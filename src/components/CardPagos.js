@@ -1,13 +1,29 @@
-import React, {Component} from 'react';
+import React, {Component, useState} from 'react';
 import { StyleSheet, Text, View,Image} from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 
 
 const Card = props => {
-    
+    const[isBlank, blank] = useState(props.isBlank);
+    const[isIconType, setIsIconType] = useState(props.enableEntypo);
+    if (isBlank)
     return(
-        <View style={{...styles.squareStyle,...props.style}}>
-            <Image style={styles.iconContainer}  source={props.img}/>
-            <Text>{props.nombreItem}</Text>
+        
+        <View handleEvent={blank} style={{...styles.squareStyleBlank,...props.style}}>
+        </View>
+    );
+    else if (!isIconType) return(
+        
+        <View handleEvent={setIsIconType} style={{...styles.squareStyle,...props.style}}>
+            <Icon size={40}styles={styles.iconContainer} name={props.iconName} color="#404040" />
+            <Text style={{textAlign:'center'}}>{props.nombreItem}</Text>
+        </View>
+    );
+    return(
+        <View handleEvent={setIsIconType} style={{...styles.squareStyle,...props.style}}>
+            <FontAwesome5 name={props.iconName} size={40} styles={styles.iconContainer} color="#404040" />
+            <Text style={{textAlign:'center'}}>{props.nombreItem}</Text>
         </View>
     );
 } 
@@ -27,11 +43,17 @@ const styles = StyleSheet.create({
         elevation: 5,
         marginHorizontal:12
     },
+    squareStyleBlank:{
+        borderRadius:5,
+        width: 104,
+        height: 95,
+        backgroundColor: 'transparent',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginHorizontal:12
+    },
     iconContainer:{
-        width: 40,
-        height:36,
         margin: 5,
-        resizeMode:'contain'
     }
 })
 
