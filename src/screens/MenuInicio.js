@@ -20,11 +20,11 @@ const dataList = [
 ]
 
 const dataListSecond = [
-    {isBlank:false,color:"##767778",name:'Mis Adeudos', iconname:'chart-bar', enableEntypo:true},
-    {isBlank:false,color:"##767778",name:'Mis Citas', iconname:'calendar-alt',enableEntypo:true},
-    {isBlank:false,color:"##767778",name:'Mis Trámites', iconname:'folder-open',enableEntypo:false},
-    {isBlank:false,color:"##767778",name:'Mi Portafolio', iconname:'folder',enableEntypo:true},
-    {isBlank:false,color:"##767778",name:'Mi buzón', iconname:'envelope',enableEntypo:true},
+    {isBlank:false,color:"#767778",name:'Mis Adeudos', iconname:'chart-bar', enableEntypo:true},
+    {isBlank:false,color:"#767778",name:'Mis Citas', iconname:'calendar-alt',enableEntypo:true},
+    {isBlank:false,color:"#767778",name:'Mis Trámites', iconname:'folder-open',enableEntypo:false},
+    {isBlank:false,color:"#767778",name:'Mi Portafolio', iconname:'folder',enableEntypo:true},
+    {isBlank:false,color:"#767778",name:'Mi buzón', iconname:'envelope',enableEntypo:true},
 
 ]
 
