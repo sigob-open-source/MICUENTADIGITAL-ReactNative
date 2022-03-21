@@ -9,15 +9,25 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const dataList = [
-    {isBlank:false,name:'Pagos', iconname:'wallet', enableEntypo:true},
-    {isBlank:false,name:'Trámites', iconname:'folder-open',enableEntypo:false},
-    {isBlank:false,name:'Peticiones', iconname:'file-text',enableEntypo:false},
-    {isBlank:false,name:'Directorio', iconname:'book',enableEntypo:true},
-    {isBlank:false,name:'Citas', iconname:'tasks',enableEntypo:true},
-    {isBlank:false,name:'Oficinas de Atención', iconname:'school',enableEntypo:true},
-    {isBlank:false,name:'Facturación', iconname:'id-card-alt',enableEntypo:true},
-    {isBlank:false,name:'Otra\nnormatividad', iconname:'file-text',enableEntypo:false},
+    {isBlank:false,color:"#404040",name:'Pagos', iconname:'wallet', enableEntypo:true},
+    {isBlank:false,color:"#404040",name:'Trámites', iconname:'folder-open',enableEntypo:false},
+    {isBlank:false,color:"#404040",name:'Peticiones', iconname:'file-text',enableEntypo:false},
+    {isBlank:false,color:"#404040",name:'Directorio', iconname:'book',enableEntypo:true},
+    {isBlank:false,color:"#404040",name:'Citas', iconname:'tasks',enableEntypo:true},
+    {isBlank:false,color:"#404040",name:'Oficinas de Atención', iconname:'school',enableEntypo:true},
+    {isBlank:false,color:"#404040",name:'Facturación', iconname:'id-card-alt',enableEntypo:true},
+    {isBlank:false,color:"#404040",name:'Otra\nNormatividad', iconname:'file-text',enableEntypo:false},
 ]
+
+const dataListSecond = [
+    {isBlank:false,color:"##767778",name:'Mis Adeudos', iconname:'chart-bar', enableEntypo:true},
+    {isBlank:false,color:"##767778",name:'Mis Citas', iconname:'calendar-alt',enableEntypo:true},
+    {isBlank:false,color:"##767778",name:'Mis Trámites', iconname:'folder-open',enableEntypo:false},
+    {isBlank:false,color:"##767778",name:'Mi Portafolio', iconname:'folder',enableEntypo:true},
+    {isBlank:false,color:"##767778",name:'Mi buzón', iconname:'envelope',enableEntypo:true},
+
+]
+
 const numColumns = 3;
 
 const WIDTH = Dimensions.get('window').width
@@ -67,7 +77,7 @@ class MenuInicio extends Component{
     _renderItem = ({item,index}) => {
         return(
             <View style={{flex:1, alignItems:'center'}}>
-                <Square isBlank={item.isBlank} style={styles.menuContainer} enableEntypo={item.enableEntypo} nombreItem={item.name} iconName={item.iconname}/>
+                <Square col={item.color}isBlank={item.isBlank} style={styles.menuContainer} enableEntypo={item.enableEntypo} nombreItem={item.name} iconName={item.iconname}/>
             </View>
         );
     }
@@ -84,6 +94,16 @@ class MenuInicio extends Component{
                         numColumns={numColumns}
                     />
                 </View>
+                <View style={styles.separator}/>
+                    <View style={{marginHorizontal:'2%'}}>
+                        <FlatList
+                            style={{marginBottom:'6%'}}
+                            data={this.formatData(dataListSecond, numColumns)}
+                            renderItem={this._renderItem}
+                            keyExtractor={(item, index) => index.toString()}
+                            numColumns={numColumns}
+                        />
+                </View>
                 <Footer style={styles.footer}/>
             </View>
         );
@@ -97,6 +117,14 @@ const styles = StyleSheet.create({
         flex:1,
         backgroundColor:'#EDF2F5',
        
+    },
+    separator:{
+        justifyContent:'center',
+        alignSelf:'center',
+        width:336,
+        height:1,
+        marginBottom:'2%',
+        backgroundColor:'#DCE1E5'
     },
     mainContainer:{
         flex:1,

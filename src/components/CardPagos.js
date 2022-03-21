@@ -16,13 +16,13 @@ const Card = props => {
     else if (!isIconType) return(
         
         <View handleEvent={setIsIconType} style={{...styles.squareStyle,...props.style}}>
-            <Icon size={40}styles={styles.iconContainer} name={props.iconName} color="#404040" />
+            <Icon size={40}styles={styles.iconContainer} name={props.iconName} color={props.col} />
             <Text style={{textAlign:'center'}}>{props.nombreItem}</Text>
         </View>
     );
     return(
         <View handleEvent={setIsIconType} style={{...styles.squareStyle,...props.style}}>
-            <FontAwesome5 name={props.iconName} size={40} styles={styles.iconContainer} color="#404040" />
+            <FontAwesome5 name={props.iconName} size={40} styles={styles.iconContainer} solid color={props.col} />
             <Text style={{textAlign:'center'}}>{props.nombreItem}</Text>
         </View>
     );
