@@ -63,7 +63,7 @@ class Solicitud extends Component{
         return(
             <View style={styles.container}>
                 <Header style={styles.header}item="Trámites" imgnotif={require("../../assets/imagenes/notificationGet_icon.png")} img={require("../../assets/imagenes/header_logo.png")}/>
-                    <ScrollView contentContainerStyle={{padding:10}}>
+                    <ScrollView contentContainerStyle={{padding:10,paddingHorizontal:0}}>
                         <View style={{flex:1, marginTop:9,marginHorizontal:'2%'}}>
                             <Accordion
                                 sections={SECTIONS}

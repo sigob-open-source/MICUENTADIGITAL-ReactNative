@@ -11,12 +11,12 @@ const CardSolicitud = props => {
                 <View style={{flex:1, backgroundColor:'transparent'}}>
                     <Image style={styles.imageStyle} source={require('../../assets/imagenes/blog-ph.jpg')}/>
                 </View>
-                <View style={{flex:1, flexDirection:'column',backgroundColor:'white'}}>
-                    <View style={{flex:1, backgroundColor:'white'}}></View>
-                    <View style={{flex:1, backgroundColor:'white', justifyContent:'center'}}>
+                <View style={{flex:1, flexDirection:'column',backgroundColor:'transparent'}}>
+                    <View style={{flex:1, backgroundColor:'transparent'}}></View>
+                    <View style={{flex:1, backgroundColor:'transparent', justifyContent:'center'}}>
                         <Text style={styles.textStyle}>image.png</Text>
                     </View>
-                    <View style={{flex:1, backgroundColor:'white'}}>
+                    <View style={{flex:1, backgroundColor:'transparent'}}>
                         <Text style={styles.changeImageText}>Cambiar Imagen...</Text>
                     </View>
                 </View>
