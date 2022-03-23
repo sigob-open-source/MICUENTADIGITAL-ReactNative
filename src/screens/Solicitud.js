@@ -1,62 +1,14 @@
-
 import React, {Component, useState} from 'react';
 import { StyleSheet, View, Text, FlatList, Dimensions,TouchableOpacity,ScrollView} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import Accordion from 'react-native-collapsible/Accordion';
 
 import CardSolicitud from '../components/CardSolicitud';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Card from '../components/CardPagos';
-
-const SECTIONS = [
-    {
-      title: 'Solicitud',
-      content: 'Lorem ipsum...',
-      icono:'chart-box-outline'
-    },
-
-  ];
+import ButtonRequest from '../components/SolicitudComponents/Button';
 
 class Solicitud extends Component{
-    state = {
-        activeSections: [],
-      };
-    
-      _renderSectionTitle = (section) => {
-        return (
-          <View style={styles.content}>
-
-          </View>
-        );
-      };
-    
-      _renderHeader = (section) => {
-        return (
-          <View style={styles.optionCard}>
-            <View style={styles.collapsibleContent}>
-                <MaterialCommunityIcons size={40} name={section.icono} color={'black'} />
-                <Text style={styles.collapsibleText}>{section.title}</Text>
-                <View style={{flex:1, marginRight:'5%'}}>
-                    <MaterialIcons style={{alignSelf:'flex-end',}}size={40} name='keyboard-arrow-down' color={'black'} />
-                </View>
-            </View>
-          </View>
-        );
-      };
-    
-      _renderContent = (section) => {
-        return (
-          <View style={styles.content}>
-            <CardSolicitud/>
-          </View>
-        );
-      };
-    
-      _updateSections = (activeSections) => {
-        this.setState({ activeSections });
-      };
 
     render() {
 
@@ -65,39 +17,18 @@ class Solicitud extends Component{
                 <Header style={styles.header}item="Trámites" imgnotif={require("../../assets/imagenes/notificationGet_icon.png")} img={require("../../assets/imagenes/header_logo.png")}/>
                     <ScrollView contentContainerStyle={{padding:10,paddingHorizontal:0}}>
                         <View style={{flex:1, marginTop:9,marginHorizontal:'2%'}}>
-                            <Accordion
-                                sections={SECTIONS}
-                                activeSections={this.state.activeSections}
-                                renderSectionTitle={this._renderSectionTitle}
-                                renderHeader={this._renderHeader}
-                                renderContent={this._renderContent}
-                                onChange={this._updateSections}
-                                underlayColor={'transparent'}
-                                expandMultiple={true}
-                            />
-                            <TouchableOpacity backface>
-                                <View style={styles.optionCard}>
-                                    <View style={styles.collapsibleContent}>
-                                        <MaterialCommunityIcons size={40} name='chart-box-outline' color={'black'} />
-                                        <Text style={styles.collapsibleText}>Cambiar Comentario</Text>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity>
-                                <View style={styles.optionCard}>
-                                    <View style={styles.collapsibleContent}>
-                                        <MaterialCommunityIcons size={40} name='chart-box-outline' color={'black'} />
-                                        <Text style={styles.collapsibleText}>Cambiar Dirección</Text>
-                                    </View>
-                                </View>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.sendRequestGeneralContainer}>
+                                <ButtonRequest texto='Motivo de Solicitud' showArrow={true}/>
+                            <CardSolicitud></CardSolicitud>
+                                <ButtonRequest texto='Cambiar Comentario' />
+                                <ButtonRequest texto='Cambiar Dirección' />
+  
+                            <View style={styles.sendRequestGeneralContainer}>
                                 <View style={styles.sendRequestStyle}>
                                         <View style={styles.sendRequestContainer}>
                                             <Text style={{color:'black',fontSize:20, fontWeight:'500'}}>Enviar Solicitud</Text>
                                         </View>
                                     </View>
-                            </TouchableOpacity>
+                            </View>
                         </View>
                     </ScrollView>
                 <Footer style={styles.footer}/>
@@ -133,11 +64,11 @@ const styles = StyleSheet.create({
         alignItems:'center',
     },
     sendRequestGeneralContainer:{
-        marginTop:'55%'
+        marginTop:'25%'
     },  
     optionCard:{
         width:333,
-        height:80,
+        height:60,
         justifyContent:'center',
         alignSelf:'center',
         marginTop:7,
@@ -151,7 +82,7 @@ const styles = StyleSheet.create({
     },
     sendRequestStyle:{
         width:333,
-        height:80,
+        height:60,
         justifyContent:'center',
         alignSelf:'center',
         marginTop:7,

@@ -1,45 +1,70 @@
 import React, {Component, useState} from 'react';
-import { StyleSheet, Text, View,Image} from 'react-native';
+import { StyleSheet, Text, View, Image,TouchableOpacity, SafeAreaView} from 'react-native';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import { BottomPopUp } from './BottomPopUp';
 
 const CardSolicitud = props => {
+    let popupRef = React.createRef()
+    const onShowPopup = () => {
+        popupRef.show()
+    }
+    const onClosePopup = () => {
+        popupRef.close()
+    }
+    const [shouldShow, setShouldShow] = useState(false);
 
     return(
         <View>
             <View style={{...styles.squareStyle,...props.style}}>
+                <TouchableOpacity
+                 onPress={onShowPopup}
+                >
                 <View style={{flex:1, backgroundColor:'transparent'}}>
-                    <Image style={styles.imageStyle} source={require('../../assets/imagenes/blog-ph.jpg')}/>
+                    <View style={styles.agregarImagen}>
+                        <MaterialCommunityIcons size={60} name='image-outline' color={'gray'}/>
+                    </View>
                 </View>
+                </TouchableOpacity>
                 <View style={{flex:1, flexDirection:'column',backgroundColor:'transparent'}}>
                     <View style={{flex:1, backgroundColor:'transparent'}}></View>
                     <View style={{flex:1, backgroundColor:'transparent', justifyContent:'center'}}>
-                        <Text style={styles.textStyle}>image.png</Text>
+                        <Text style={styles.textStyle}>Agregar imagen {"\n"}de evidencia</Text>
                     </View>
                     <View style={{flex:1, backgroundColor:'transparent'}}>
-                        <Text style={styles.changeImageText}>Cambiar Imagen...</Text>
+                        <Text style={styles.changeImageText}></Text>
                     </View>
                 </View>
             </View>
-            <View style={{flexDirection:'row',marginTop:'5%'}}>
-                <Icon size={40} name='person-circle-outline' color={'black'} />
-                <View style={{flex:1, flexDirection:'column'}}>
-                    <Text style={styles.TitleBottom}>Comentario de usuario</Text>
-                    <Text style={styles.userComment}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod temport.</Text>
-                    
-                </View>
-                
+            {/* Sección de comentario de usuario y ubicación de la solicitud */}
+            <View>
+                {
+                    shouldShow ?(
+                        <><View style={{ flexDirection: 'row', marginTop: '5%' }}>
+                            <Icon size={40} name='person-circle-outline' color={'black'} />
+                            <View style={{ flex: 1, flexDirection: 'column' }}>
+                                <Text style={styles.TitleBottom}>Comentario de usuario</Text>
+                                <Text style={styles.userComment}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod temport.</Text>
+
+                            </View>
+
+                        </View><View style={{ flexDirection: 'row', marginTop: '5%' }}>
+                                <MaterialCommunityIcons size={40} name='map-marker-outline' color={'black'} />
+                                <View style={{ flex: 1, flexDirection: 'column' }}>
+                                    <Text style={styles.TitleBottom}>Av. Ferrocaril y Salvador Cabrales</Text>
+                                    <Text style={styles.verLocacionMapa}>Ver locación en el mapa.</Text>
+
+                                </View>
+                            </View></>
+                    ) : null
+                }
+                <View style={styles.linea}></View>
             </View>
-            <View style={{flexDirection:'row',marginTop:'5%'}}>
-                <MaterialCommunityIcons size={40} name='map-marker-outline' color={'black'} />
-                <View style={{flex:1, flexDirection:'column'}}>
-                    <Text style={styles.TitleBottom}>Av. Ferrocaril y Salvador Cabrales</Text>
-                    <Text style={styles.verLocacionMapa}>Ver locación en el mapa.</Text>
-                    
-                </View>
-                
-            </View>
-            <View style={styles.linea}></View>
+            <BottomPopUp
+                title='Elegir imagen'
+                ref={(target) => popupRef = target}
+                onTouchOutside={onClosePopup}
+            />
         </View>
 
         
@@ -47,6 +72,13 @@ const CardSolicitud = props => {
 } 
 
 const styles = StyleSheet.create({
+    agregarImagen:{
+        flex:1,
+        width:161,
+        justifyContent:'center',
+        alignItems:'center',
+        backgroundColor:'#E3E3E3'
+    },  
     squareStyle:{
         marginTop:'3%',
         borderRadius:5,
@@ -74,9 +106,10 @@ const styles = StyleSheet.create({
         fontSize:15
     },  
     textStyle:{
-       justifyContent:'center',
-       alignSelf:'center',
-       fontWeight:'600'
+        textAlign:'center',
+        justifyContent:'center',
+        alignSelf:'center',
+        fontWeight:'600'
     },
     changeImageText:{
         justifyContent:'center',
@@ -99,6 +132,7 @@ const styles = StyleSheet.create({
         borderTopLeftRadius:5
     },
     linea:{
+        alignSelf:'center',
         marginTop:'6%',
         width:336,
         height:2,
