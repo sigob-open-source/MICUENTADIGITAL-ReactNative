@@ -1,5 +1,7 @@
+import { metaProperty } from '@babel/types';
 import React, {Component, useState} from 'react';
 import { StyleSheet, Text, View, Image,TouchableOpacity, SafeAreaView} from 'react-native';
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 import { BottomPopUp } from './BottomPopUp';
@@ -13,6 +15,63 @@ const CardSolicitud = props => {
         popupRef.close()
     }
     const [shouldShow, setShouldShow] = useState(false);
+    const [showImage, setShowImage] = useState(false);
+    const [changeTextImage, setChangeTextImage] = useState(true);
+    const [image, setImage] = useState('https://via.placeholder.com/200');
+    const [nombreArchivo, setNombreArchivo] = useState('')
+
+    const selectImage = () => {
+        const options = {
+            storageOptions:{
+                skipBackup: false,
+                path: 'images'
+            }
+        }
+
+        launchImageLibrary(options,response =>{
+            if(response.errorCode){
+                console.log(response.errorMessage)
+            }else if (response.didCancel){
+                console.log('El usuario canceló la selección')
+            }else{
+                const path = response.assets[0].uri
+                const name = response.assets[0].fileName
+                setShowImage(true)
+                setChangeTextImage(false)
+                setNombreArchivo(name)
+                setShouldShow(false)
+                setImage(path)
+            }
+        })
+        
+    }
+
+    const takePicture = () => {
+        const options = {
+            storageOptions:{
+                skipBackup: false,
+                path: 'images'
+            }
+        }
+
+        launchCamera(options,response =>{
+            if(response.errorCode){
+                console.log(response.errorMessage)
+            }else if (response.didCancel){
+                console.log('El usuario canceló la fotografía')
+            }else{
+                const path = response.assets[0].uri
+                const name = response.assets[0].fileName
+                setShowImage(true)
+                setChangeTextImage(false)
+                setNombreArchivo(name)
+                setShouldShow(false)
+                setImage(path)
+                
+            }
+        })
+        
+    }
 
     return(
         <View>
@@ -20,19 +79,38 @@ const CardSolicitud = props => {
                 <TouchableOpacity
                  onPress={onShowPopup}
                 >
+                    {
+                        showImage ? (
+                            <Image style={{width:'100%', height:'100%',borderBottomLeftRadius:5,borderTopLeftRadius:5}}source={{uri:image}}/>    
+                        ) : null
+                    }
+                
                 <View style={{flex:1, backgroundColor:'transparent'}}>
+                    
                     <View style={styles.agregarImagen}>
                         <MaterialCommunityIcons size={60} name='image-outline' color={'gray'}/>
+                        
                     </View>
+                    
                 </View>
                 </TouchableOpacity>
                 <View style={{flex:1, flexDirection:'column',backgroundColor:'transparent'}}>
                     <View style={{flex:1, backgroundColor:'transparent'}}></View>
                     <View style={{flex:1, backgroundColor:'transparent', justifyContent:'center'}}>
-                        <Text style={styles.textStyle}>Agregar imagen {"\n"}de evidencia</Text>
+                        {
+                            changeTextImage ?(
+                                <Text numberOfLines={3} style={styles.textStyle}>Agregar imagen {"\n"}de evidencia</Text>
+                            ) : <Text numberOfLines={3} style={styles.textStyle}>{nombreArchivo} {"\n"}de evidencia</Text>
+                        }
+                        
                     </View>
                     <View style={{flex:1, backgroundColor:'transparent'}}>
-                        <Text style={styles.changeImageText}></Text>
+                        {
+                            changeTextImage ?(
+                                <Text style={styles.changeImageText}></Text>
+                            ) : <Text onPress={onShowPopup}style={styles.changeImageText}>Cambiar Imagen</Text>
+                        }
+                        
                     </View>
                 </View>
             </View>
@@ -60,10 +138,14 @@ const CardSolicitud = props => {
                 }
                 <View style={styles.linea}></View>
             </View>
+            
             <BottomPopUp
+                pain = {selectImage}
+                pain2 = {takePicture}
                 title='Elegir imagen'
                 ref={(target) => popupRef = target}
                 onTouchOutside={onClosePopup}
+                
             />
         </View>
 
@@ -109,7 +191,8 @@ const styles = StyleSheet.create({
         textAlign:'center',
         justifyContent:'center',
         alignSelf:'center',
-        fontWeight:'600'
+        fontWeight:'600',
+        paddingHorizontal:'10%'
     },
     changeImageText:{
         justifyContent:'center',

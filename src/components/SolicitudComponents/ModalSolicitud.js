@@ -1,11 +1,12 @@
 import {Modal, Dimensions, TouchableWithoutFeedback,StyleSheet, View, Text, FlatList, TouchableOpacity} from 'react-native';
+import { launchImageLibrary } from 'react-native-image-picker';
 import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 
 const deviceHeight = Dimensions.get("window").height
 
-export class BottomPopUp extends React.Component{
+export class ModalSolicitud extends React.Component{
     constructor(props){
         super(props)
         this.state = {
@@ -48,7 +49,7 @@ export class BottomPopUp extends React.Component{
             </View>
         );
     }
-
+    
     render(){
         let {show} = this.state
         const {onTouchOutside, title} = this.props
@@ -62,17 +63,14 @@ export class BottomPopUp extends React.Component{
                 <View style={{
                     flex:1,
                     backgroundColor:'#000000AA', 
-                    justifyContent:'flex-end',
                     }}>
 
                         {this.renderOutsideTouchable(onTouchOutside)}
                         <View style={{
                             backgroundColor:'white',
                             width:'100%',
-                            borderTopRightRadius:10,
-                            borderTopLeftRadius:10,
-    
-                            maxHeight:deviceHeight*0.4
+                            height:'100%'
+
                         }}>
                             {this.renderTitle()}
                             <TouchableOpacity>
@@ -101,7 +99,6 @@ export class BottomPopUp extends React.Component{
 const styles = StyleSheet.create({
     optionCard:{
         width:'100%',
-        height:60,
         justifyContent:'center',
         alignSelf:'center',
         marginTop:7,
