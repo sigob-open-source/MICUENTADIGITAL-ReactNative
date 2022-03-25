@@ -1,10 +1,16 @@
-import {Modal, Dimensions, TouchableWithoutFeedback,StyleSheet, View, Text, TextInput, ScrollView} from 'react-native';
+import {PermissionsAndroid, Modal, Dimensions, StyleSheet, View, Text, SafeAreaView} from 'react-native';
+import MapBoxGL from '@react-native-mapbox-gl/maps';
+import Fontisto from 'react-native-vector-icons/Fontisto';
+
 import React from 'react';
 import Header from '../Header';
+import MapboxGL from '@react-native-mapbox-gl/maps';
 
+MapBoxGL.setAccessToken("pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ")
+MapBoxGL.geo
 const deviceHeight = Dimensions.get("window").height
 
-export class ComentarioModal extends React.Component{
+export class MapaModal extends React.Component{
     constructor(props){
         super(props)
         this.state = {
@@ -20,7 +26,17 @@ export class ComentarioModal extends React.Component{
             textLength: text.length
         })
     }
-
+    componentDidMount() {
+    
+        PermissionsAndroid.requestMultiple(
+                   [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+                   PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION],
+                   {
+                       title: 'Give Location Permission',
+                   message: 'App needs location permission to find your position.'
+               }
+           )
+   }
     show = () => {
         this.setState({show: true})
     }
@@ -70,29 +86,44 @@ export class ComentarioModal extends React.Component{
  
                     }}> 
                         <Header style={styles.header}item="Trámites" imgnotif={require("../../../assets/imagenes/notificationGet_icon.png")} img={require("../../../assets/imagenes/header_logo.png")}/>
-                        {this.renderOutsideTouchable(onTouchOutside)}
-                        <View style={{
-                            backgroundColor:'#EDF2F5',
-                            width:'100%',
-                            height:'100%',
-                            
-                        }}>
-                        {this.renderTitle()}
-
-                        <TextInput onChangeText={this.onChangeText.bind(this)} maxLength={250} style={{paddingHorizontal:'5%'}} multiline={true}></TextInput>
-                        <View style={{width:'95%',height:1, backgroundColor:'black', alignSelf:'center'}}></View>
-                        <Text style={{textAlign:'right', paddingHorizontal:'5%'}}>{this.state.textLength}/250</Text>
                         <View style={styles.sendRequestGeneralContainer}>
-                            <View style={styles.sendRequestStyle}>
-                                     <View style={styles.sendRequestContainer}>
-                                        <Text style={{color:'black',fontSize:20, fontWeight:'500'}}>Subir Comentario</Text>
+                                <View style={styles.sendRequestStyle}>
+                                        <View style={styles.sendRequestContainer}>
+                                            <Text style={{color:'black',fontSize:20, fontWeight:'500'}}>Seleccionar Locación</Text>
+                                        </View>
                                     </View>
-                                </View>
+                            </View>
+
+                        <View style={{flex:1,height:'100%',width:'100%',borderRadius:90}}>
+
+                            <MapboxGL.MapView
+                                onPress={(feature)=>console.log('Coords:', feature.geometry.coordinates)}
+                                localizeLabels={true}
+                                styleURL={MapBoxGL.StyleURL.Street}
+                                zoomLevel={17}
+                                followUserLocation={true}
+                                style={{flex:1}}>
+                                <MapBoxGL.Camera
+                                    zoomLevel={17}
+                                    followUserLocation={true}
+                                    animationMode={'flyTo'}
+                                    animationDuration={0}
+                                    >
+                                        
+                                    </MapBoxGL.Camera>
+                                    <MapBoxGL.MarkerView
+                                    //solo una coordinada de reemplazo en lo que se añade la funcionalidad para añadir marcadores con un onPress dell mapView
+                                    coordinate={[-114.73939380952801, 32.440140135692374]}
+                                    >
+                                        <Fontisto style={{alignSelf:'flex-end',}}size={60} name='map-marker-alt' color={'#79142A'} />
+                                    </MapBoxGL.MarkerView>
+                            </MapboxGL.MapView>
+                            
+
                         </View>
 
                     </View>
-                </View>
-                    
+
             </Modal>
         );
     }
@@ -100,6 +131,8 @@ export class ComentarioModal extends React.Component{
 
 const styles = StyleSheet.create({
     header:{
+        zIndex:10,
+        position:'absolute',
         flexDirection:'row',
         height:64,
         width: '100%',
@@ -109,7 +142,7 @@ const styles = StyleSheet.create({
         borderBottomEndRadius:15,
         borderBottomLeftRadius:15,
         padding:20,
-        marginBottom:14,
+
     },
     optionCard:{
         width:'100%',
@@ -134,8 +167,15 @@ const styles = StyleSheet.create({
         alignItems:'center',
     },
     sendRequestGeneralContainer:{
-        marginTop:'120%'
-    },  
+        marginTop:'165%',
+        zIndex:10,
+        position:'absolute',
+        backgroundColor:'transparent',
+        flex:0.2,
+        justifyContent:'center',
+        alignSelf:'center',
+        alignItems:'center',
+    },
     sendRequestStyle:{
         width:333,
         height:60,

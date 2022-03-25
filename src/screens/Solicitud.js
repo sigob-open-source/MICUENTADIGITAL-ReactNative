@@ -3,28 +3,41 @@ import { StyleSheet, View, Text, FlatList, Dimensions,TouchableOpacity,ScrollVie
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-import CardSolicitud from '../components/SolicitudComponents/CardSolicitud';
 import { ModalSolicitud } from '../components/SolicitudComponents/ModalSolicitud';
+import { ComentarioModal } from '../components/SolicitudComponents/ComentariosModal';
+import { MapaModal } from '../components/SolicitudComponents/MapaModal';
+
+import CardSolicitud from '../components/SolicitudComponents/CardSolicitud';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ButtonRequest from '../components/SolicitudComponents/Button';
-import { ComentarioModal } from '../components/SolicitudComponents/ComentariosModal';
+
 
 const Solicitud = props =>{
         let popupRef = React.createRef()
         let popupRef2 = React.createRef()
+        let popupRef3 = React.createRef()
         const onShowPopup = () => {
             popupRef.show()
         }
         const onClosePopup = () => {
             popupRef.close()
         }
+
         const onShowCommentPopup = () => {
             popupRef2.show()
         }
         const onCloseCommentPopup = () => {
             popupRef2.close()
         }
+
+        const onShowMapPopup = () => {
+            popupRef3.show()
+        }
+        const onCloseMapPopup = () => {
+            popupRef3.close()
+        }
+ 
         return(
             <View style={styles.container}>
                 <ModalSolicitud
@@ -38,17 +51,28 @@ const Solicitud = props =>{
                     ref={(target) => popupRef2 = target}
                     onTouchOutside={onClosePopup}                   
                  />
+
+                <MapaModal
+                    ref={(target) => popupRef3 = target}
+                    onTouchOutside={onClosePopup}                   
+                 />
                     <ScrollView contentContainerStyle={{padding:10,paddingHorizontal:0}}>
                         <View style={{flex:1, marginTop:9,marginHorizontal:'2%'}}>
+
                                 <TouchableOpacity  onPress={onShowPopup}>
                                     <ButtonRequest texto='Motivo de Solicitud' showArrow={true}/>
                                 </TouchableOpacity>
+
                                 <CardSolicitud></CardSolicitud>
+
                                 <TouchableOpacity  onPress={onShowCommentPopup}>
                                     <ButtonRequest texto='Cambiar Comentario' />
                                 </TouchableOpacity>
-                                <ButtonRequest texto='Cambiar Dirección' />
-  
+
+                                <TouchableOpacity  onPress={onShowMapPopup}>
+                                    <ButtonRequest texto='Cambiar Dirección' />
+                                </TouchableOpacity>
+
                             <View style={styles.sendRequestGeneralContainer}>
                                 <View style={styles.sendRequestStyle}>
                                         <View style={styles.sendRequestContainer}>
