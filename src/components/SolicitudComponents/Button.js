@@ -15,7 +15,7 @@ const ButtonRequest = props => {
             {
                 shouldShow ? (
                     <View style={{flex:1, marginRight:'5%'}}>
-                        <MaterialIcons style={{alignSelf:'flex-end',}}size={40} name='keyboard-arrow-down' color={'black'} />
+                        <MaterialIcons style={{alignSelf:'flex-end',}}size={40} name={props.iconName} color={'black'} />
                     </View>
                 ) : null
             }
@@ -34,8 +34,8 @@ const styles = StyleSheet.create({
     },
     collapsibleText:{
         fontWeight:'500',
-        marginLeft:'10%',
-        fontSize:20,
+        marginLeft:'5%',
+        fontSize:18,
         color:'black',
     },
     optionCard:{

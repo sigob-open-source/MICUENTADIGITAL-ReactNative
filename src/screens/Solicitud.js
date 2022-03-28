@@ -60,7 +60,7 @@ const Solicitud = props =>{
                         <View style={{flex:1, marginTop:9,marginHorizontal:'2%'}}>
 
                                 <TouchableOpacity  onPress={onShowPopup}>
-                                    <ButtonRequest texto='Motivo de Solicitud' showArrow={true}/>
+                                    <ButtonRequest texto='Motivo de Solicitud' iconName='keyboard-arrow-down' showArrow={true}/>
                                 </TouchableOpacity>
 
                                 <CardSolicitud></CardSolicitud>
