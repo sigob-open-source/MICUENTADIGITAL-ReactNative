@@ -7,7 +7,7 @@ import Square from '../components/CardPagos';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-
+//test comment
 const Test = () =>(
     <View style={styles.container}>
         <Header style={styles.header}item="Pagos" imgnotif={require("../../assets/imagenes/notificationGet_icon.png")} img={require("../../assets/imagenes/header_logo.png")}/>
