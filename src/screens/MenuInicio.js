@@ -32,37 +32,6 @@ const numColumns = 3;
 
 const WIDTH = Dimensions.get('window').width
 
-
-/*
-const MenuInicio = () =>(
-    <View style={styles.container}>
-        <Header style={styles.header}item="Pagos" imgnotif={require("../../assets/imagenes/notificationGet_icon.png")} img={require("../../assets/imagenes/header_logo.png")}/>
-        <View style={styles.mainContainer}>
-            <View style={styles.menuContainer}>
-                <Square enableEntypo={true} nombreItem='Pagos' iconName="wallet"/>
-                <Square enableEntypo={true} nombreItem='Pagos' iconName="wallet"/>
-                <Square enableEntypo={true} nombreItem='Pagos' iconName="wallet"/>
-            </View>
-            <View style={styles.menuContainer}>
-                <Square enableEntypo={true} nombreItem='Pagos' iconName="wallet"/>
-                <Square enableEntypo={true} nombreItem='Pagos' iconName="wallet"/>
-                <Square enableEntypo={true} nombreItem='Pagos' iconName="wallet"/>
-            </View>
-            <View style={styles.menuContainer}>
-                
-                <Square enableEntypo={true} nombreItem='Pagos' iconName="wallet"/>
-                <Square enableEntypo={true} nombreItem='Pagos' iconName="wallet"/>
-                <Square enableEntypo={true} nombreItem='Pagos' iconName="wallet"/>
-
-            </View>
-           
-        </View>
-        <Footer style={styles.footer}/>
-    </View>
-    
-);
-*/
-
 class MenuInicio extends Component{
     formatData = (dataList, numColumns) =>{
         const totalRows = Math.floor(dataList.length / numColumns)
@@ -113,7 +82,6 @@ class MenuInicio extends Component{
 
 const styles = StyleSheet.create({
     container:{
-       // paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
         flex:1,
         backgroundColor:'#EDF2F5',
        
