@@ -5,6 +5,7 @@ type RootStackParamList = {
   peticiones: undefined;
   solicitud: undefined;
   dirfuncionario:undefined;
+  oficinaAtencion:undefined;
   problemOneScreen: undefined;
   problemTwoScreen: undefined;
   problemThreeScreen: undefined;
