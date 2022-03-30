@@ -45,36 +45,35 @@ const OficinasAtencion = () =>{
         <View style={{flex:1,}}> 
             <Header style={styles.header}item="Oficinas de atención" imgnotif={require("../../assets/imagenes/notificationGet_icon.png")} img={require("../../assets/imagenes/header_logo.png")}/>
 
-            <ScrollView contentContainerStyle={{flex: 1}}>
-            <View style={{position:'absolute',flex:1,height:deviceHeight,width:'100%',borderRadius:90}}>
+            <View style={{flex:1}}> 
+                <View style={{position:'absolute',flex:1,height:deviceHeight,width:'100%',borderRadius:90}}>
 
-                <MapboxGL.MapView
-                onPress={(feature)=>console.log('Coords:', feature.geometry.coordinates)}
-                localizeLabels={true}
-                styleURL={MapBoxGL.StyleURL.Street}
-                zoomLevel={17}
-                followUserLocation={true}
-                style={{flex:1}}>
-                    <MapBoxGL.Camera
-                        zoomLevel={17}
-                        followUserLocation={true}
-                        animationMode={'flyTo'}
-                        animationDuration={0}>
-                                                
-                    </MapBoxGL.Camera>
-                    <MapBoxGL.MarkerView
-                        //solo una coordenada de reemplazo en lo que se añade la funcionalidad para añadir marcadores con un onPress dell mapView
-                        coordinate={[-114.73939380952801, 32.440140135692374]}>
-                        <Fontisto style={{alignSelf:'flex-end',}}size={60} name='map-marker-alt' color={'#79142A'} />
-                    </MapBoxGL.MarkerView>
-                </MapboxGL.MapView>
+                    <MapboxGL.MapView
+                    onPress={(feature)=>console.log('Coords:', feature.geometry.coordinates)}
+                    localizeLabels={true}
+                    styleURL={MapBoxGL.StyleURL.Street}
+                    zoomLevel={17}
+                    followUserLocation={true}
+                    style={{flex:1}}>
+                        <MapBoxGL.Camera
+                            zoomLevel={17}
+                            followUserLocation={true}
+                            animationMode={'flyTo'}
+                            animationDuration={0}>
+                                                    
+                        </MapBoxGL.Camera>
+                        <MapBoxGL.MarkerView
+                            //solo una coordenada de reemplazo en lo que se añade la funcionalidad para añadir marcadores con un onPress dell mapView
+                            coordinate={[-114.73939380952801, 32.440140135692374]}>
+                            <Fontisto style={{alignSelf:'flex-end',}}size={60} name='map-marker-alt' color={'#79142A'} />
+                        </MapBoxGL.MarkerView>
+                    </MapboxGL.MapView>
 
+                </View>
             </View>
-            <View style={{flex:1}}></View>
             
             <Footer style={styles.footer}/>
-            
-            
+
             <View style={styles.textInputStyle}>
                 <TextInput style={{paddingLeft:14}}placeholder='Buscar Oficinas...'/>
                 <View style={styles.buttonRowsStyle}>
@@ -92,9 +91,9 @@ const OficinasAtencion = () =>{
                 </View>
                 
             </View>      
-            </ScrollView>
+           
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({
