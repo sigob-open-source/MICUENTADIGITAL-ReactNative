@@ -1,30 +1,38 @@
-import React, {Component, useState} from 'react';
-import { StyleSheet, Text, View,Image} from 'react-native';
+import React, {useState} from 'react';
+import { StyleSheet, Text, View} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 
 
 const Card = props => {
+
     const[isBlank, blank] = useState(props.isBlank);
     const[isIconType, setIsIconType] = useState(props.enableEntypo);
+
     if (isBlank)
     return(
-        
-        <View handleEvent={blank} style={{...styles.squareStyleBlank,...props.style}}>
-        </View>
+
+        <View handleEvent={blank} style={{...styles.squareStyleBlank,...props.style}}></View>
+
     );
     else if (!isIconType) return(
         
         <View handleEvent={setIsIconType} style={{...styles.squareStyle,...props.style}}>
+
             <Icon size={40}styles={styles.iconContainer} name={props.iconName} color={props.col} />
             <Text style={{textAlign:'center'}}>{props.nombreItem}</Text>
+
         </View>
+
     );
     return(
         <View handleEvent={setIsIconType} style={{...styles.squareStyle,...props.style}}>
+
             <FontAwesome5 name={props.iconName} size={40} styles={styles.iconContainer} solid color={props.col} />
             <Text style={{textAlign:'center'}}>{props.nombreItem}</Text>
+
         </View>
+
     );
 } 
 
