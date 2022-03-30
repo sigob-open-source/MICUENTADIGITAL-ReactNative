@@ -1,16 +1,16 @@
-import React, {Component, useState} from 'react';
-import { StyleSheet, View, Text,TextInput, TouchableOpacity,ScrollView} from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import React from 'react';
+import { StyleSheet, View, Text,TextInput, TouchableOpacity} from 'react-native';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
 const DirectorioFunc = () =>{
     return(
-        
+
         <View style={{flex:1,height:'100%'}}>
+
             <View style={{flex:1, alignItems:'center', }}>
+
                 <Header style={styles.header} 
                 item="Peticiones" 
                 imgnotif={require("../../assets/imagenes/notificationGet_icon.png")} 
@@ -25,12 +25,17 @@ const DirectorioFunc = () =>{
                 <View style={styles.textInputContainer}>
                     <TextInput style={styles.textInputStyle} placeholder='Busqueda de texto.'/>
                 </View>
+
             </View>
+
             <TouchableOpacity>
+
                 <View style={styles.searchButton}>
                     <Text style={styles.buttonText}>Buscar Funcionario</Text>
                 </View>
+
             </TouchableOpacity>
+
             <Footer style={styles.footer}/>
 
         </View>
