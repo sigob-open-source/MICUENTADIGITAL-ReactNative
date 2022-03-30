@@ -22,6 +22,7 @@ const AppContainer = () => (
     }}
     >
       <Stack.Screen name="menuInicio" component={MenuInicio} />
+      <Stack.Screen name="solicitud" component={Solicitud} />
       <Stack.Screen name="peticiones" component={Peticiones} />
       <Stack.Screen name="dirfuncionario" component={DirectorioFunc} />
       <Stack.Screen name="oficinaAtencion" component={OficinasAtencion} />
