@@ -6,6 +6,7 @@ import { RootStackParamList } from './src/types/navigation';
 
 // Screens
 import HomeScreen from './src/screens/Home';
+import MenuInicio from './src/screens/MenuInicio';
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -15,7 +16,7 @@ const AppContainer = () => (
       headerShown: false,
     }}
     >
-      <Stack.Screen name="home" component={HomeScreen} />
+      <Stack.Screen name="menuInicio" component={MenuInicio} />
     </Stack.Navigator>
   </NavigationContainer>
 );
