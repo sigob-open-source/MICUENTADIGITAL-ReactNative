@@ -2,6 +2,8 @@ import {Modal, Dimensions, TouchableWithoutFeedback,StyleSheet, View, Text, Text
 import React from 'react';
 import Header from '../Header';
 
+import Footer from '../Footer';
+
 const deviceHeight = Dimensions.get("window").height
 
 export class ComentarioModal extends React.Component{
@@ -79,7 +81,7 @@ export class ComentarioModal extends React.Component{
                         }}>
                         {this.renderTitle()}
 
-                        <TextInput onChangeText={this.onChangeText.bind(this)} maxLength={250} style={{paddingHorizontal:'5%'}} multiline={true}></TextInput>
+                        <TextInput color={'black'} onChangeText={this.onChangeText.bind(this)} maxLength={250} style={{paddingHorizontal:'5%'}} multiline={true}></TextInput>
                         <View style={{width:'95%',height:1, backgroundColor:'black', alignSelf:'center'}}></View>
                         <Text style={{textAlign:'right', paddingHorizontal:'5%'}}>{this.state.textLength}/250</Text>
                         <View style={styles.sendRequestGeneralContainer}>
@@ -92,7 +94,10 @@ export class ComentarioModal extends React.Component{
 
                     </View>
                 </View>
-                    
+                <Footer 
+                back={this.close}
+                showBack={true} 
+                style={styles.footer} />
             </Modal>
         );
     }
@@ -134,7 +139,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
     },
     sendRequestGeneralContainer:{
-        marginTop:'120%'
+        marginTop:'106%'
     },  
     sendRequestStyle:{
         width:333,
@@ -149,5 +154,19 @@ const styles = StyleSheet.create({
         shadowRadius: 7,
         shadowOpacity: 0.09,
         elevation: 5,
+    },
+    footer: {
+      flexDirection: 'row',
+      height: 64,
+      width: '100%',
+      backgroundColor: 'white',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+      shadowColor: 'black',
+      shadowOffset: { width: 1, height: 7 },
+      shadowRadius: 32,
+      shadowOpacity: 0.25,
+      elevation: 20,
     },
 })

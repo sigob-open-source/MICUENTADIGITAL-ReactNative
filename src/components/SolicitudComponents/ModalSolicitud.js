@@ -3,6 +3,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
+import Footer from '../Footer';
 
 const deviceHeight = Dimensions.get("window").height
 
@@ -91,6 +92,10 @@ export class ModalSolicitud extends React.Component{
                             </TouchableOpacity>
                         </View>
                     </View>
+                    <Footer 
+                      back={this.close}
+                      showBack={true} 
+                      style={styles.footer}/>
             </Modal>
         );
     }
@@ -114,5 +119,19 @@ const styles = StyleSheet.create({
         marginLeft:'10%',
         fontSize:20,
         color:'black',
-    }
+    },
+    footer: {
+      flexDirection: 'row',
+      height: 64,
+      width: '100%',
+      backgroundColor: 'white',
+      justifyContent: 'center',
+      alignItems: 'center',
+      padding: 20,
+      shadowColor: 'black',
+      shadowOffset: { width: 1, height: 7 },
+      shadowRadius: 32,
+      shadowOpacity: 0.25,
+      elevation: 20,
+    },
 })

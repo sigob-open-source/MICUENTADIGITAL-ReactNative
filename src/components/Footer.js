@@ -1,13 +1,39 @@
-import { StyleSheet,View, Text,TouchableWithoutFeedback,Image } from 'react-native'
-import React from 'react'
+import { StyleSheet,View,TouchableWithoutFeedback} from 'react-native'
+import React, {useState} from 'react'
 import Icon from 'react-native-vector-icons/Octicons';
 
 
 const Footer = props => {
+    const closeFromFooter = () =>{
+      const {back} = props
+      return(back)
+  }
+  const [showGoBack, setShowGoBack] = useState(props.showBack);
+
   return (
     <View style={{...props.style}}>
+        <TouchableWithoutFeedback onPress={closeFromFooter() }>
+          {
+            showGoBack ? (
+              <View style={styles.textContainer}>
+                <Icon size={41} name='chevron-left' color="black" />
+              </View>
+            ) : 
+            <View style={styles.textContainer}>
+                
+            </View>
+          }
+
+        </TouchableWithoutFeedback>
+
+      
+            <View style={styles.textContainer}>
+                <Icon size={41} name='people' color="black" />
+            </View>  
+        
+    
         <View style={styles.textContainer}>
-            <Icon size={41} name='people' color="black" />
+
         </View>
     </View>
   )

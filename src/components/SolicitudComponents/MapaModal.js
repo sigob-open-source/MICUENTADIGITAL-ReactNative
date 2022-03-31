@@ -6,6 +6,8 @@ import React from 'react';
 import Header from '../Header';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 
+import Footer from '../Footer'
+
 MapBoxGL.setAccessToken("pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ")
 MapBoxGL.geo
 const deviceHeight = Dimensions.get("window").height
@@ -44,6 +46,8 @@ export class MapaModal extends React.Component{
     close = () => {
         this.setState({show: false})
     }
+
+
 
     renderOutsideTouchable(onTouch){
         const view = <View style={{flex:1, width:'100%'}}/>
@@ -97,6 +101,7 @@ export class MapaModal extends React.Component{
                         <View style={{flex:1,height:'100%',width:'100%',borderRadius:90}}>
 
                             <MapboxGL.MapView
+                                logoEnabled={false}
                                 onPress={(feature)=>console.log('Coords:', feature.geometry.coordinates)}
                                 localizeLabels={true}
                                 styleURL={MapBoxGL.StyleURL.Street}
@@ -123,7 +128,10 @@ export class MapaModal extends React.Component{
                         </View>
 
                     </View>
-
+                    <Footer 
+                back={this.close}
+                showBack={true} 
+                style={styles.footer} />
             </Modal>
         );
     }
@@ -167,7 +175,7 @@ const styles = StyleSheet.create({
         alignItems:'center',
     },
     sendRequestGeneralContainer:{
-        marginTop:'165%',
+        marginTop:'155%',
         zIndex:10,
         position:'absolute',
         backgroundColor:'transparent',
@@ -190,4 +198,18 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.09,
         elevation: 5,
     },
+    footer:{
+      flexDirection:'row',
+      height:64,
+      width: '100%',
+      backgroundColor:'white',
+      justifyContent:'center',
+      alignItems:'center',
+      padding:20,
+      shadowColor: 'black',
+      shadowOffset: { width: 1, height: 7 },
+      shadowRadius: 32,
+      shadowOpacity: 0.25,
+      elevation: 20,
+  },
 })

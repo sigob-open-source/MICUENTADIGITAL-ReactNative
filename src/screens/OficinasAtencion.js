@@ -1,4 +1,4 @@
-import {PermissionsAndroid, Dimensions, StyleSheet, View, Text, TextInput,ScrollView} from 'react-native';
+import {PermissionsAndroid, Dimensions, StyleSheet, View, Text, TextInput} from 'react-native';
 import MapBoxGL from '@react-native-mapbox-gl/maps';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 
@@ -24,7 +24,6 @@ const OficinasAtencion = () =>{
                }
            )
    }
-
 
     renderTitle = () => {
         const {title} = this.props
@@ -75,17 +74,19 @@ const OficinasAtencion = () =>{
             <Footer style={styles.footer}/>
 
             <View style={styles.textInputStyle}>
-                <TextInput style={{paddingLeft:14}}placeholder='Buscar Oficinas...'/>
+                <TextInput  placeholderTextColor={'#C4C4C4'} style={{paddingLeft:14}}placeholder='Buscar Oficinas...'/>
                 <View style={styles.buttonRowsStyle}>
 
                     <View style={styles.SearchButtons}>
-                        <Text>Oficina 1</Text>
+                        <Text style={styles.textStyle}>Oficina 1</Text>
                     </View>
+
                     <View style={styles.SearchButtons}>
-                        <Text>Oficina 2</Text>
+                        <Text style={styles.textStyle}>Oficina 2</Text>
                     </View>
+
                     <View style={styles.SearchButtons}>
-                        <Text>Oficina 3</Text>
+                        <Text style={styles.textStyle}>Oficina 3</Text>
                     </View>
 
                 </View>
@@ -132,6 +133,9 @@ const styles = StyleSheet.create({
         marginTop:7,
         backgroundColor:'#e6e6e6',
     },
+    textStyle:{
+      color:'black'
+    },  
     collapsibleContent:{
         marginLeft:'5%',
         flexDirection:'row',
