@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import { StyleSheet, Text, View} from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
-
+import fonts from '../utils/fonts';
 
 const Card = props => {
 
@@ -19,8 +19,8 @@ const Card = props => {
         
         <View handleEvent={setIsIconType} style={{...styles.squareStyle,...props.style}}>
 
-            <Icon size={40}styles={styles.iconContainer} name={props.iconName} color={props.col} />
-            <Text style={{textAlign:'center'}}>{props.nombreItem}</Text>
+            <Icon size={40} style={styles.iconContainer} name={props.iconName} color={props.col} />
+            <Text style={styles.textstyle}>{props.nombreItem}</Text>
 
         </View>
 
@@ -28,8 +28,8 @@ const Card = props => {
     return(
         <View handleEvent={setIsIconType} style={{...styles.squareStyle,...props.style}}>
 
-            <FontAwesome5 name={props.iconName} size={40} styles={styles.iconContainer} solid color={props.col} />
-            <Text style={{textAlign:'center'}}>{props.nombreItem}</Text>
+            <FontAwesome5 name={props.iconName} size={40} style={styles.iconContainer} solid color={props.col} />
+            <Text style={styles.textstyle}>{props.nombreItem}</Text>
 
         </View>
 
@@ -61,7 +61,11 @@ const styles = StyleSheet.create({
         marginHorizontal:12
     },
     iconContainer:{
-        margin: 5,
+        margin:5,
+    },  
+    textstyle:{
+        textAlign:'center',
+        fontFamily:fonts.semiBold
     }
 })
 

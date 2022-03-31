@@ -1,9 +1,7 @@
-import React, { Component, useState } from 'react';
+import React, { Component} from 'react';
 import {
-  StyleSheet, View, Text, FlatList, Dimensions, TouchableWithoutFeedback,
+  StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import Square from '../components/CardPagos';
 import Header from '../components/Header';
@@ -127,7 +125,7 @@ class MenuInicio extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Header style={styles.header} item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
+        <Header style={styles.header} item="Inicio" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
         <View style={{ flex: 1, marginHorizontal: '2%' }}>
           <FlatList
             data={this.formatData(dataList, numColumns)}
