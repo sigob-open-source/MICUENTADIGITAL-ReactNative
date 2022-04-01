@@ -1,7 +1,5 @@
 import React, { Component} from 'react';
-import {
-  StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback,
-} from 'react-native';
+import {StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback,} from 'react-native';
 
 import Square from '../components/CardPagos';
 import Header from '../components/Header';
@@ -14,6 +12,7 @@ const dataList = [
     name: 'Pagos',
     iconname: 'wallet',
     enableEntypo: true,
+    navegacion: 'pagos'
   },
   {
     isBlank: false,
@@ -37,6 +36,7 @@ const dataList = [
     name: 'Directorio',
     iconname: 'book',
     enableEntypo: true,
+    navegacion: 'dirfuncionario'
   },
   {
     isBlank: false,
@@ -69,22 +69,38 @@ const dataList = [
     enableEntypo: false,
   },
 ];
-
+//recordatorio para remover la propiedad de enableEntypo
 const dataListSecond = [
   {
-    isBlank: false, color: '#767778', name: 'Mis Adeudos', iconname: 'chart-bar', enableEntypo: true,
+    isBlank: false, color: '#767778', 
+    name: 'Mis Adeudos', 
+    iconname: 'chart-bar', 
+    enableEntypo: true,
   },
   {
-    isBlank: false, color: '#767778', name: 'Mis Citas', iconname: 'calendar-alt', enableEntypo: true,
+    isBlank: false, color: '#767778', 
+    name: 'Mis Citas', iconname: 'calendar-alt', 
+    enableEntypo: true,
   },
   {
-    isBlank: false, color: '#767778', name: 'Mis Trámites', iconname: 'folder-open', enableEntypo: false,
+    isBlank: false, color: '#767778', 
+    name: 'Mis Trámites', 
+    iconname: 'folder-open', 
+    enableEntypo: false,
   },
   {
-    isBlank: false, color: '#767778', name: 'Mi Portafolio', iconname: 'folder', enableEntypo: true,
+    isBlank: false, 
+    color: '#767778', 
+    name: 'Mi Portafolio', 
+    iconname: 'folder', 
+    enableEntypo: true,
   },
   {
-    isBlank: false, color: '#767778', name: 'Mi buzón', iconname: 'envelope', enableEntypo: true,
+    isBlank: false, 
+    color: '#767778', 
+    name: 'Mi buzón', 
+    iconname: 'envelope', 
+    enableEntypo: true,
   },
 
 ];

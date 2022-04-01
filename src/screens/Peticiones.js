@@ -1,31 +1,38 @@
-import React, {Component, useState} from 'react';
-import { StyleSheet, View, Text} from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import React from 'react';
+import { StyleSheet, View} from 'react-native';
 
 import ButtonRequest from '../components/SolicitudComponents/Button';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-const Peticiones = () =>{
-    return(
-        <View style={{flex:1}}>
-            <View style={{flex:1}}>
-                <Header style={styles.header} 
-                item="Peticiones" 
-                imgnotif={require("../../assets/imagenes/notificationGet_icon.png")} 
-                img={require("../../assets/imagenes/header_logo.png")}/>
+const Peticiones = props =>{
+  const goBack = () => {
+    props.navigation.goBack();
+  }
+  return(
+    <View style={{flex:1}}>
 
-                <ButtonRequest texto='Pagos' showArrow={true} iconName='keyboard-arrow-right'/>
-                <ButtonRequest texto='Directorio de Funcionarios' showArrow={true} iconName='keyboard-arrow-right'/>
-                <ButtonRequest texto='Oficinas de Atención' showArrow={true} iconName='keyboard-arrow-right'/>
-            </View>
+      <View style={{flex:1}}>
 
-            <Footer style={styles.footer}/>
+        <Header style={styles.header} 
 
-        </View>
+          item="Peticiones" 
+          imgnotif={require("../../assets/imagenes/notificationGet_icon.png")} 
+          img={require("../../assets/imagenes/header_logo.png")}/>
+
+          <ButtonRequest texto='Pagos' showArrow={true} iconName='keyboard-arrow-right'/>
+          <ButtonRequest texto='Directorio de Funcionarios' showArrow={true} iconName='keyboard-arrow-right'/>
+          <ButtonRequest texto='Oficinas de Atención' showArrow={true} iconName='keyboard-arrow-right'/>
+
+      </View>
+
+      <Footer 
+        back={goBack}
+        showBack={true} 
+        style={styles.footer} />
         
-    );
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

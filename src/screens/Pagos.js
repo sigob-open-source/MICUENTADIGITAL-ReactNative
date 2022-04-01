@@ -35,8 +35,8 @@ const dataList = [
 
 const numColumns = 3;
 
-//test comment
 class Pagos extends Component {
+
   formatData = (dataList, numColumns) => {
     const totalRows = Math.floor(dataList.length / numColumns);
     let totalLastRow = dataList.length - (totalRows * numColumns);
@@ -50,7 +50,12 @@ class Pagos extends Component {
     return dataList;
   };
 
+  goBack = () => {
+    this.props.navigation.goBack();
+  }
+
   _renderItem = ({ item, index }) => (
+
     <TouchableWithoutFeedback onPress={() => this.props.navigation.push(item.navegacion)}>
       <View style={{ flex: 1, alignItems: 'center' }}>
         <Square
@@ -63,6 +68,7 @@ class Pagos extends Component {
         />
       </View>
     </TouchableWithoutFeedback>
+
   );
 
   render() {
@@ -76,15 +82,20 @@ class Pagos extends Component {
         </View>
         
         <View style={{ flex: 1, marginHorizontal: '2%' }}>
+
           <FlatList
             data={this.formatData(dataList, numColumns)}
             renderItem={this._renderItem}
             keyExtractor={(item, index) => index.toString()}
             numColumns={numColumns}
           />
+
         </View>
 
-        <Footer style={styles.footer} />
+        <Footer 
+          back={this.goBack}
+          showBack={true} 
+          style={styles.footer} />
 
       </View>
     );

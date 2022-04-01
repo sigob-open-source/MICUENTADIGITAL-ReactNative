@@ -1,9 +1,6 @@
-import React, { Component, useState } from 'react';
-import {
-  StyleSheet, View, Text, FlatList, Dimensions, TouchableOpacity, ScrollView,
-} from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import React from 'react';
+import {StyleSheet, View, Text, TouchableOpacity, ScrollView} from 'react-native';
+
 
 import { ModalSolicitud } from '../components/SolicitudComponents/ModalSolicitud';
 import { ComentarioModal } from '../components/SolicitudComponents/ComentariosModal';
@@ -18,9 +15,11 @@ const Solicitud = (props) => {
   let popupRef = React.createRef();
   let popupRef2 = React.createRef();
   let popupRef3 = React.createRef();
+  
   const onShowPopup = () => {
     popupRef.show();
   };
+
   const onClosePopup = () => {
     popupRef.close();
   };
@@ -28,6 +27,7 @@ const Solicitud = (props) => {
   const onShowCommentPopup = () => {
     popupRef2.show();
   };
+
   const onCloseCommentPopup = () => {
     popupRef2.close();
   };
@@ -35,18 +35,30 @@ const Solicitud = (props) => {
   const onShowMapPopup = () => {
     popupRef3.show();
   };
+
   const onCloseMapPopup = () => {
     popupRef3.close();
   };
 
+  const goBack = () => {
+    props.navigation.goBack();
+  }
+
   return (
+    
     <View style={styles.container}>
+      
       <ModalSolicitud
         title="Elegir Razón"
         ref={(target) => popupRef = target}
         onTouchOutside={onClosePopup}
       />
-      <Header style={styles.header} item="Trámites" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
+
+      <Header style={styles.header} 
+      item="Trámites" 
+      imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
+      img={require('../../assets/imagenes/header_logo.png')} />
+
       <ComentarioModal
         title="Escribe tu comentario"
         ref={(target) => popupRef2 = target}
@@ -83,7 +95,11 @@ const Solicitud = (props) => {
           </View>
         </View>
       </ScrollView>
-      <Footer style={styles.footer} />
+
+      <Footer 
+        back={goBack}
+        showBack={true} 
+        style={styles.footer} />
 
     </View>
   );
@@ -91,10 +107,8 @@ const Solicitud = (props) => {
 
 const styles = StyleSheet.create({
   container: {
-    // paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
     flex: 1,
     backgroundColor: '#EDF2F5',
-
   },
   content: {
     marginVertical: 5,

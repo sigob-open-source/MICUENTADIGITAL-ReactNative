@@ -3,6 +3,7 @@ type RootStackParamList = {
   menuInicio: undefined;
   peticiones: undefined;
   solicitud: undefined;
+  pagos: undefined;
   dirfuncionario:undefined;
   oficinaAtencion:undefined;
   problemOneScreen: undefined;
