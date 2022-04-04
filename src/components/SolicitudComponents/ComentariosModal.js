@@ -8,23 +8,41 @@ class ComentarioModal extends React.Component{
   constructor(props){
     super(props)
     this.state = {
-      show: false,
-      textLength:0
+      show: false, 
+      textLength:0,
+      comment:''
     }
     this.maxLength = 250;
   }
+
+  getParentProp = () => {
+    const {modalToParent} = this.props
+    return modalToParent
+  }
+
   onChangeText(text){
     this.setState({
-      textLength: text.length
+      textLength: text.length,
+      comment:text
     })
   }
+
 
   show = () => {
     this.setState({show: true})
   }
 
   close = () => {
+    this.state.textLength = 0;
     this.setState({show: false})
+  }
+
+  _handleSendComment(){
+    console.log(this.state.comment)
+    if (this.state.textLength > 0){
+      this.props.modalToParent(this.state.comment)
+    }
+    this.close()
   }
 
   renderOutsideTouchable(onTouch){
@@ -53,7 +71,9 @@ class ComentarioModal extends React.Component{
       </View>
     );
   }
-    
+  
+
+
   render(){
     let {show} = this.state
     const {onTouchOutside, title} = this.props
@@ -82,7 +102,7 @@ class ComentarioModal extends React.Component{
             onChangeText={this.onChangeText.bind(this)} 
             maxLength={250} 
             style={{paddingHorizontal:'5%'}} 
-            multiline={true}></TextInput>
+            multiline={true}>  </TextInput>
 
             <View style={{
               width:'95%',
@@ -92,12 +112,15 @@ class ComentarioModal extends React.Component{
               }}>
               </View>
               
-              <Text style={{textAlign:'right', paddingHorizontal:'5%'}}>{this.state.textLength}/250</Text>
+            <Text style={{textAlign:'right', paddingHorizontal:'5%'}}>{this.state.textLength}/250</Text>
             <View style={styles.sendRequestGeneralContainer}>
               <View style={styles.sendRequestStyle}>
-                <View style={styles.sendRequestContainer}>
-                  <Text style={{color:'black',fontSize:20, fontWeight:'500'}}>Subir Comentario</Text>
-                </View>
+                <TouchableWithoutFeedback onPress={()=> this._handleSendComment()} >
+                  <View style={styles.sendRequestContainer}>
+                    <Text style={{color:'black',fontSize:20, fontWeight:'500'}}>Subir Comentario</Text>
+                  </View>
+                </TouchableWithoutFeedback>
+
               </View>
             </View>
           </View>
@@ -149,7 +172,9 @@ const styles = StyleSheet.create({
         alignItems:'center',
     },
     sendRequestGeneralContainer:{
-        marginTop:'106%'
+        position:"absolute",
+        alignSelf:'center',
+        marginTop:'136%'
     },  
     sendRequestStyle:{
         width:333,

@@ -1,7 +1,6 @@
 import { StyleSheet,View, Text,TouchableWithoutFeedback,Image } from 'react-native'
 import React from 'react'
 
-
 const Header = props  => {
   return (
     <View style={{...props.style}}>
@@ -14,7 +13,7 @@ const Header = props  => {
         <Text style={styles.tituloHeader}>{props.item}</Text>
       </View>
 
-      <TouchableWithoutFeedback onPress={()=>console.log('hola me presionaste aaa')}>
+      <TouchableWithoutFeedback onPress={()=>console.log('Sample Touch')}>
         <View style={styles.logoContainer}>
           <Image style={styles.notifContainer} source={props.imgnotif}/>
         </View>

@@ -3,7 +3,8 @@ import { StyleSheet, Text, View, Image,TouchableOpacity} from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
-import { BottomPopUp } from './BottomPopUp';
+
+import BottomPopUp from './BottomPopUp';
 
 const CardSolicitud = props => {
     let popupRef = React.createRef()
@@ -13,7 +14,8 @@ const CardSolicitud = props => {
     const onClosePopup = () => {
         popupRef.close()
     }
-    const [shouldShow, setShouldShow] = useState(false);
+    const [comment, setComment] = useState('')
+    const [shouldShow, setShouldShow] = useState(true);
     const [showImage, setShowImage] = useState(false);
     const [changeTextImage, setChangeTextImage] = useState(true);
     const [image, setImage] = useState('https://via.placeholder.com/200');
@@ -43,7 +45,6 @@ const CardSolicitud = props => {
         }
       })
     }
-
     const takePicture = () => {
       const options = {
         storageOptions:{
@@ -122,7 +123,7 @@ const CardSolicitud = props => {
                 <View style={{ flex: 1, flexDirection: 'column' }}>
 
                   <Text style={styles.TitleBottom}>Comentario de usuario</Text>
-                  <Text style={styles.userComment}>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod temport.</Text>
+                  <Text style={styles.userComment}>{props.getText}</Text>
 
                 </View>
 
@@ -132,8 +133,8 @@ const CardSolicitud = props => {
                 <MaterialCommunityIcons size={40} name='map-marker-outline' color={'black'} />
                 <View style={{ flex: 1, flexDirection: 'column' }}>
 
-                    <Text style={styles.TitleBottom}>Av. Ferrocaril y Salvador Cabrales</Text>
-                    <Text style={styles.verLocacionMapa}>Ver locación en el mapa.</Text>
+                    <Text style={styles.TitleBottom}>{props.getLocation}</Text>
+                    <Text style={styles.verLocacionMapa}>Ver o añadir locación en el mapa.</Text>
 
                 </View>
               </View>

@@ -1,9 +1,9 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {StyleSheet, View, Text, TouchableOpacity, ScrollView} from 'react-native';
 
 
-import { ModalSolicitud } from '../components/SolicitudComponents/ModalSolicitud';
-import { ComentarioModal } from '../components/SolicitudComponents/ComentariosModal';
+import ModalSolicitud from '../components/SolicitudComponents/ModalSolicitud';
+import ComentarioModal from '../components/SolicitudComponents/ComentariosModal';
 import { MapaModal } from '../components/SolicitudComponents/MapaModal';
 
 import CardSolicitud from '../components/SolicitudComponents/CardSolicitud';
@@ -11,11 +11,18 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ButtonRequest from '../components/SolicitudComponents/Button';
 
-const Solicitud = (props) => {
+const Solicitud = props => {
   let popupRef = React.createRef();
   let popupRef2 = React.createRef();
   let popupRef3 = React.createRef();
   
+  const [comment, setComment] = useState('Sin comentario.')
+  const [location, setLocation] = useState('Sin locación')
+
+  const modalToParent = (modalData) => {
+    setComment(modalData);
+  }
+
   const onShowPopup = () => {
     popupRef.show();
   };
@@ -42,9 +49,10 @@ const Solicitud = (props) => {
 
   const goBack = () => {
     props.navigation.goBack();
-  }
+  };
 
-  return (
+  
+  return(
     
     <View style={styles.container}>
       
@@ -55,28 +63,31 @@ const Solicitud = (props) => {
       />
 
       <Header style={styles.header} 
-      item="Trámites" 
-      imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
-      img={require('../../assets/imagenes/header_logo.png')} />
+        item="Trámites" 
+        imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
+        img={require('../../assets/imagenes/header_logo.png')} />
 
       <ComentarioModal
         title="Escribe tu comentario"
         ref={(target) => popupRef2 = target}
         onTouchOutside={onClosePopup}
+        modalToParent = {modalToParent}
       />
 
       <MapaModal
         ref={(target) => popupRef3 = target}
         onTouchOutside={onClosePopup}
       />
+
       <ScrollView contentContainerStyle={{ padding: 10, paddingHorizontal: 0 }}>
+
         <View style={{ flex: 1, marginTop: 9, marginHorizontal: '2%' }}>
 
           <TouchableOpacity onPress={onShowPopup}>
-            <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow />
+            <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow={true} />
           </TouchableOpacity>
 
-          <CardSolicitud />
+          <CardSolicitud getText={comment} getLocation={location}/>
 
           <TouchableOpacity onPress={onShowCommentPopup}>
             <ButtonRequest texto="Cambiar Comentario" />
@@ -89,11 +100,17 @@ const Solicitud = (props) => {
           <View style={styles.sendRequestGeneralContainer}>
             <View style={styles.sendRequestStyle}>
               <View style={styles.sendRequestContainer}>
-                <Text style={{ color: 'black', fontSize: 20, fontWeight: '500' }}>Enviar Solicitud</Text>
+                <Text style={{ 
+                  color: 'black', 
+                  fontSize: 20, 
+                  fontWeight: '500' }}
+                  >Enviar Solicitud
+                </Text>
               </View>
             </View>
           </View>
         </View>
+
       </ScrollView>
 
       <Footer 
@@ -184,7 +201,7 @@ const styles = StyleSheet.create({
     shadowRadius: 32,
     shadowOpacity: 0.25,
     elevation: 20,
-  },
+  }
 });
 
 export default Solicitud;

@@ -1,6 +1,8 @@
-import {PermissionsAndroid, Modal, StyleSheet, View, Text} from 'react-native';
+import {PermissionsAndroid, Modal, StyleSheet, View, Text, Alert} from 'react-native';
 import MapBoxGL from '@react-native-mapbox-gl/maps';
+
 import Fontisto from 'react-native-vector-icons/Fontisto';
+import Geolocation from '@react-native-community/geolocation';
 
 import React from 'react';
 import Header from '../Header';
@@ -11,12 +13,15 @@ import Footer from '../Footer'
 MapBoxGL.setAccessToken("pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ")
 MapBoxGL.geo
 
+Geolocation.getCurrentPosition(info => console.log(info));
+
 export class MapaModal extends React.Component{
   constructor(props){
     super(props)
     this.state = {
         show: false,
-        textLength:0
+        textLength:0,
+        coords: [0,0]
     }
     this.maxLength = 250;
   }
@@ -26,24 +31,34 @@ export class MapaModal extends React.Component{
       textLength: text.length
     })
   }
-  componentDidMount() {
+  
+  componentDidMount(){
+    Geolocation.getCurrentPosition(
+      //Will give you the current location
+      (position) => {
+        //getting the Longitude from the location json
+        const currentLongitude =
+          JSON.stringify(position.coords.longitude);
     
-    PermissionsAndroid.requestMultiple(
-      [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION],
-      {
-        title: 'Give Location Permission',
-        message: 'App needs location permission to find your position.'
-      }
-    )
+        //getting the Latitude from the location json
+        const currentLatitude =
+          JSON.stringify(position.coords.latitude);
+
+          this.state.coords = [currentLongitude,currentLatitude]
+
+       }, (error) => Alert(error.message), { 
+         enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 
+       }
+    );
   }
-  show = () => {
-    this.setState({show: true})
-  }
+
   close = () => {
     this.setState({show: false})
   }
 
+  show = () => {
+    this.setState({show: true})
+  }
   renderOutsideTouchable(onTouch){
     const view = <View style={{flex:1, width:'100%'}}/>
     if (!onTouch) return view
@@ -103,23 +118,21 @@ export class MapaModal extends React.Component{
 
             <MapboxGL.MapView
               logoEnabled={false}
-              onPress={(feature)=>console.log('Coords:', feature.geometry.coordinates)}
               localizeLabels={true}
               styleURL={MapBoxGL.StyleURL.Street}
               zoomLevel={17}
-              followUserLocation={true}
               style={{flex:1}}>
-
+              
               <MapBoxGL.Camera
+                centerCoordinate={this.state.coords}
                 zoomLevel={17}
-                followUserLocation={true}
                 animationMode={'flyTo'}
-                animationDuration={0}>                   
+                animationDuration={0}>                  
               </MapBoxGL.Camera>
 
               <MapBoxGL.MarkerView
                 //solo una coordinada de reemplazo en lo que se añade la funcionalidad para añadir marcadores con un onPress dell mapView
-                coordinate={[-114.73939380952801, 32.440140135692374]}>
+                coordinate={this.state.coords}>
                 <Fontisto style={{alignSelf:'flex-end',}}size={60} name='map-marker-alt' color={'#79142A'} />
               </MapBoxGL.MarkerView>
 
