@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import {StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback,} from 'react-native';
+import {PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback,} from 'react-native';
 
 import Square from '../components/CardPagos';
 import Header from '../components/Header';
@@ -110,6 +110,7 @@ const numColumns = 3;
 const WIDTH = Dimensions.get('window').width;
 
 class MenuInicio extends Component {
+
   formatData = (dataList, numColumns) => {
     const totalRows = Math.floor(dataList.length / numColumns);
     let totalLastRow = dataList.length - (totalRows * numColumns);

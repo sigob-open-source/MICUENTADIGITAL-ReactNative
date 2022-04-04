@@ -1,8 +1,16 @@
-import {PermissionsAndroid, Modal, StyleSheet, View, Text, Alert} from 'react-native';
-import MapBoxGL from '@react-native-mapbox-gl/maps';
+import {
+  PermissionsAndroid, 
+  Modal, 
+  StyleSheet, 
+  View, 
+  Text, 
+  Alert, 
+  TouchableWithoutFeedback} from 'react-native';
 
+import MapBoxGL from '@react-native-mapbox-gl/maps';
+import axios from "axios";
 import Fontisto from 'react-native-vector-icons/Fontisto';
-import Geolocation from '@react-native-community/geolocation';
+import Geolocation from 'react-native-geolocation-service';
 
 import React from 'react';
 import Header from '../Header';
@@ -10,10 +18,11 @@ import MapboxGL from '@react-native-mapbox-gl/maps';
 
 import Footer from '../Footer'
 
+MapBoxGL.requestAndroidLocationPermissions()
 MapBoxGL.setAccessToken("pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ")
 MapBoxGL.geo
 
-Geolocation.getCurrentPosition(info => console.log(info));
+
 
 export class MapaModal extends React.Component{
   constructor(props){
@@ -21,9 +30,19 @@ export class MapaModal extends React.Component{
     this.state = {
         show: false,
         textLength:0,
-        coords: [0,0]
+        lat: 0,
+        long:0,
+        coords: [0, 0],
+        street:''
     }
     this.maxLength = 250;
+  }
+
+  apihandler=()=>{
+    axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+this.state.long+','+this.state.lat+'.json?access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ').then(
+      result => 
+      console.log(result)
+    ).catch(console.log)
   }
 
   onChangeText(text){
@@ -32,24 +51,29 @@ export class MapaModal extends React.Component{
     })
   }
   
-  componentDidMount(){
+  GetLocation() {
+
     Geolocation.getCurrentPosition(
-      //Will give you the current location
       (position) => {
-        //getting the Longitude from the location json
-        const currentLongitude =
-          JSON.stringify(position.coords.longitude);
-    
-        //getting the Latitude from the location json
-        const currentLatitude =
-          JSON.stringify(position.coords.latitude);
+        this.setState({
+          coords: [position.coords.longitude, position.coords.latitude],
+          lat:position.coords.latitude,
+          long:position.coords.longitude
+        })
+        
 
-          this.state.coords = [currentLongitude,currentLatitude]
-
-       }, (error) => Alert(error.message), { 
-         enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 
-       }
+      },
+      (error) => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
+  }
+
+  changeCoordinates = (feature) =>{
+    this.setState({
+      coords: feature.geometry.coordinates
+      
+    })
+    console.log(this.state.coords)
   }
 
   close = () => {
@@ -57,6 +81,7 @@ export class MapaModal extends React.Component{
   }
 
   show = () => {
+    this.GetLocation()
     this.setState({show: true})
   }
   renderOutsideTouchable(onTouch){
@@ -106,6 +131,13 @@ export class MapaModal extends React.Component{
             imgnotif={require("../../../assets/imagenes/notificationGet_icon.png")} 
             img={require("../../../assets/imagenes/header_logo.png")} />
 
+          <TouchableWithoutFeedback onPress={this.apihandler}>
+            <View style={styles.streetName}>
+              <Text>{this.state.coords}</Text>
+            </View>
+          </TouchableWithoutFeedback>
+ 
+
           <View style={styles.sendRequestGeneralContainer}>
             <View style={styles.sendRequestStyle}>
               <View style={styles.sendRequestContainer}>
@@ -119,6 +151,7 @@ export class MapaModal extends React.Component{
             <MapboxGL.MapView
               logoEnabled={false}
               localizeLabels={true}
+              onPress={(feature)=> this.changeCoordinates(feature)}
               styleURL={MapBoxGL.StyleURL.Street}
               zoomLevel={17}
               style={{flex:1}}>
@@ -131,9 +164,10 @@ export class MapaModal extends React.Component{
               </MapBoxGL.Camera>
 
               <MapBoxGL.MarkerView
+                anchor={{ x: 0.5, y: 0.9 }}
                 //solo una coordinada de reemplazo en lo que se añade la funcionalidad para añadir marcadores con un onPress dell mapView
                 coordinate={this.state.coords}>
-                <Fontisto style={{alignSelf:'flex-end',}}size={60} name='map-marker-alt' color={'#79142A'} />
+                <Fontisto style={{alignSelf:'flex-end'}}size={50} name='map-marker-alt' color={'#79142A'} />
               </MapBoxGL.MarkerView>
 
             </MapboxGL.MapView>
@@ -166,6 +200,18 @@ const styles = StyleSheet.create({
     borderBottomLeftRadius:15,
     padding:20,
   },
+  streetName:{
+    justifyContent:'center',
+    alignSelf:'center',
+    alignItems:'center',
+    marginTop:'35%',
+    zIndex:10,
+    position:'absolute',
+    width:250,
+    height:3,
+    borderRadius:5,
+    backgroundColor:'white'
+  },  
   optionCard:{
     width:'100%',
     justifyContent:'center',

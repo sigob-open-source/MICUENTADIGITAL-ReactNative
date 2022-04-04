@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, ScrollView} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, ScrollView, PermissionsAndroid} from 'react-native';
 
 
 import ModalSolicitud from '../components/SolicitudComponents/ModalSolicitud';
@@ -51,7 +51,6 @@ const Solicitud = props => {
     props.navigation.goBack();
   };
 
-  
   return(
     
     <View style={styles.container}>
