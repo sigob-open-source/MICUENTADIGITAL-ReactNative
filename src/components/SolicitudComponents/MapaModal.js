@@ -29,30 +29,44 @@ export class MapaModal extends React.Component{
     super(props)
     this.state = {
         show: false,
-        textLength:0,
         lat: 0,
         long:0,
         coords: [0, 0],
-        street:''
+        street:null
     }
     this.maxLength = 250;
+    
   }
 
   apihandler=()=>{
-    axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+this.state.long+','+this.state.lat+'.json?access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ').then(
-      result => 
-      console.log(result)
-    ).catch(console.log)
+    try{
+      axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+this.state.coords+'.json?type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ')
+      .then(response => {
+        const posts = response.data.features[0].place_name;
+        if (posts != null){
+          this.setState({
+            street: posts
+          })
+        }
+
+      })
+    }catch(error){
+      console.log(error)
+    }
+
   }
 
-  onChangeText(text){
+
+  changeCoordinates = (feature) =>{
     this.setState({
-      textLength: text.length
+      coords: feature.geometry.coordinates,
     })
+    this.apihandler()
   }
-  
-  GetLocation() {
 
+
+  GetLocation() {
+    
     Geolocation.getCurrentPosition(
       (position) => {
         this.setState({
@@ -60,21 +74,13 @@ export class MapaModal extends React.Component{
           lat:position.coords.latitude,
           long:position.coords.longitude
         })
-        
-
+        this.apihandler()
       },
       (error) => this.setState({ error: error.message }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   }
 
-  changeCoordinates = (feature) =>{
-    this.setState({
-      coords: feature.geometry.coordinates
-      
-    })
-    console.log(this.state.coords)
-  }
 
   close = () => {
     this.setState({show: false})
@@ -84,6 +90,15 @@ export class MapaModal extends React.Component{
     this.GetLocation()
     this.setState({show: true})
   }
+
+  _handleSendLocation(){
+    console.log(this.state.street)
+    if (this.state.street != null){
+      this.props.mapToParent(this.state.street,this.state.lat,this.state.long)
+    }
+    this.close()
+  }
+
   renderOutsideTouchable(onTouch){
     const view = <View style={{flex:1, width:'100%'}}/>
     if (!onTouch) return view
@@ -115,38 +130,47 @@ export class MapaModal extends React.Component{
     
   render(){
     let {show} = this.state
-    const {onTouchOutside, title} = this.props
     return(
       <Modal 
         animationType={'fade'}
         transparent={true}
         visible={show}
         onRequestClose={this.close}
-        >
+      >
 
         <View style={{flex:1,}}> 
           <Header 
             style={styles.header}
             item="Trámites" 
             imgnotif={require("../../../assets/imagenes/notificationGet_icon.png")} 
-            img={require("../../../assets/imagenes/header_logo.png")} />
+            img={require("../../../assets/imagenes/header_logo.png")} 
+          />
 
-          <TouchableWithoutFeedback onPress={this.apihandler}>
+          <TouchableWithoutFeedback>
             <View style={styles.streetName}>
-              <Text>{this.state.coords}</Text>
+              <Text>{this.state.street}</Text>
             </View>
           </TouchableWithoutFeedback>
  
-
+          <TouchableWithoutFeedback onPress={()=> this._handleSendLocation()} >
           <View style={styles.sendRequestGeneralContainer}>
             <View style={styles.sendRequestStyle}>
               <View style={styles.sendRequestContainer}>
-                <Text style={{color:'black',fontSize:20, fontWeight:'500'}}>Seleccionar Locación</Text>
+                <Text style={{
+                  color:'black',
+                  fontSize:20, 
+                  fontWeight:'500'
+                }}>Seleccionar Locación</Text>
               </View>
             </View>
           </View>
-          
-          <View style={{flex:1,height:'100%',width:'100%',borderRadius:90}}>
+          </TouchableWithoutFeedback>
+          <View style={{
+            flex:1,
+            height:'100%',
+            width:'100%',
+            borderRadius:90}}
+          >
 
             <MapboxGL.MapView
               logoEnabled={false}
@@ -154,18 +178,18 @@ export class MapaModal extends React.Component{
               onPress={(feature)=> this.changeCoordinates(feature)}
               styleURL={MapBoxGL.StyleURL.Street}
               zoomLevel={17}
-              style={{flex:1}}>
+              style={{flex:1}}
+            >
               
               <MapBoxGL.Camera
                 centerCoordinate={this.state.coords}
                 zoomLevel={17}
                 animationMode={'flyTo'}
-                animationDuration={0}>                  
-              </MapBoxGL.Camera>
+                animationDuration={0}
+              ></MapBoxGL.Camera>
 
               <MapBoxGL.MarkerView
                 anchor={{ x: 0.5, y: 0.9 }}
-                //solo una coordinada de reemplazo en lo que se añade la funcionalidad para añadir marcadores con un onPress dell mapView
                 coordinate={this.state.coords}>
                 <Fontisto style={{alignSelf:'flex-end'}}size={50} name='map-marker-alt' color={'#79142A'} />
               </MapBoxGL.MarkerView>
@@ -179,7 +203,8 @@ export class MapaModal extends React.Component{
         <Footer 
           back={this.close}
           showBack={true} 
-          style={styles.footer} />
+          style={styles.footer} 
+        />
           
       </Modal>
     );
@@ -207,10 +232,15 @@ const styles = StyleSheet.create({
     marginTop:'35%',
     zIndex:10,
     position:'absolute',
-    width:250,
-    height:3,
+    width:336,
+    height:30,
     borderRadius:5,
-    backgroundColor:'white'
+    backgroundColor:'white',
+    shadowColor: 'black',
+    shadowOffset: {width: 0, height:3},
+    shadowRadius: 7,
+    shadowOpacity: 0.09,
+    elevation: 5,
   },  
   optionCard:{
     width:'100%',

@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, ScrollView, PermissionsAndroid} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, ScrollView} from 'react-native';
 
 
 import ModalSolicitud from '../components/SolicitudComponents/ModalSolicitud';
@@ -18,9 +18,17 @@ const Solicitud = props => {
   
   const [comment, setComment] = useState('Sin comentario.')
   const [location, setLocation] = useState('Sin locación')
+  const [latitud, setLatitud] = useState('')
+  const [longitud, setLongitud] = useState('')
 
   const modalToParent = (modalData) => {
     setComment(modalData);
+  }
+
+  const mapToParent = (mapData,latitud,longitud) => {
+    setLocation(mapData);
+    setLatitud(latitud);
+    setLongitud(longitud);
   }
 
   const onShowPopup = () => {
@@ -62,6 +70,7 @@ const Solicitud = props => {
       />
 
       <Header style={styles.header} 
+        route={1}
         item="Trámites" 
         imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
         img={require('../../assets/imagenes/header_logo.png')} />
@@ -76,6 +85,7 @@ const Solicitud = props => {
       <MapaModal
         ref={(target) => popupRef3 = target}
         onTouchOutside={onClosePopup}
+        mapToParent = {mapToParent}
       />
 
       <ScrollView contentContainerStyle={{ padding: 10, paddingHorizontal: 0 }}>
@@ -86,7 +96,7 @@ const Solicitud = props => {
             <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow={true} />
           </TouchableOpacity>
 
-          <CardSolicitud getText={comment} getLocation={location}/>
+          <CardSolicitud openMap={onShowMapPopup} getText={comment} getLocation={location}/>
 
           <TouchableOpacity onPress={onShowCommentPopup}>
             <ButtonRequest texto="Cambiar Comentario" />

@@ -1,20 +1,52 @@
-import {Modal, TouchableWithoutFeedback,StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {Modal, TouchableWithoutFeedback,StyleSheet, View, Text, ScrollView} from 'react-native';
 import React from 'react';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Footer from '../Footer';
+import SolicitudCard from './solicitudComponent';
+import ButtonRequest from './Button';
+import { getTiposDeSolicitudes } from '../../services/api';
+import { create } from 'react-test-renderer';
 
 class ModalSolicitud extends React.Component{
   constructor(props){
     super(props)
     this.state = {
-      show: false
+      show: false,
+      motivos: [],
+      renderCard: false
     }
   }
 
   show = () => {
+    this.getData()
     this.setState({show: true})
   }
+
+  getData = async () => {
+    const id = 1;
+    const tipos = await getTiposDeSolicitudes(id);
+    this.state.motivos = tipos
+      for(let i = 0; i < this.state.motivos.length ;i++)
+      {
+        console.log(this.state.motivos[i].descripcion)
+      }
+    if (this.state.motivos.length > 0){
+      this.setState({
+        renderCard:true
+      })
+    }
+
+
+  };
+
+  createCard = () => {
+    return this.state.motivos.map((item)=>{
+      return(
+        <SolicitudCard key={item.key} iconName='chart-box-outline' sampleSolicitud={item.descripcion}/>
+      )
+    })
+  }
+
 
   close = () => {
     this.setState({show: false})
@@ -52,6 +84,7 @@ class ModalSolicitud extends React.Component{
   }
     
   render(){
+    const isRequestListed = this.state.motivos;
     let {show} = this.state
     const {onTouchOutside, title} = this.props
     return(
@@ -70,27 +103,14 @@ class ModalSolicitud extends React.Component{
             backgroundColor:'white',
             width:'100%',
             height:'100%'}}>
-
-            {this.renderTitle()}
-
-            <TouchableOpacity>
-              <View style={styles.optionCard}>
-                <View style={styles.collapsibleContent}>
-                  <MaterialCommunityIcons size={40} name='image-frame' color={'black'} />
-                  <Text style={styles.collapsibleText}>Galería</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-
-            <TouchableOpacity>
-              <View style={styles.optionCard}>
-                <View style={styles.collapsibleContent}>
-                  <MaterialCommunityIcons size={40} name='camera-outline' color={'black'} />
-                  <Text style={styles.collapsibleText}>Cámara</Text>
-                </View>
-              </View>
-            </TouchableOpacity>
-
+            <ScrollView>
+              {this.renderTitle()}
+              {
+                this.state.renderCard ? (
+                  this.createCard()
+                ):null
+              }
+            </ScrollView>
           </View>
         </View>
 
@@ -105,24 +125,6 @@ class ModalSolicitud extends React.Component{
 }
 
 const styles = StyleSheet.create({
-  optionCard:{
-    width:'100%',
-    justifyContent:'center',
-    alignSelf:'center',
-    marginTop:7,
-    backgroundColor:'#e6e6e6',
-  },
-  collapsibleContent:{
-    marginLeft:'5%',
-    flexDirection:'row',
-    alignItems:'center',
-  },
-  collapsibleText:{
-    fontWeight:'500',
-    marginLeft:'10%',
-    fontSize:20,
-    color:'black',
-  },
   footer: {
     flexDirection: 'row',
     height: 64,

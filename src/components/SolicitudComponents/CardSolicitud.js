@@ -64,7 +64,6 @@ const CardSolicitud = props => {
         setShowImage(true)
         setChangeTextImage(false)
         setNombreArchivo(name)
-        setShouldShow(false)
         setImage(path)
                 
       }
@@ -115,9 +114,6 @@ const CardSolicitud = props => {
       {/* Sección de comentario de usuario y ubicación de la solicitud */}
       <View>
 
-        {
-          shouldShow ?(
-            <>
               <View style={{ flexDirection: 'row', marginTop: '5%' }}>
                 <Icon size={40} name='person-circle-outline' color={'black'} />
                 <View style={{ flex: 1, flexDirection: 'column' }}>
@@ -138,9 +134,7 @@ const CardSolicitud = props => {
 
                 </View>
               </View>
-            </>
-            ) : null
-          }
+
           <View style={styles.linea}></View>
 
       </View>
