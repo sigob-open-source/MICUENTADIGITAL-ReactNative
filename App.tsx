@@ -23,8 +23,9 @@ const AppContainer = () => (
       headerShown: false,
     }}
     >
-      <Stack.Screen name="menuInicio" component={MenuInicio} />
       <Stack.Screen name="verSolicitudes" component={VerSolicitudes} />
+      <Stack.Screen name="menuInicio" component={MenuInicio} />
+
       <Stack.Screen name="verSolicitud" component={VerSolicitud} />
       <Stack.Screen name="solicitud" component={Solicitud} />
       <Stack.Screen name="login" component={Login} />

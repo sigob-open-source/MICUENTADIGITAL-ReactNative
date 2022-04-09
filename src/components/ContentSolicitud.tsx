@@ -8,19 +8,19 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
 import fonts from '../utils/fonts';
 
-const ContentSolicitud = ({ fecha }) => {
+const ContentSolicitud = ({ fecha, solicitud }) => {
   const navigation = useNavigation();
 
   return (
-    <TouchableWithoutFeedback onPress={() => navigation.push('verSolicitud')}>
+    <TouchableWithoutFeedback onPress={() => navigation.push('verSolicitud', { solicitud })}>
       <View style={styles.contentSolicitud}>
         <View style={styles.rectangle}>
-          <Image style={styles.image} source={require('../../assets/imagenes/amanecer-playa.jpg')} />
+          <Image style={styles.image} source={{ uri: solicitud?.seguimientos[0]?.archivos[0]?.archivo } || require('../../assets/imagenes/amanecer-playa.jpg')} />
         </View>
         <Text style={styles.text}>
           Solicitud
           {' '}
-          {fecha}
+          {fecha.split('T')[0]}
         </Text>
         <MaterialIcons style={{ textAlignVertical: 'center', textAlign: 'right' }} size={40} name="navigate-next" color="black" />
       </View>

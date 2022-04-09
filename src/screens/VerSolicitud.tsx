@@ -1,18 +1,41 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, View, Text, Image, Modal, Pressable,
 } from 'react-native';
 
+import MapboxGL from '@react-native-mapbox-gl/maps';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
+import axios from 'axios';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ComentarioInfo from '../components/ComentarioInfo';
 import fonts from '../utils/fonts';
 
-const VerSolicitud = () => {
+MapboxGL.requestAndroidLocationPermissions();
+MapboxGL.setAccessToken('sk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNnM2azV4NGI2ODNjcGtkMnlhbHhkNSJ9.OFrtu6biPoxkVm_RU8zz7w');
+MapboxGL.geoUtils;
+
+const VerSolicitud = ({ route }) => {
   const [modalVisibility, setModalVisibility] = useState(false);
   const [estadoSolicitud, setEstadoSolicitud] = useState('En Revisión');
+  const [solicitud, setSolicitud] = useState();
+  const [address, setAddress] = useState();
+
+  useEffect(() => {
+    setSolicitud(route.params.solicitud);
+    coordsHandler();
+  }, []);
+
+  const coordsHandler = async () => {
+    try {
+      const res = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${route.params.solicitud.longitud},${route.params.solicitud?.latitud}.json?language=es&types=address&postcode&access_token=sk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNnM2azV4NGI2ODNjcGtkMnlhbHhkNSJ9.OFrtu6biPoxkVm_RU8zz7w`);
+      console.log(res.data.features[0]);
+      setAddress(res.data.features[0]);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   const onPressHandler = () => {
     setModalVisibility(true);
@@ -28,10 +51,13 @@ const VerSolicitud = () => {
             <MaterialIcons style={{ textAlign: 'center' }} size={30} color="black" name="navigate-next" />
           </Pressable>
           <View style={styles.rectangle}>
-            <Image style={styles.image} source={require('../../assets/imagenes/amanecer-playa.jpg')} />
+            <Image
+              style={styles.image}
+              source={{ uri: solicitud?.seguimientos[0]?.archivos[0]?.archivo } || require('../../assets/imagenes/amanecer-playa.jpg')}
+            />
           </View>
-          <ComentarioInfo headText="Comentario de Usuario" subText="Hola mundo" iconName="person" />
-          <ComentarioInfo headText="Av. Ferrocaril y Salvador Cabrales." subText="Ver locación en el mapa" iconName="gps-fixed" />
+          <ComentarioInfo headText="Comentario de Usuario" subText={solicitud?.comentario || 'prueba'} iconName="person" />
+          <ComentarioInfo headText={`${address?.place_name}` || 'Av. Ferrocaril y Salvador Cabrales.'} subText="Ver locación en el mapa" hipervinculo iconName="gps-fixed" />
         </View>
         <Footer style={styles.footer} />
       </View>
@@ -89,6 +115,8 @@ const styles = StyleSheet.create({
     marginTop: 12,
     marginHorizontal: 20,
     borderRadius: 5,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   text: {
     color: 'black',

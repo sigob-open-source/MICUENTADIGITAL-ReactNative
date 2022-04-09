@@ -6,7 +6,9 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 
-const ComentarioInfo = ({ headText, subText, iconName }) => (
+const ComentarioInfo = ({
+  headText, subText, iconName, hipervinculo,
+}) => (
   <View style={styles.comment}>
     <View>
       <View style={styles.circle}>
@@ -15,7 +17,7 @@ const ComentarioInfo = ({ headText, subText, iconName }) => (
     </View>
     <View style={styles.texts}>
       <Text style={styles.headText}>{headText}</Text>
-      <Text style={styles.subText}>{subText}</Text>
+      <Text style={[styles.subText, (hipervinculo) ? styles.hipervinculo : undefined]}>{subText}</Text>
     </View>
   </View>
 );
@@ -43,6 +45,9 @@ const styles = StyleSheet.create({
   texts: {
     marginLeft: 8,
     marginRight: 20,
+  },
+  hipervinculo: {
+    color: 'blue',
   },
 });
 

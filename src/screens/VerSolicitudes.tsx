@@ -1,24 +1,45 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import moment from 'moment';
 import {
-  StyleSheet, View, Text, Image, TouchableWithoutFeedback,
+  StyleSheet, View, Text, Image, TouchableWithoutFeedback, FlatList,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { getSolicitudes } from '../services/solicitudes';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ContentSolicitud from '../components/ContentSolicitud';
 
-const VerSolicitudes = () => (
-  <View style={styles.container}>
-    <Header style={styles.header} item="Solicitudes" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
+const VerSolicitudes = () => {
+  const [solicitudes, setSolicitudes] = useState([]);
+
+  const getData = async () => {
+    const res = await getSolicitudes();
+    setSolicitudes(res);
+  };
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const renderItem = ({ item }) => (
+    <ContentSolicitud fecha={item.fecha_de_la_solicitud} solicitud={item} />
+  );
+
+  return (
     <View style={styles.container}>
-      <ContentSolicitud fecha="24/3/2042" />
-      <ContentSolicitud fecha="24/3/2022" />
-      <ContentSolicitud fecha="24/3/2022" />
+      <Header style={styles.header} item="Solicitudes" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
+      <View style={styles.container}>
+        <FlatList
+          data={solicitudes}
+          renderItem={renderItem}
+          keyExtractor={(item) => item.id}
+        />
+      </View>
+      <Footer style={styles.footer} />
     </View>
-    <Footer style={styles.footer} />
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
