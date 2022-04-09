@@ -1,33 +1,41 @@
-// Axios main config
 import axios from 'axios';
 
 import { store } from '../store';
 import { dispatchClearAuth, dispatchSetToken } from '../store/actions/auth';
-import { navigateWithReset } from '../types/navigation';
+import { navigateWithReset } from '../utils/navigation';
 
 // Configuration
 export const API_SCHEMA = 'https';
-export const API_HOST = 'apigrp.migob.mx/';
-export const API_PATH = '';
+export const API_HOST = 'api.micuenta.digital';
+// export const API_LOCALHOST_GRP = '10.0.2.2:8000';
+export const API_HOST_GRP = 'apigrp.migob.mx';
+export const API_PATH = '/';
+const headers = {
+  'Content-Type': 'application/json',
+  'Accept-Language': 'es',
+};
+
+export const httpConfigGRP = {
+  baseURL: `${API_SCHEMA}://${API_HOST_GRP}${API_PATH}`,
+  // baseURL: `http://${API_LOCALHOST_GRP}${API_PATH}`,
+  headers,
+};
 
 export const httpConfig = {
   baseURL: `${API_SCHEMA}://${API_HOST}${API_PATH}`,
-  headers: {
-    'Content-Type': 'application/json',
-    'Accept-Language': 'es',
-  },
+  headers,
 };
 
-export const HTTP = axios.create(httpConfig);
+// Axios instances
+const HTTP_GRP = axios.create(httpConfigGRP);
+const HTTP_MI_CUENTA = axios.create(httpConfig);
 
 // Interceptors
 const onSendRequest = (config) => {
   const token = store.getState()?.auth?.accessToken;
-
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
-
   return config;
 };
 
@@ -75,8 +83,10 @@ const onResponseFail = async (error) => {
   return Promise.reject(error);
 };
 
-// Resgister axios hooks
-HTTP.interceptors.request.use(onSendRequest, null);
-HTTP.interceptors.response.use(null, onResponseFail);
+// Register axios hooks
+HTTP_MI_CUENTA.interceptors.request.use(onSendRequest, null);
+HTTP_MI_CUENTA.interceptors.response.use(null, onResponseFail);
 
-export default HTTP;
+export const HTTP = HTTP_MI_CUENTA;
+
+export default HTTP_GRP;

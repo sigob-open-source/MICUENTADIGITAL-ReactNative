@@ -11,6 +11,7 @@ import MapBoxGL from '@react-native-mapbox-gl/maps';
 import axios from "axios";
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Geolocation from 'react-native-geolocation-service';
+import { NetInfo } from '@react-native-community/netinfo';
 
 import React from 'react';
 import Header from '../Header';
@@ -34,36 +35,29 @@ export class MapaModal extends React.Component{
         coords: [0, 0],
         street:null
     }
-    this.maxLength = 250;
-    
+  }
+
+  changeCoordinates = (feature) =>{
+    this.setState({
+      coords: feature.geometry.coordinates,
+    },this.apihandler)
+
   }
 
   apihandler=()=>{
     try{
-      axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+this.state.coords+'.json?type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ')
+      axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+this.state.coords+'.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ')
       .then(response => {
         const posts = response.data.features[0].place_name;
-        if (posts != null){
-          this.setState({
-            street: posts
-          })
-        }
-
+        this.setState({
+          street:posts
+        })
       })
     }catch(error){
       console.log(error)
     }
 
   }
-
-
-  changeCoordinates = (feature) =>{
-    this.setState({
-      coords: feature.geometry.coordinates,
-    })
-    this.apihandler()
-  }
-
 
   GetLocation() {
     
@@ -73,8 +67,8 @@ export class MapaModal extends React.Component{
           coords: [position.coords.longitude, position.coords.latitude],
           lat:position.coords.latitude,
           long:position.coords.longitude
-        })
-        this.apihandler()
+        },this.apihandler)
+        
       },
       (error) => this.setState({ error: error.message }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
@@ -87,7 +81,10 @@ export class MapaModal extends React.Component{
   }
 
   show = () => {
-    this.GetLocation()
+    if (this.state.lat == 0 && this.state.long == 0){
+      this.GetLocation()
+    }
+    
     this.setState({show: true})
   }
 
@@ -229,7 +226,7 @@ const styles = StyleSheet.create({
     justifyContent:'center',
     alignSelf:'center',
     alignItems:'center',
-    marginTop:'35%',
+    marginTop:'25%',
     zIndex:10,
     position:'absolute',
     width:336,
@@ -249,7 +246,7 @@ const styles = StyleSheet.create({
     marginTop:7,
     backgroundColor:'#e6e6e6',
   },
-    collapsibleContent:{
+  collapsibleContent:{
     marginLeft:'5%',
     flexDirection:'row',
     alignItems:'center',

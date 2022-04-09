@@ -1,34 +1,85 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, ScrollView} from 'react-native';
+import {StyleSheet, View, Text, TouchableOpacity, ScrollView, Alert} from 'react-native';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { notificationAction } from '../store/actions/app';
+import { registrarSolicitud } from '../services/api';
+import { registrarArchivo } from '../services/api';
 
+import axios from 'axios';
 
 import ModalSolicitud from '../components/SolicitudComponents/ModalSolicitud';
 import ComentarioModal from '../components/SolicitudComponents/ComentariosModal';
 import { MapaModal } from '../components/SolicitudComponents/MapaModal';
+
 
 import CardSolicitud from '../components/SolicitudComponents/CardSolicitud';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ButtonRequest from '../components/SolicitudComponents/Button';
 
+
+
 const Solicitud = props => {
   let popupRef = React.createRef();
   let popupRef2 = React.createRef();
   let popupRef3 = React.createRef();
+
+  const [comment, setComment] = useState('Sin comentario.');
+  const [location, setLocation] = useState('Sin locación');
+  const [latitud, setLatitud] = useState('');
+  const [longitud, setLongitud] = useState('');
+  const [motivo_de_la_solicitud, setMotivo_de_la_solicitud] = useState(null);
+  const [motivoSolID, setMotivoSolID] = useState(null);
+  const [showMotivo, setShowMotivo] = useState(false);
+  const [entidadMunicipalId, setEntidadMunicipalId] = useState(null);
+  const [archivo, setArchivo] = useState(null);
   
-  const [comment, setComment] = useState('Sin comentario.')
-  const [location, setLocation] = useState('Sin locación')
-  const [latitud, setLatitud] = useState('')
-  const [longitud, setLongitud] = useState('')
+  const submit = async () => {
+    const response = await registrarSolicitud(
+      comment,
+      latitud,
+      longitud,
+      motivoSolID,
+      entidadMunicipalId,
+    );
+    if (response) {
+      const responseFile = await registrarArchivo(
+        response.seguimientos[0].id,
+        archivo,
+      );
+      if (responseFile) {
+        response.seguimientos[0].archivos.push(responseFile);
+      }
+      console.log(JSON.stringify(response, null, 2));
+
+      Alert.alert('Registro existoso', 'Su solicitud ha sido procesada con éxito, pronto recibirá informes de su solicitud.')
+    }else{
+      Alert.alert('Error', 'Ha ocurrido un error, su solicitud no pudo ser registrada. Intente más tarde.')
+    }
+  }
+
+  const imageToParent = (imageData) => {
+    setArchivo(imageData)
+    console.log('foto: ',archivo)
+  } 
 
   const modalToParent = (modalData) => {
     setComment(modalData);
+  }
+
+  const motivoToParent = (motivo,entidadId,motivoID) => {
+    setShowMotivo(true)
+    setMotivo_de_la_solicitud(motivo)
+    setMotivoSolID(motivoID)
+    setEntidadMunicipalId(entidadId)
+
   }
 
   const mapToParent = (mapData,latitud,longitud) => {
     setLocation(mapData);
     setLatitud(latitud);
     setLongitud(longitud);
+    
   }
 
   const onShowPopup = () => {
@@ -67,6 +118,7 @@ const Solicitud = props => {
         title="Elegir Razón"
         ref={(target) => popupRef = target}
         onTouchOutside={onClosePopup}
+        onclose={motivoToParent}
       />
 
       <Header style={styles.header} 
@@ -95,8 +147,18 @@ const Solicitud = props => {
           <TouchableOpacity onPress={onShowPopup}>
             <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow={true} />
           </TouchableOpacity>
+          {
+            showMotivo ? (
+              <View style={styles.optionCard}>
+                <View style={styles.collapsibleContent}>
+                  <MaterialCommunityIcons size={40} name='chart-box-outline'color={'black'} />
+                  <Text style={styles.collapsibleText}>{motivo_de_la_solicitud}</Text>
+                </View>
+              </View>
+            ) : null
+          }
 
-          <CardSolicitud openMap={onShowMapPopup} getText={comment} getLocation={location}/>
+          <CardSolicitud onPassImage={imageToParent} openMap={onShowMapPopup} getText={comment} getLocation={location}/>
 
           <TouchableOpacity onPress={onShowCommentPopup}>
             <ButtonRequest texto="Cambiar Comentario" />
@@ -106,18 +168,20 @@ const Solicitud = props => {
             <ButtonRequest texto="Cambiar Dirección" />
           </TouchableOpacity>
 
-          <View style={styles.sendRequestGeneralContainer}>
-            <View style={styles.sendRequestStyle}>
-              <View style={styles.sendRequestContainer}>
-                <Text style={{ 
-                  color: 'black', 
-                  fontSize: 20, 
-                  fontWeight: '500' }}
-                  >Enviar Solicitud
-                </Text>
+          <TouchableOpacity onPress={submit} >
+            <View style={styles.sendRequestGeneralContainer}>
+              <View style={styles.sendRequestStyle}>
+                <View style={styles.sendRequestContainer}>
+                  <Text style={{ 
+                    color: 'black', 
+                    fontSize: 20, 
+                    fontWeight: '500' }}
+                    >Enviar Solicitud
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
+          </TouchableOpacity>
         </View>
 
       </ScrollView>
@@ -210,7 +274,31 @@ const styles = StyleSheet.create({
     shadowRadius: 32,
     shadowOpacity: 0.25,
     elevation: 20,
-  }
+  },
+  optionCard:{
+    width:'96%',
+    justifyContent:'center',
+    alignSelf:'center',
+    marginTop:7,
+    backgroundColor:'white',
+    shadowColor: 'black',
+    shadowOffset: { width: 1, height: 7 },
+    shadowRadius: 32,
+    shadowOpacity: 0.25,
+    elevation: 20,
+  },
+  collapsibleContent:{
+    marginLeft:'5%',
+    flexDirection:'row',
+    alignItems:'center',
+  },
+  collapsibleText:{
+    fontWeight:'500',
+    marginLeft:'3%',
+    fontSize:17
+    ,
+    color:'black',
+  },
 });
 
 export default Solicitud;

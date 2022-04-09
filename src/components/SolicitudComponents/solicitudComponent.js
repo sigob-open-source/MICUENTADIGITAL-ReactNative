@@ -1,21 +1,17 @@
-import {StyleSheet, View, Text, TouchableOpacity} from 'react-native';
-import React, {useState} from 'react';
+import {StyleSheet, View, Text} from 'react-native';
+import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-import { getTiposDeSolicitudes } from '../../services/api';
 
 const SolicitudCard = props =>{
 
   return(
     <View>
-      <TouchableOpacity>
         <View style={styles.optionCard}>
           <View style={styles.collapsibleContent}>
             <MaterialCommunityIcons size={40} name={props.iconName}color={'black'} />
             <Text style={styles.collapsibleText}>{props.sampleSolicitud}</Text>
           </View>
         </View>
-      </TouchableOpacity>  
     </View>
   
   )

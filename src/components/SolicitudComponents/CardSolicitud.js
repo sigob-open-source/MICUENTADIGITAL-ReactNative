@@ -1,6 +1,7 @@
 import React, {useState} from 'react';
 import { StyleSheet, Text, View, Image,TouchableOpacity} from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
 
@@ -18,9 +19,62 @@ const CardSolicitud = props => {
     const [shouldShow, setShouldShow] = useState(true);
     const [showImage, setShowImage] = useState(false);
     const [changeTextImage, setChangeTextImage] = useState(true);
-    const [image, setImage] = useState('https://via.placeholder.com/200');
+    const [image, setImage] = useState('../../assets/imagenes/none.jpg');
     const [nombreArchivo, setNombreArchivo] = useState('')
 
+    const normalizeObject = (file) => ({
+      uri: file.path,
+      type: file.mime,
+      name: file.path.substring(file.path.lastIndexOf('/') + 1, undefined),
+      size: file.size,
+    });
+
+    const passImage = (archivo) =>{
+      props.onPassImage(archivo)
+    }  
+
+    const launchCamera = async () => {
+      try {
+        const img = await ImagePicker.openCamera({
+          width: 300,
+          height: 400,
+          cropping: true,
+          multiple: false,
+          useFrontCamera: false,
+        });
+        setShowImage(true)
+        setImage(img.path)
+        setChangeTextImage(false)
+        setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined),)
+        setShouldShow(false)
+        passImage(archivo)
+      } catch (error) {
+        console.error(error);
+      }
+    };
+  
+    const launchImageLibrary = async () => {
+      try {
+        const img = await ImagePicker.openPicker({
+          width: 300,
+          height: 400,
+          cropping: true,
+          multiple: false,
+          useFrontCamera: false,
+        });
+        setShowImage(true)
+        setImage(img.path)
+        setChangeTextImage(false)
+        setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined),)
+        setShouldShow(false)
+  
+        passImage(normalizeObject(img))
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+/*
     const selectImage = () => {
     const options = {
       storageOptions:{
@@ -29,6 +83,8 @@ const CardSolicitud = props => {
       } 
     }
 
+
+
     launchImageLibrary(options,response =>{
       if(response.errorCode){
         console.log(response.errorMessage)
@@ -36,12 +92,13 @@ const CardSolicitud = props => {
         console.log('El usuario canceló la selección')
       }else{
         const path = response.assets[0].uri
-        const name = response.assets[0].fileName
+        const name = response.assets[0].fileName.replace('rn_image_picker_lib_temp_','')
         setShowImage(true)
         setChangeTextImage(false)
         setNombreArchivo(name)
         setShouldShow(false)
         setImage(path)
+        passImage(response)
         }
       })
     }
@@ -60,16 +117,17 @@ const CardSolicitud = props => {
         console.log('El usuario canceló la fotografía')
       }else{
         const path = response.assets[0].uri
-        const name = response.assets[0].fileName
+        const name = response.assets[0].fileName.replace('rn_image_picker_lib_temp_','')
         setShowImage(true)
         setChangeTextImage(false)
         setNombreArchivo(name)
         setImage(path)
+        passImage(path)
                 
       }
     })
   }
-
+*/
   return(
     <View>
       <View style={{...styles.squareStyle,...props.style}}>
@@ -97,7 +155,7 @@ const CardSolicitud = props => {
                 changeTextImage ?(
                   <Text numberOfLines={3} style={styles.textStyle}>Agregar imagen {"\n"}de evidencia</Text>
                 ) : 
-                  <Text numberOfLines={3} style={styles.textStyle}>{nombreArchivo} {"\n"}de evidencia</Text>
+                  <Text numberOfLines={3} style={styles.textStyle}>{nombreArchivo}</Text>
               }
             </View>
 
@@ -140,8 +198,8 @@ const CardSolicitud = props => {
       </View>
             
       <BottomPopUp
-        pain = {selectImage}
-        pain2 = {takePicture}
+        pain = {launchImageLibrary}
+        pain2 = {launchCamera}
         title='Elegir imagen'
         ref={(target) => popupRef = target}
         onTouchOutside={onClosePopup} />

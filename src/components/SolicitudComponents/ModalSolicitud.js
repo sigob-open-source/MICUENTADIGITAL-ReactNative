@@ -1,11 +1,11 @@
-import {Modal, TouchableWithoutFeedback,StyleSheet, View, Text, ScrollView} from 'react-native';
+import {Modal, TouchableWithoutFeedback, TouchableOpacity,StyleSheet, View, Text, ScrollView} from 'react-native';
 import React from 'react';
 
 import Footer from '../Footer';
 import SolicitudCard from './solicitudComponent';
 import ButtonRequest from './Button';
 import { getTiposDeSolicitudes } from '../../services/api';
-import { create } from 'react-test-renderer';
+
 
 class ModalSolicitud extends React.Component{
   constructor(props){
@@ -13,7 +13,10 @@ class ModalSolicitud extends React.Component{
     this.state = {
       show: false,
       motivos: [],
-      renderCard: false
+      renderCard: false,
+      motivoSeleccionado:[],
+      entidadId: '',
+      motivoID:null
     }
   }
 
@@ -25,28 +28,36 @@ class ModalSolicitud extends React.Component{
   getData = async () => {
     const id = 1;
     const tipos = await getTiposDeSolicitudes(id);
+    console.log(tipos)
     this.state.motivos = tipos
-      for(let i = 0; i < this.state.motivos.length ;i++)
-      {
-        console.log(this.state.motivos[i].descripcion)
-      }
     if (this.state.motivos.length > 0){
       this.setState({
+        entidadId: id,
         renderCard:true
       })
     }
-
-
   };
 
   createCard = () => {
-    return this.state.motivos.map((item)=>{
+    return this.state.motivos.map((item, index)=>{
       return(
-        <SolicitudCard key={item.key} iconName='chart-box-outline' sampleSolicitud={item.descripcion}/>
+        <TouchableOpacity key={index} onPress={()=>this.selectMotivo(item.descripcion,item.id)}>
+          <View>
+            <SolicitudCard iconName='chart-box-outline' sampleSolicitud={item.descripcion}/>
+          </View>
+        </TouchableOpacity>
+        
       )
     })
   }
 
+  selectMotivo = (motivo,mID) => {
+    this.state.motivoID = mID
+    this.state.motivoSeleccionado=motivo
+    console.log(this.state.motivoSeleccionado,'',this.state.motivoID)
+    this.props.onclose(this.state.motivoSeleccionado,this.state.entidadId,this.state.motivoID)
+    this.close()
+  }
 
   close = () => {
     this.setState({show: false})
