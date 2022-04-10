@@ -6,6 +6,8 @@ type RootStackParamList = {
   pagos: undefined;
   dirfuncionario:undefined;
   oficinaAtencion:undefined;
+  verSolicitud:undefined;
+  verSolicitudes:undefined;
   problemOneScreen: undefined;
   problemTwoScreen: undefined;
   problemThreeScreen: undefined;

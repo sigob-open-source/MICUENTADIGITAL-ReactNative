@@ -28,7 +28,7 @@ const dataList = [
     name: 'Solicitudes',
     iconname: 'file-text',
     enableEntypo: false,
-    navegacion: 'solicitud',
+    navegacion: 'verSolicitudes',
   },
   {
     isBlank: false,
