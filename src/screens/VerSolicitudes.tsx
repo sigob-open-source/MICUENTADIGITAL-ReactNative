@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import moment from 'moment';
 import {
   StyleSheet, View, Text, Image, TouchableWithoutFeedback, FlatList,
 } from 'react-native';
@@ -9,6 +8,7 @@ import { getSolicitudes } from '../services/solicitudes';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ContentSolicitud from '../components/ContentSolicitud';
+import fonts from '../utils/fonts';
 
 const VerSolicitudes = () => {
   const [solicitudes, setSolicitudes] = useState([]);
@@ -30,6 +30,7 @@ const VerSolicitudes = () => {
     <View style={styles.container}>
       <Header style={styles.header} item="Solicitudes" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
       <View style={styles.container}>
+        {(solicitudes.length === 0) ? <Text style={styles.noSolicitud}>No hay solicitudes por mostrar</Text> : null}
         <FlatList
           data={solicitudes}
           renderItem={renderItem}
@@ -71,6 +72,11 @@ const styles = StyleSheet.create({
     shadowRadius: 32,
     shadowOpacity: 0.25,
     elevation: 20,
+  },
+  noSolicitud: {
+    color: 'gray',
+    fontFamily: fonts.semiBold,
+    textAlign: 'center',
   },
 });
 
