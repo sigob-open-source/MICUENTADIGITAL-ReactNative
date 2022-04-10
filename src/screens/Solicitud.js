@@ -1,15 +1,14 @@
 import React, {useState} from 'react';
-import {StyleSheet, View, Text, TouchableOpacity, ScrollView, Alert} from 'react-native';
+import {StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { notificationAction } from '../store/actions/app';
-import { registrarSolicitud } from '../services/api';
-import { registrarArchivo } from '../services/api';
+import { registrarArchivo, registrarSolicitud } from '../services/api';
 
 import axios from 'axios';
 
 import ModalSolicitud from '../components/SolicitudComponents/ModalSolicitud';
 import ComentarioModal from '../components/SolicitudComponents/ComentariosModal';
 import { MapaModal } from '../components/SolicitudComponents/MapaModal';
+import AccordionView from '../components/SolicitudComponents/accordion';
 
 
 import CardSolicitud from '../components/SolicitudComponents/CardSolicitud';
@@ -17,6 +16,7 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ButtonRequest from '../components/SolicitudComponents/Button';
 
+const WIDTH = Dimensions.get('window').width;
 
 
 const Solicitud = props => {
@@ -30,6 +30,8 @@ const Solicitud = props => {
   const [longitud, setLongitud] = useState('');
   const [motivo_de_la_solicitud, setMotivo_de_la_solicitud] = useState(null);
   const [motivoSolID, setMotivoSolID] = useState(null);
+  const [motivoDesc, setMotivoDesc] = useState(null);
+  const [submotivoDesc, setSubMotivoDesc] = useState(null);
   const [showMotivo, setShowMotivo] = useState(false);
   const [entidadMunicipalId, setEntidadMunicipalId] = useState(null);
   const [archivo, setArchivo] = useState(null);
@@ -39,7 +41,7 @@ const Solicitud = props => {
       comment,
       latitud,
       longitud,
-      motivoSolID,
+      motivo_de_la_solicitud,
       entidadMunicipalId,
     );
     if (response) {
@@ -60,19 +62,18 @@ const Solicitud = props => {
 
   const imageToParent = (imageData) => {
     setArchivo(imageData)
-    console.log('foto: ',archivo)
+    console.log('foto: ',imageData.uri,'',imageData.type,'',imageData.name,'',imageData.size)
   } 
 
   const modalToParent = (modalData) => {
     setComment(modalData);
   }
 
-  const motivoToParent = (motivo,entidadId,motivoID) => {
+  const motivoToParent = (entidad,motivo,descripcion) => {
     setShowMotivo(true)
     setMotivo_de_la_solicitud(motivo)
-    setMotivoSolID(motivoID)
-    setEntidadMunicipalId(entidadId)
-
+    setEntidadMunicipalId(entidad)
+    setMotivoDesc(descripcion)
   }
 
   const mapToParent = (mapData,latitud,longitud) => {
@@ -115,7 +116,7 @@ const Solicitud = props => {
     <View style={styles.container}>
       
       <ModalSolicitud
-        title="Elegir Razón"
+        title="Elegir Motivo"
         ref={(target) => popupRef = target}
         onTouchOutside={onClosePopup}
         onclose={motivoToParent}
@@ -141,7 +142,6 @@ const Solicitud = props => {
       />
 
       <ScrollView contentContainerStyle={{ padding: 10, paddingHorizontal: 0 }}>
-
         <View style={{ flex: 1, marginTop: 9, marginHorizontal: '2%' }}>
 
           <TouchableOpacity onPress={onShowPopup}>
@@ -151,8 +151,8 @@ const Solicitud = props => {
             showMotivo ? (
               <View style={styles.optionCard}>
                 <View style={styles.collapsibleContent}>
-                  <MaterialCommunityIcons size={40} name='chart-box-outline'color={'black'} />
-                  <Text style={styles.collapsibleText}>{motivo_de_la_solicitud}</Text>
+                  <MaterialCommunityIcons size={40} name={'chart-box-outline'}color={'black'} />
+                  <Text style={styles.solicitudTipoText}>{motivoDesc}</Text>
                 </View>
               </View>
             ) : null
@@ -199,6 +199,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#EDF2F5',
+  },
+  solicitudTipoText:{
+    flexShrink: 1,
+    flex:1,
+    flexWrap:'wrap',
+    fontWeight:'500',
+    marginLeft:'1.5%',
+    fontSize:0.05*WIDTH,
+    color:'black',
   },
   content: {
     marginVertical: 5,

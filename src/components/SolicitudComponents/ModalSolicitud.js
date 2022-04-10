@@ -1,10 +1,14 @@
-import {Modal, TouchableWithoutFeedback, TouchableOpacity,StyleSheet, View, Text, ScrollView} from 'react-native';
+import {Modal, TouchableWithoutFeedback, Dimensions,StyleSheet, View, Text, ScrollView} from 'react-native';
 import React from 'react';
+import Accordion from 'react-native-collapsible/Accordion';
 
 import Footer from '../Footer';
 import SolicitudCard from './solicitudComponent';
 import ButtonRequest from './Button';
 import { getTiposDeSolicitudes } from '../../services/api';
+import AccordionView from './accordion';
+
+const WIDTH = Dimensions.get('window').width;
 
 
 class ModalSolicitud extends React.Component{
@@ -14,7 +18,8 @@ class ModalSolicitud extends React.Component{
       show: false,
       motivos: [],
       renderCard: false,
-      motivoSeleccionado:[],
+      motivoParentId:[],
+      motivoDesc:'',
       entidadId: '',
       motivoID:null
     }
@@ -28,8 +33,8 @@ class ModalSolicitud extends React.Component{
   getData = async () => {
     const id = 1;
     const tipos = await getTiposDeSolicitudes(id);
-    console.log(tipos)
     this.state.motivos = tipos
+
     if (this.state.motivos.length > 0){
       this.setState({
         entidadId: id,
@@ -38,30 +43,37 @@ class ModalSolicitud extends React.Component{
     }
   };
 
+  close = () => {
+    this.setState({show: false})
+  }
+
   createCard = () => {
     return this.state.motivos.map((item, index)=>{
       return(
-        <TouchableOpacity key={index} onPress={()=>this.selectMotivo(item.descripcion,item.id)}>
-          <View>
-            <SolicitudCard iconName='chart-box-outline' sampleSolicitud={item.descripcion}/>
+          <View key={index} >
+            <AccordionView 
+              close = {this.selectMotivo}
+              parentId = {item.id}
+              motivo = {item.descripcion}
+              sampleSolicitud={'nothing'} 
+              titleText={item.descripcion} 
+              iconName='chart-box-outline'
+            />
           </View>
-        </TouchableOpacity>
         
       )
     })
   }
-
-  selectMotivo = (motivo,mID) => {
-    this.state.motivoID = mID
-    this.state.motivoSeleccionado=motivo
-    console.log(this.state.motivoSeleccionado,'',this.state.motivoID)
-    this.props.onclose(this.state.motivoSeleccionado,this.state.entidadId,this.state.motivoID)
+//Manda los motivos del modal hacia la pantalla donde se debe de mostrar ya el motivo seleccionado junto con su subcategoría
+  selectMotivo = (entidad,motivo,descripcion) => {
+    this.props.onclose(
+      entidad,
+      motivo,
+      descripcion
+    )
     this.close()
   }
 
-  close = () => {
-    this.setState({show: false})
-  }
 
   renderOutsideTouchable(onTouch){
     const view = <View style={{flex:1, width:'100%'}}/>
@@ -95,7 +107,6 @@ class ModalSolicitud extends React.Component{
   }
     
   render(){
-    const isRequestListed = this.state.motivos;
     let {show} = this.state
     const {onTouchOutside, title} = this.props
     return(
@@ -114,6 +125,7 @@ class ModalSolicitud extends React.Component{
             backgroundColor:'white',
             width:'100%',
             height:'100%'}}>
+            
             <ScrollView>
               {this.renderTitle()}
               {

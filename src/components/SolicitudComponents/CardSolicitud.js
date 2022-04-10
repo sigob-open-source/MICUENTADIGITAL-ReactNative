@@ -29,7 +29,8 @@ const CardSolicitud = props => {
       size: file.size,
     });
 
-    const passImage = (archivo) =>{
+    const passImage = async (archivo) =>{
+      const foto = await archivo
       props.onPassImage(archivo)
     }  
 
@@ -67,7 +68,7 @@ const CardSolicitud = props => {
         setChangeTextImage(false)
         setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined),)
         setShouldShow(false)
-  
+        
         passImage(normalizeObject(img))
       } catch (error) {
         console.error(error);

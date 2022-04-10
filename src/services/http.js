@@ -1,3 +1,5 @@
+/* eslint-disable no-param-reassign */
+// Axios main config
 import axios from 'axios';
 
 import { store } from '../store';
