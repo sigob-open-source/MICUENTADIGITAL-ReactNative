@@ -1,15 +1,15 @@
-import React, {useState} from 'react';
-import {StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView, Alert} from 'react-native';
+import React, { useState } from 'react';
+import {
+  StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView, Alert,
+} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { registrarArchivo, registrarSolicitud } from '../services/api';
-
 import axios from 'axios';
+import { registrarArchivo, registrarSolicitud } from '../services/api';
 
 import ModalSolicitud from '../components/SolicitudComponents/ModalSolicitud';
 import ComentarioModal from '../components/SolicitudComponents/ComentariosModal';
 import { MapaModal } from '../components/SolicitudComponents/MapaModal';
 import AccordionView from '../components/SolicitudComponents/accordion';
-
 
 import CardSolicitud from '../components/SolicitudComponents/CardSolicitud';
 import Header from '../components/Header';
@@ -18,8 +18,7 @@ import ButtonRequest from '../components/SolicitudComponents/Button';
 
 const WIDTH = Dimensions.get('window').width;
 
-
-const Solicitud = props => {
+const Solicitud = (props) => {
   let popupRef = React.createRef();
   let popupRef2 = React.createRef();
   let popupRef3 = React.createRef();
@@ -35,7 +34,7 @@ const Solicitud = props => {
   const [showMotivo, setShowMotivo] = useState(false);
   const [entidadMunicipalId, setEntidadMunicipalId] = useState(null);
   const [archivo, setArchivo] = useState(null);
-  
+
   const submit = async () => {
     const response = await registrarSolicitud(
       comment,
@@ -54,34 +53,33 @@ const Solicitud = props => {
       }
       console.log(JSON.stringify(response, null, 2));
 
-      Alert.alert('Registro existoso', 'Su solicitud ha sido procesada con éxito, pronto recibirá informes de su solicitud.')
-    }else{
-      Alert.alert('Error', 'Ha ocurrido un error, su solicitud no pudo ser registrada. Intente más tarde.')
+      Alert.alert('Registro existoso', 'Su solicitud ha sido procesada con éxito, pronto recibirá informes de su solicitud.');
+    } else {
+      Alert.alert('Error', 'Ha ocurrido un error, su solicitud no pudo ser registrada. Intente más tarde.');
     }
-  }
+  };
 
   const imageToParent = (imageData) => {
-    setArchivo(imageData)
-    console.log('foto: ',imageData.uri,'',imageData.type,'',imageData.name,'',imageData.size)
-  } 
+    setArchivo(imageData);
+    console.log('foto: ', imageData.uri, '', imageData.type, '', imageData.name, '', imageData.size);
+  };
 
   const modalToParent = (modalData) => {
     setComment(modalData);
-  }
+  };
 
-  const motivoToParent = (entidad,motivo,descripcion) => {
-    setShowMotivo(true)
-    setMotivo_de_la_solicitud(motivo)
-    setEntidadMunicipalId(entidad)
-    setMotivoDesc(descripcion)
-  }
+  const motivoToParent = (entidad, motivo, descripcion) => {
+    setShowMotivo(true);
+    setMotivo_de_la_solicitud(motivo);
+    setEntidadMunicipalId(entidad);
+    setMotivoDesc(descripcion);
+  };
 
-  const mapToParent = (mapData,latitud,longitud) => {
+  const mapToParent = (mapData, latitud, longitud) => {
     setLocation(mapData);
     setLatitud(latitud);
     setLongitud(longitud);
-    
-  }
+  };
 
   const onShowPopup = () => {
     popupRef.show();
@@ -111,10 +109,10 @@ const Solicitud = props => {
     props.navigation.goBack();
   };
 
-  return(
-    
+  return (
+
     <View style={styles.container}>
-      
+
       <ModalSolicitud
         title="Elegir Motivo"
         ref={(target) => popupRef = target}
@@ -122,43 +120,45 @@ const Solicitud = props => {
         onclose={motivoToParent}
       />
 
-      <Header style={styles.header} 
+      <Header
+        style={styles.header}
         route={1}
-        item="Trámites" 
+        item="Trámites"
         imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
-        img={require('../../assets/imagenes/header_logo.png')} />
+        img={require('../../assets/imagenes/header_logo.png')}
+      />
 
       <ComentarioModal
         title="Escribe tu comentario"
         ref={(target) => popupRef2 = target}
         onTouchOutside={onClosePopup}
-        modalToParent = {modalToParent}
+        modalToParent={modalToParent}
       />
 
       <MapaModal
         ref={(target) => popupRef3 = target}
         onTouchOutside={onClosePopup}
-        mapToParent = {mapToParent}
+        mapToParent={mapToParent}
       />
 
       <ScrollView contentContainerStyle={{ padding: 10, paddingHorizontal: 0 }}>
         <View style={{ flex: 1, marginTop: 9, marginHorizontal: '2%' }}>
 
           <TouchableOpacity onPress={onShowPopup}>
-            <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow={true} />
+            <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow />
           </TouchableOpacity>
           {
             showMotivo ? (
               <View style={styles.optionCard}>
                 <View style={styles.collapsibleContent}>
-                  <MaterialCommunityIcons size={40} name={'chart-box-outline'}color={'black'} />
+                  <MaterialCommunityIcons size={40} name="chart-box-outline" color="black" />
                   <Text style={styles.solicitudTipoText}>{motivoDesc}</Text>
                 </View>
               </View>
             ) : null
           }
 
-          <CardSolicitud onPassImage={imageToParent} openMap={onShowMapPopup} getText={comment} getLocation={location}/>
+          <CardSolicitud onPassImage={imageToParent} openMap={onShowMapPopup} getText={comment} getLocation={location} />
 
           <TouchableOpacity onPress={onShowCommentPopup}>
             <ButtonRequest texto="Cambiar Comentario" />
@@ -168,15 +168,17 @@ const Solicitud = props => {
             <ButtonRequest texto="Cambiar Dirección" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={submit} >
+          <TouchableOpacity onPress={submit}>
             <View style={styles.sendRequestGeneralContainer}>
               <View style={styles.sendRequestStyle}>
                 <View style={styles.sendRequestContainer}>
-                  <Text style={{ 
-                    color: 'black', 
-                    fontSize: 20, 
-                    fontWeight: '500' }}
-                    >Enviar Solicitud
+                  <Text style={{
+                    color: 'black',
+                    fontSize: 20,
+                    fontWeight: '500',
+                  }}
+                  >
+                    Enviar Solicitud
                   </Text>
                 </View>
               </View>
@@ -186,10 +188,11 @@ const Solicitud = props => {
 
       </ScrollView>
 
-      <Footer 
+      <Footer
         back={goBack}
-        showBack={true} 
-        style={styles.footer} />
+        showBack
+        style={styles.footer}
+      />
 
     </View>
   );
@@ -200,14 +203,14 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#EDF2F5',
   },
-  solicitudTipoText:{
+  solicitudTipoText: {
     flexShrink: 1,
-    flex:1,
-    flexWrap:'wrap',
-    fontWeight:'500',
-    marginLeft:'1.5%',
-    fontSize:0.05*WIDTH,
-    color:'black',
+    flex: 1,
+    flexWrap: 'wrap',
+    fontWeight: '500',
+    marginLeft: '1.5%',
+    fontSize: 0.05 * WIDTH,
+    color: 'black',
   },
   content: {
     marginVertical: 5,
@@ -284,29 +287,28 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     elevation: 20,
   },
-  optionCard:{
-    width:'96%',
-    justifyContent:'center',
-    alignSelf:'center',
-    marginTop:7,
-    backgroundColor:'white',
+  optionCard: {
+    width: '96%',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    marginTop: 7,
+    backgroundColor: 'white',
     shadowColor: 'black',
     shadowOffset: { width: 1, height: 7 },
     shadowRadius: 32,
     shadowOpacity: 0.25,
     elevation: 20,
   },
-  collapsibleContent:{
-    marginLeft:'5%',
-    flexDirection:'row',
-    alignItems:'center',
+  collapsibleContent: {
+    marginLeft: '5%',
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  collapsibleText:{
-    fontWeight:'500',
-    marginLeft:'3%',
-    fontSize:17
-    ,
-    color:'black',
+  collapsibleText: {
+    fontWeight: '500',
+    marginLeft: '3%',
+    fontSize: 17,
+    color: 'black',
   },
 });
 

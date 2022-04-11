@@ -1,7 +1,7 @@
 const axios = require('axios');
 
 const timeout = 30000;
-const baseURL = 'http://192.168.0.222:2000/';
+const baseURL = 'apigrp.migob.mx/';
 
 export const config = {
   timeout,

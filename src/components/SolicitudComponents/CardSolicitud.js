@@ -1,90 +1,90 @@
-import React, {useState} from 'react';
-import { StyleSheet, Text, View, Image,TouchableOpacity} from 'react-native';
+import React, { useState } from 'react';
+import {
+  StyleSheet, Text, View, Image, TouchableOpacity,
+} from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import BottomPopUp from './BottomPopUp';
 
-const CardSolicitud = props => {
-    let popupRef = React.createRef()
-    const onShowPopup = () => {
-        popupRef.show()
+const CardSolicitud = (props) => {
+  let popupRef = React.createRef();
+  const onShowPopup = () => {
+    popupRef.show();
+  };
+  const onClosePopup = () => {
+    popupRef.close();
+  };
+  const [comment, setComment] = useState('');
+  const [shouldShow, setShouldShow] = useState(true);
+  const [showImage, setShowImage] = useState(false);
+  const [changeTextImage, setChangeTextImage] = useState(true);
+  const [image, setImage] = useState('../../assets/imagenes/none.jpg');
+  const [nombreArchivo, setNombreArchivo] = useState('');
+
+  const normalizeObject = (file) => ({
+    uri: file.path,
+    type: file.mime,
+    name: file.path.substring(file.path.lastIndexOf('/') + 1, undefined),
+    size: file.size,
+  });
+
+  const passImage = async (archivo) => {
+    const foto = await archivo;
+    props.onPassImage(archivo);
+  };
+
+  const launchCamera = async () => {
+    try {
+      const img = await ImagePicker.openCamera({
+        width: 300,
+        height: 400,
+        cropping: true,
+        multiple: false,
+        useFrontCamera: false,
+      });
+      setShowImage(true);
+      setImage(img.path);
+      setChangeTextImage(false);
+      setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined));
+      setShouldShow(false);
+      passImage(archivo);
+    } catch (error) {
+      console.error(error);
     }
-    const onClosePopup = () => {
-        popupRef.close()
+  };
+
+  const launchImageLibrary = async () => {
+    try {
+      const img = await ImagePicker.openPicker({
+        width: 300,
+        height: 400,
+        cropping: true,
+        multiple: false,
+        useFrontCamera: false,
+      });
+      setShowImage(true);
+      setImage(img.path);
+      setChangeTextImage(false);
+      setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined));
+      setShouldShow(false);
+
+      passImage(normalizeObject(img));
+    } catch (error) {
+      console.error(error);
     }
-    const [comment, setComment] = useState('')
-    const [shouldShow, setShouldShow] = useState(true);
-    const [showImage, setShowImage] = useState(false);
-    const [changeTextImage, setChangeTextImage] = useState(true);
-    const [image, setImage] = useState('../../assets/imagenes/none.jpg');
-    const [nombreArchivo, setNombreArchivo] = useState('')
+  };
 
-    const normalizeObject = (file) => ({
-      uri: file.path,
-      type: file.mime,
-      name: file.path.substring(file.path.lastIndexOf('/') + 1, undefined),
-      size: file.size,
-    });
-
-    const passImage = async (archivo) =>{
-      const foto = await archivo
-      props.onPassImage(archivo)
-    }  
-
-    const launchCamera = async () => {
-      try {
-        const img = await ImagePicker.openCamera({
-          width: 300,
-          height: 400,
-          cropping: true,
-          multiple: false,
-          useFrontCamera: false,
-        });
-        setShowImage(true)
-        setImage(img.path)
-        setChangeTextImage(false)
-        setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined),)
-        setShouldShow(false)
-        passImage(archivo)
-      } catch (error) {
-        console.error(error);
-      }
-    };
-  
-    const launchImageLibrary = async () => {
-      try {
-        const img = await ImagePicker.openPicker({
-          width: 300,
-          height: 400,
-          cropping: true,
-          multiple: false,
-          useFrontCamera: false,
-        });
-        setShowImage(true)
-        setImage(img.path)
-        setChangeTextImage(false)
-        setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined),)
-        setShouldShow(false)
-        
-        passImage(normalizeObject(img))
-      } catch (error) {
-        console.error(error);
-      }
-    };
-
-/*
+  /*
     const selectImage = () => {
     const options = {
       storageOptions:{
         skipBackup: false,
         path: 'images'
-      } 
+      }
     }
-
-
 
     launchImageLibrary(options,response =>{
       if(response.errorCode){
@@ -124,48 +124,58 @@ const CardSolicitud = props => {
         setNombreArchivo(name)
         setImage(path)
         passImage(path)
-                
+
       }
     })
   }
 */
-  return(
+  return (
     <View>
-      <View style={{...styles.squareStyle,...props.style}}>
+      <View style={{ ...styles.squareStyle, ...props.style }}>
         <TouchableOpacity onPress={onShowPopup}>
           {
             showImage ? (
-              <Image style={{width:'100%', height:'100%',borderBottomLeftRadius:5,borderTopLeftRadius:5}}source={{uri:image}}/>    
+              <Image
+                style={{
+                  width: '100%', height: '100%', borderBottomLeftRadius: 5, borderTopLeftRadius: 5,
+                }}
+                source={{ uri: image }}
+              />
             ) : null
           }
-                
-          <View style={{flex:1, backgroundColor:'transparent'}}>
+
+          <View style={{ flex: 1, backgroundColor: 'transparent' }}>
 
             <View style={styles.agregarImagen}>
-              <MaterialCommunityIcons size={60} name='image-outline' color={'gray'}/>
+              <MaterialCommunityIcons size={60} name="image-outline" color="gray" />
             </View>
-                    
+
           </View>
 
         </TouchableOpacity>
 
-        <View style={{flex:1, flexDirection:'column',backgroundColor:'transparent'}}>
-          <View style={{flex:1, backgroundColor:'transparent'}}></View>
-            <View style={{flex:1, backgroundColor:'transparent', justifyContent:'center'}}>
-              {
-                changeTextImage ?(
-                  <Text numberOfLines={3} style={styles.textStyle}>Agregar imagen {"\n"}de evidencia</Text>
-                ) : 
-                  <Text numberOfLines={3} style={styles.textStyle}>{nombreArchivo}</Text>
-              }
-            </View>
-
-          <View style={{flex:1, backgroundColor:'transparent'}}>
+        <View style={{ flex: 1, flexDirection: 'column', backgroundColor: 'transparent' }}>
+          <View style={{ flex: 1, backgroundColor: 'transparent' }} />
+          <View style={{ flex: 1, backgroundColor: 'transparent', justifyContent: 'center' }}>
             {
-              changeTextImage ?(
-                  <Text style={styles.changeImageText}></Text>
-                ) : 
-                  <Text onPress={onShowPopup}style={styles.changeImageText}>Cambiar Imagen</Text>
+                changeTextImage ? (
+                  <Text numberOfLines={3} style={styles.textStyle}>
+                    Agregar imagen
+                    {' '}
+                    {'\n'}
+                    de evidencia
+                  </Text>
+                )
+                  : <Text numberOfLines={3} style={styles.textStyle}>{nombreArchivo}</Text>
+              }
+          </View>
+
+          <View style={{ flex: 1, backgroundColor: 'transparent' }}>
+            {
+              changeTextImage ? (
+                <Text style={styles.changeImageText} />
+              )
+                : <Text onPress={onShowPopup} style={styles.changeImageText}>Cambiar Imagen</Text>
                 }
           </View>
         </View>
@@ -173,121 +183,123 @@ const CardSolicitud = props => {
       {/* Sección de comentario de usuario y ubicación de la solicitud */}
       <View>
 
-              <View style={{ flexDirection: 'row', marginTop: '5%' }}>
-                <Icon size={40} name='person-circle-outline' color={'black'} />
-                <View style={{ flex: 1, flexDirection: 'column' }}>
+        <View style={{ flexDirection: 'row', marginTop: '5%' }}>
+          <Icon size={40} name="person-circle-outline" color="black" />
+          <View style={{ flex: 1, flexDirection: 'column' }}>
 
-                  <Text style={styles.TitleBottom}>Comentario de usuario</Text>
-                  <Text style={styles.userComment}>{props.getText}</Text>
+            <Text style={styles.TitleBottom}>Comentario de usuario</Text>
+            <Text style={styles.userComment}>{props.getText}</Text>
 
-                </View>
+          </View>
 
-              </View>
+        </View>
 
-              <View style={{ flexDirection: 'row', marginTop: '5%' }}>
-                <MaterialCommunityIcons size={40} name='map-marker-outline' color={'black'} />
-                <View style={{ flex: 1, flexDirection: 'column' }}>
+        <View style={{ flexDirection: 'row', marginTop: '5%' }}>
+          <MaterialCommunityIcons size={40} name="map-marker-outline" color="black" />
+          <View style={{ flex: 1, flexDirection: 'column' }}>
 
-                    <Text style={styles.TitleBottom}>{props.getLocation}</Text>
-                    <Text style={styles.verLocacionMapa}>Ver o añadir locación en el mapa.</Text>
+            <Text style={styles.TitleBottom}>{props.getLocation}</Text>
+            <Text style={styles.verLocacionMapa}>Ver o añadir locación en el mapa.</Text>
 
-                </View>
-              </View>
+          </View>
+        </View>
 
-          <View style={styles.linea}></View>
+        <View style={styles.linea} />
 
       </View>
-            
+
       <BottomPopUp
-        pain = {launchImageLibrary}
-        pain2 = {launchCamera}
-        title='Elegir imagen'
+        pain={launchImageLibrary}
+        pain2={launchCamera}
+        title="Elegir imagen"
         ref={(target) => popupRef = target}
-        onTouchOutside={onClosePopup} />
-    </View>   
+        onTouchOutside={onClosePopup}
+      />
+    </View>
   );
-} 
+};
 
 const styles = StyleSheet.create({
-  agregarImagen:{
-    flex:1,
-    width:161,
-    justifyContent:'center',
-    alignItems:'center',
-    backgroundColor:'#E3E3E3'
-  },  
-  squareStyle:{
-    marginTop:'3%',
-    borderRadius:5,
+  agregarImagen: {
+    flex: 1,
+    width: 161,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#E3E3E3',
+  },
+  squareStyle: {
+    marginTop: '3%',
+    borderRadius: 5,
     width: 333,
     height: 161,
-    flexDirection:'row',
+    flexDirection: 'row',
     backgroundColor: 'white',
     justifyContent: 'flex-start',
-    alignSelf:'center',
+    alignSelf: 'center',
     shadowColor: 'black',
-    shadowOffset: {width: 0, height:3},
+    shadowOffset: { width: 0, height: 3 },
     shadowRadius: 7,
     shadowOpacity: 0.09,
     elevation: 5,
-    marginHorizontal:12
+    marginHorizontal: 12,
   },
-  TitleBottom:{
-    color:'black',
-    marginLeft:'3%',
-    fontSize:15
-  },  
-  userComment:{
-    color:'#515151',
-    marginLeft:'3%',
-    fontSize:15
-  },  
-  textStyle:{
-    textAlign:'center',
-    justifyContent:'center',
-    alignSelf:'center',
-    fontWeight:'600',
-    paddingHorizontal:'10%'
+  TitleBottom: {
+    color: 'black',
+    marginLeft: '3%',
+    fontSize: 15,
   },
-  changeImageText:{
-    justifyContent:'center',
-    alignSelf:'center',
-    color:'#0097B8',
-    fontWeight:'600',
-    textDecorationLine:'underline'
+  userComment: {
+    color: '#515151',
+    marginLeft: '3%',
+    fontSize: 15,
   },
-  verLocacionMapa:{
-    marginLeft:'3%',
-    justifyContent:'center',
-    color:'#0097B8',
-    fontWeight:'600',
-    textDecorationLine:'underline'
+  textStyle: {
+    textAlign: 'center',
+    justifyContent: 'center',
+    alignSelf: 'center',
+    fontWeight: '600',
+    paddingHorizontal: '10%',
+    color: 'gray',
   },
-  imageStyle:{
-    width:'100%',
-    height:161,
-    borderBottomLeftRadius:5,
-    borderTopLeftRadius:5
+  changeImageText: {
+    justifyContent: 'center',
+    alignSelf: 'center',
+    color: '#0097B8',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
   },
-  linea:{
-    alignSelf:'center',
-    marginTop:'6%',
-    width:336,
-    height:2,
-    backgroundColor:'#C8CCD0'
-  },  
-  squareStyleBlank:{
-    borderRadius:5,
+  verLocacionMapa: {
+    marginLeft: '3%',
+    justifyContent: 'center',
+    color: '#0097B8',
+    fontWeight: '600',
+    textDecorationLine: 'underline',
+  },
+  imageStyle: {
+    width: '100%',
+    height: 161,
+    borderBottomLeftRadius: 5,
+    borderTopLeftRadius: 5,
+  },
+  linea: {
+    alignSelf: 'center',
+    marginTop: '6%',
+    width: 336,
+    height: 2,
+    backgroundColor: '#C8CCD0',
+  },
+  squareStyleBlank: {
+    borderRadius: 5,
     width: 104,
     height: 95,
     backgroundColor: 'transparent',
     justifyContent: 'center',
     alignItems: 'center',
-    marginHorizontal:12
+    marginHorizontal: 12,
   },
-  iconContainer:{
+  iconContainer: {
     margin: 5,
-  }
-})
+  },
+});
 
 export default CardSolicitud;

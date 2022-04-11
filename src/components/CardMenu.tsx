@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from 'react-native';
 const CardMenu = ({ nombreItem }) => (
   <View style={styles.card}>
     <View style={styles.iconContainer} />
-    <Text>{nombreItem}</Text>
+    <Text style={{ color: 'black' }}>{nombreItem}</Text>
   </View>
 );
 

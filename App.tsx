@@ -13,6 +13,7 @@ import Peticiones from './src/screens/Peticiones';
 import DirectorioFunc from './src/screens/DirectorioFuncionarios';
 import OficinasAtencion from './src/screens/OficinasAtencion';
 import Pagos from './src/screens/Pagos';
+import PagoPadron from './src/screens/PagoPadron';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -24,6 +25,7 @@ const AppContainer = () => (
     }}
     >
       <Stack.Screen name="menuInicio" component={MenuInicio} />
+      <Stack.Screen name="pagoPadron" component={PagoPadron} />
       <Stack.Screen name="pagos" component={Pagos} />
       <Stack.Screen name="solicitud" component={Solicitud} />
       <Stack.Screen name="peticiones" component={Peticiones} />
@@ -31,6 +33,7 @@ const AppContainer = () => (
       <Stack.Screen name="oficinaAtencion" component={OficinasAtencion} />
       <Stack.Screen name="verSolicitud" component={VerSolicitud} />
       <Stack.Screen name="verSolicitudes" component={VerSolicitudes} />
+
     </Stack.Navigator>
   </NavigationContainer>
 );

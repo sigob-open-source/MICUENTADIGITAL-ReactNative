@@ -12,6 +12,7 @@ type RootStackParamList = {
   problemTwoScreen: undefined;
   problemThreeScreen: undefined;
   problemFourScreen: undefined;
+  pagoPadron: undefined;
 };
 
 export type {
