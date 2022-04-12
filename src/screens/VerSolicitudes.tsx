@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, View, Text, Image, TouchableWithoutFeedback, FlatList,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { getSolicitudes } from '../services/api';
 
 import Header from '../components/Header';
@@ -10,14 +10,14 @@ import Footer from '../components/Footer';
 import ContentSolicitud from '../components/ContentSolicitud';
 import fonts from '../utils/fonts';
 
-const VerSolicitudes = props => {
+const VerSolicitudes = (props) => {
   const [solicitudes, setSolicitudes] = useState([]);
 
   const getData = async () => {
     const res = await getSolicitudes();
     setSolicitudes(res);
   };
-  
+
   const goBack = () => {
     props.navigation.goBack();
   };
@@ -41,10 +41,11 @@ const VerSolicitudes = props => {
           keyExtractor={(item) => item.id}
         />
       </View>
-      <Footer 
+      <Footer
         back={goBack}
-        showBack={true} 
-        style={styles.footer} />
+        showBack
+        style={styles.footer}
+      />
     </View>
   );
 };
@@ -85,6 +86,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.semiBold,
     textAlign: 'center',
   },
+
 });
 
 export default VerSolicitudes;

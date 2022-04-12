@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useState } from 'react';
 import {
-  StyleSheet, View, TextInput, FlatList, TouchableWithoutFeedback, Text,
+  StyleSheet, View, TextInput, FlatList, TouchableWithoutFeedback, Text, ScrollView, Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -39,8 +39,9 @@ const dataList = [
 
 const numColumns = 3;
 
-const Pagos = () => {
+const Pagos = (props) => {
   const [padrones, setPadrones] = useState();
+  const [listPadrones, setListPadrones] = ([]);
   const [loading, setLoading] = useState();
 
   useEffect(() => {
@@ -52,11 +53,30 @@ const Pagos = () => {
       (response) => {
         const result = response.data;
         setPadrones(result);
+        console.log(padrones);
       },
       (error) => {
         console.log(error);
       },
     );
+  };
+
+  const checkIcon = (elementName) => {
+    if (elementName === 'Ciudadano') return 'user';
+    if (elementName === 'Empresa') return 'briefcase';
+    if (elementName === 'Predio') return 'building';
+    if (elementName === 'Vehicular') return 'car-alt';
+    if (elementName === 'Todo') return 'align-justify';
+    if (elementName === 'Hospedaje') return 'bed';
+    if (elementName === 'Arrendamiento') return 'wpforms';
+    if (elementName === 'Nomina') return 'cc-visa';
+    if (elementName === 'Alcohol') return 'cube';
+    if (elementName === 'Cedular') return 'id-card';
+    if (elementName === 'JuegoDeAzar') return 'delicious';
+    if (elementName === 'Notario') return 'gavel';
+    if (elementName === 'CasaDeEmpenio') return 'university';
+    if (elementName === 'Agencia') return 'lock';
+    return 'van';
   };
 
   const formatData = (dataList, numColumns) => {
@@ -73,7 +93,7 @@ const Pagos = () => {
   };
 
   const goBack = () => {
-    this.props.navigation.goBack();
+    props.navigation.goBack();
   };
 
   const _renderItem = ({ item, index }) => (
@@ -100,23 +120,36 @@ const Pagos = () => {
         <TextInput color="black" placeholderTextColor="#C4C4C4" style={styles.textInputStyle} placeholder="Buscar..." />
       </View>
 
-      <View style={{ flex: 1, marginHorizontal: '2%' }}>
-
-        <FlatList
-          data={formatData(dataList, numColumns)}
-          renderItem={_renderItem}
-          keyExtractor={(item, index) => index.toString()}
-          numColumns={numColumns}
-        />
-
-      </View>
-      {
+      <View style={{
+        flex: 1, justifyContent: 'center',
+      }}
+      >
+        {
         (padrones)
-          ? (padrones.map((element) => {
-            console.log(element.descripcion);
-          }))
+          ? (
+            <FlatList
+              data={padrones}
+              renderItem={({ padron, index }) => (
+                <Pressable onPress={() => props.navigation.push('pagoPadron', { padron: padrones[index].descripcion })}>
+                  <Square
+                    col="#404040"
+                    isBlank={false}
+                    style={styles.menuContainer}
+                    enableEntypo
+                    nombreItem={padrones[index]?.descripcion || 'default'}
+                    iconName={checkIcon(padrones[index].descripcion)}
+                  />
+                </Pressable>
+
+              )}
+              key={(index) => index}
+              numColumns={3}
+            />
+          )
           : null
       }
+      </View>
+
       <Footer
         back={goBack}
         showBack
@@ -131,11 +164,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#EDF2F5',
-
+    alignItems: 'center',
   },
 
   menuContainer: {
-    marginVertical: '6%',
+    marginVertical: '3%',
   },
   textInputContainer: {
     marginVertical: 15,

@@ -1,5 +1,7 @@
-import React, { Component} from 'react';
-import {PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback,} from 'react-native';
+import React, { Component } from 'react';
+import {
+  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback,
+} from 'react-native';
 
 import Square from '../components/CardPagos';
 import Header from '../components/Header';
@@ -12,7 +14,7 @@ const dataList = [
     name: 'Pagos',
     iconname: 'wallet',
     enableEntypo: true,
-    navegacion: 'pagos'
+    navegacion: 'pagos',
   },
   {
     isBlank: false,
@@ -36,7 +38,7 @@ const dataList = [
     name: 'Directorio',
     iconname: 'book',
     enableEntypo: true,
-    navegacion: 'dirfuncionario'
+    navegacion: 'dirfuncionario',
   },
   {
     isBlank: false,
@@ -69,37 +71,41 @@ const dataList = [
     enableEntypo: false,
   },
 ];
-//recordatorio para remover la propiedad de enableEntypo
+// recordatorio para remover la propiedad de enableEntypo
 const dataListSecond = [
   {
-    isBlank: false, color: '#767778', 
-    name: 'Mis Adeudos', 
-    iconname: 'chart-bar', 
+    isBlank: false,
+    color: '#767778',
+    name: 'Mis Adeudos',
+    iconname: 'chart-bar',
     enableEntypo: true,
   },
   {
-    isBlank: false, color: '#767778', 
-    name: 'Mis Citas', iconname: 'calendar-alt', 
+    isBlank: false,
+    color: '#767778',
+    name: 'Mis Citas',
+    iconname: 'calendar-alt',
     enableEntypo: true,
   },
   {
-    isBlank: false, color: '#767778', 
-    name: 'Mis Trámites', 
-    iconname: 'folder-open', 
+    isBlank: false,
+    color: '#767778',
+    name: 'Mis Trámites',
+    iconname: 'folder-open',
     enableEntypo: false,
   },
   {
-    isBlank: false, 
-    color: '#767778', 
-    name: 'Mi Portafolio', 
-    iconname: 'folder', 
+    isBlank: false,
+    color: '#767778',
+    name: 'Mi Portafolio',
+    iconname: 'folder',
     enableEntypo: true,
   },
   {
-    isBlank: false, 
-    color: '#767778', 
-    name: 'Mi buzón', 
-    iconname: 'envelope', 
+    isBlank: false,
+    color: '#767778',
+    name: 'Mi buzón',
+    iconname: 'envelope',
     enableEntypo: true,
   },
 
@@ -110,7 +116,6 @@ const numColumns = 3;
 const WIDTH = Dimensions.get('window').width;
 
 class MenuInicio extends Component {
-
   formatData = (dataList, numColumns) => {
     const totalRows = Math.floor(dataList.length / numColumns);
     let totalLastRow = dataList.length - (totalRows * numColumns);
