@@ -14,6 +14,7 @@ import DirectorioFunc from './src/screens/DirectorioFuncionarios';
 import OficinasAtencion from './src/screens/OficinasAtencion';
 import Pagos from './src/screens/Pagos';
 import PagoPadron from './src/screens/PagoPadron';
+import Tramites from './src/screens/tramites';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -33,6 +34,7 @@ const AppContainer = () => (
       <Stack.Screen name="oficinaAtencion" component={OficinasAtencion} />
       <Stack.Screen name="verSolicitud" component={VerSolicitud} />
       <Stack.Screen name="verSolicitudes" component={VerSolicitudes} />
+      <Stack.Screen name="tramites" component={Tramites} />
 
     </Stack.Navigator>
   </NavigationContainer>

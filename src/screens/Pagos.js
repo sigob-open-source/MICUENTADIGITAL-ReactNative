@@ -39,7 +39,7 @@ const dataList = [
 
 const numColumns = 3;
 
-const Pagos = () => {
+const Pagos = props => {
   const [padrones, setPadrones] = useState();
   const [loading, setLoading] = useState();
 
@@ -73,7 +73,7 @@ const Pagos = () => {
   };
 
   const goBack = () => {
-    this.props.navigation.goBack();
+    props.navigation.goBack();
   };
 
   const _renderItem = ({ item, index }) => (

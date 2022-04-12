@@ -20,7 +20,7 @@ const dataList = [
     name: 'Trámites',
     iconname: 'folder-open',
     enableEntypo: false,
-    navegacion: 'solicitud',
+    navegacion: 'tramites',
   },
   {
     isBlank: false,
