@@ -1,5 +1,5 @@
 import React, { Component} from 'react';
-import {PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback,} from 'react-native';
+import {PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, Alert,} from 'react-native';
 
 import Square from '../components/CardPagos';
 import Header from '../components/Header';
@@ -12,7 +12,8 @@ const dataList = [
     name: 'Pagos',
     iconname: 'wallet',
     enableEntypo: true,
-    navegacion: 'pagos'
+    navegacion: 'pagos',
+    necesitaLogin: false
   },
   {
     isBlank: false,
@@ -21,6 +22,7 @@ const dataList = [
     iconname: 'folder-open',
     enableEntypo: false,
     navegacion: 'tramites',
+    necesitaLogin: false
   },
   {
     isBlank: false,
@@ -28,7 +30,8 @@ const dataList = [
     name: 'Solicitudes',
     iconname: 'file-text',
     enableEntypo: false,
-    navegacion: 'verSolicitudes',
+    navegacion: 'solicitudSelect',
+    necesitaLogin: false
   },
   {
     isBlank: false,
@@ -36,7 +39,8 @@ const dataList = [
     name: 'Directorio',
     iconname: 'book',
     enableEntypo: true,
-    navegacion: 'dirfuncionario'
+    navegacion: 'dirfuncionario',
+    necesitaLogin: false
   },
   {
     isBlank: false,
@@ -45,6 +49,7 @@ const dataList = [
     iconname: 'tasks',
     enableEntypo: true,
     navegacion: 'peticiones',
+    necesitaLogin: false
   },
   {
     isBlank: false,
@@ -53,6 +58,7 @@ const dataList = [
     iconname: 'school',
     enableEntypo: true,
     navegacion: 'oficinaAtencion',
+    necesitaLogin: false
   },
   {
     isBlank: false,
@@ -60,6 +66,7 @@ const dataList = [
     name: 'Facturación',
     iconname: 'id-card-alt',
     enableEntypo: true,
+    necesitaLogin: false
   },
   {
     isBlank: false,
@@ -67,6 +74,7 @@ const dataList = [
     name: 'Otra\nNormatividad',
     iconname: 'file-text',
     enableEntypo: false,
+    necesitaLogin: false
   },
 ];
 //recordatorio para remover la propiedad de enableEntypo
@@ -76,17 +84,20 @@ const dataListSecond = [
     name: 'Mis Adeudos', 
     iconname: 'chart-bar', 
     enableEntypo: true,
+    necesitaLogin: true
   },
   {
     isBlank: false, color: '#767778', 
     name: 'Mis Citas', iconname: 'calendar-alt', 
     enableEntypo: true,
+    necesitaLogin: true
   },
   {
     isBlank: false, color: '#767778', 
     name: 'Mis Trámites', 
     iconname: 'folder-open', 
     enableEntypo: false,
+    necesitaLogin: true
   },
   {
     isBlank: false, 
@@ -94,6 +105,7 @@ const dataListSecond = [
     name: 'Mi Portafolio', 
     iconname: 'folder', 
     enableEntypo: true,
+    necesitaLogin: true
   },
   {
     isBlank: false, 
@@ -101,6 +113,7 @@ const dataListSecond = [
     name: 'Mi buzón', 
     iconname: 'envelope', 
     enableEntypo: true,
+    necesitaLogin: true
   },
 
 ];
@@ -110,6 +123,12 @@ const numColumns = 3;
 const WIDTH = Dimensions.get('window').width;
 
 class MenuInicio extends Component {
+  constructor(props){
+    super(props)
+    this.state={
+      hasSwitchedView:false,
+    }
+  }
 
   formatData = (dataList, numColumns) => {
     const totalRows = Math.floor(dataList.length / numColumns);
@@ -124,8 +143,27 @@ class MenuInicio extends Component {
     return dataList;
   };
 
+  navigateToScreen = (item) =>{
+    if (item.navegacion != null){
+      if (!this.state.hasSwitchedView){
+        this.setState({
+          hasSwitchedView:true
+        },this.props.navigation.push(item.navegacion))
+        setTimeout(() => {
+          this.state.hasSwitchedView=false
+        },1000);
+      }
+    }else{
+      if (item.necesitaLogin){
+        Alert.alert('Aviso','Necesita iniciar sesión para tener acceso a esta opción.')
+      }else{
+        Alert.alert('Aviso','Se está realizando mantenimiento a esta función, favor de intentarlo más tarde.')
+      }
+    }
+  }
+
   _renderItem = ({ item, index }) => (
-    <TouchableWithoutFeedback onPress={() => this.props.navigation.push(item.navegacion)}>
+    <TouchableWithoutFeedback onPress={() => this.navigateToScreen(item)}>
       <View style={{ flex: 1, alignItems: 'center' }}>
         <Square
           col={item.color}

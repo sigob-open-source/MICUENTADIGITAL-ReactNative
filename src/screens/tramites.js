@@ -25,17 +25,31 @@ const WIDTH = Dimensions.get('window').width;
 class Tramites extends Component{
   constructor(props){
     super(props)
-    this.popupRef = React.createRef();
     this.state={
       collapsed: true,
       selectedDependency:null,
       data: null,
-      tramitesMunicipales: null
+      filteredData: [],
+      tramitesMunicipales: null,
+      selectedTramite:null,
+      tramiteDesc:null,
+      tramiteRequisitos:null,
+      department:null
     }
   }
+  popupRef = React.createRef();
+  controller = new AbortController();
+  onShowPopup = (tramite,descTramite,departamento,requisitos) => {
+    if (this.state.tramitesMunicipales!= null)
+    {
+      this.setState({
+        selectedTramite:tramite,
+        tramiteDesc:descTramite,
+        department:departamento,
+        tramiteRequisitos:requisitos,
+      },this.popupRef.show)
+    }
 
-  onShowPopup = () => {
-    this.popupRef.show()
   }
 
   onClosePopup = () => {
@@ -46,17 +60,33 @@ class Tramites extends Component{
     this.getDependencyList()
   }
 
+  componentWillUnmount(){
+    this.controller.abort()
+  }
+  
   getDependencyList = async () =>{
     await http.get('tramites/plantillas-tramites-atencion-ciudadana/?entidad_municipal=1').then(
       (response) => {
         const result = response.data;
-        this.setState({
-          data:result,
-          selectedDependency:result[0].departamentos[0].unidad_operativa.descripcion,
-          tramitesMunicipales:result[0].nombre
-        })
+        if (result.length>0){
+          this.setState({
+            data:result,
+            filteredData:result,
+            selectedDependency:result[0].departamentos[0].unidad_operativa.descripcion,
+            tramitesMunicipales:result[0].nombre
+          })
+        }else{
+          this.setState({
+            selectedDependency:'No hay datos.',
+            tramitesMunicipales:'Sin datos.'
+          })  
+        }
       },
       (error) => {
+        this.setState({
+          selectedDependency:'No se encontraron dependencias.',
+          tramitesMunicipales:'Sin datos.'
+        })  
         console.log(error);
       },
     );
@@ -82,10 +112,15 @@ class Tramites extends Component{
     )
   }
 
-  renderTramite = (item) =>{
-    if (this.state.selectedDependency == item.departamentos[0].unidad_operativa.descripcion){
+  renderTramite = (item,index) =>{
+    if (this.state.selectedDependency == item.departamentos[index].unidad_operativa.descripcion){
       return(
-        <TouchableOpacity>
+        <TouchableOpacity  onPress={()=>this.onShowPopup(
+          item.nombre,
+          item.descripcion,
+          item.departamentos[index].descripcion,
+          item.requisitos)}>
+
           <View style={styles.tramiteView}>
             <Text style={styles.collapsibleText}>{item.nombre}</Text>
           </View>
@@ -96,7 +131,7 @@ class Tramites extends Component{
   }
 
   toggleExpanded = () => {
-    if (this.state.selectedDependency != null){
+    if (this.state.data != null){
       this.setState({ collapsed: !this.state.collapsed });
     }
     
@@ -106,13 +141,26 @@ class Tramites extends Component{
     this.props.navigation.goBack();
   };
 
+  //Buscar un tramite en especifico filtrando dependiendo de lo que se devuelva en el campo de texto
+  searchTramite(tramiteToSearch){
+    if (this.state.data != null){
+      this.setState({
+        filteredData:this.state.data.filter(item=>item.nombre.toLowerCase().includes(tramiteToSearch.toLowerCase()))
+      })
+    }
+  }
+
   render(){
     return (
       <View style={{ flex: 1, height: '100%' }}>
         <View style={{ flex: 1, alignItems: 'center' }}>
           <PopUpTramites 
             ref={(target) => this.popupRef = target}
-            onTouchOutside={this.onClosePopup}         
+            onTouchOutside={this.onClosePopup}
+            nombreTramite={this.state.selectedTramite}
+            descTramite={this.state.tramiteDesc}
+            nombreDepartamento={this.state.department}
+            requisitos={this.state.tramiteRequisitos}
           />
           <Header
             style={styles.header}
@@ -143,26 +191,29 @@ class Tramites extends Component{
             <Collapsible collapsed={this.state.collapsed}>
               <FlatList
                 data={this.state.data}
-                renderItem={({item})=> this.renderItem(item.departamentos[0].unidad_operativa)}
-                keyExtractor={(item) => item.id}
+                renderItem={({item,index})=> this.renderItem(item.departamentos[index].unidad_operativa)}
+                keyExtractor={(item,index) => index.toString()}
               />
             </Collapsible>
           </View>
 
             <Text style={{ 
-              color: 'black', 
-              fontSize: 20, 
+              color: 'black',
+              fontSize: 20,
               fontWeight: '700',
-              marginTop:30,
-            }}> Busqueda </Text>      
+              marginTop:5,
+            }}> Busqueda </Text>
 
             <View style={styles.textInputContainer}>
-                <TextInput style={styles.textInputStyle} placeholder="Buscar..." placeholderTextColor="gray" />
-                <TouchableOpacity onPress={this.onShowPopup} >
-                  <View style={{borderRadius:10,width:46, height:46,justifyContent:'center'}}>
-                    <AntDesign style={{marginRight:10,alignSelf:'flex-end'}}size={25} name='search1' color={'black'} />
-                  </View>
-                </TouchableOpacity>
+              <TextInput style={styles.textInputStyle} 
+                placeholder="Buscar..." 
+                placeholderTextColor="gray" 
+                onChangeText={text=>{this.searchTramite(text)}}
+              />
+              <TouchableOpacity>
+                <View style={{borderRadius:10,width:46, height:46,justifyContent:'center'}}>
+                </View>
+              </TouchableOpacity>
             </View>
             
           <Text style={{ 
@@ -178,11 +229,21 @@ class Tramites extends Component{
               <Loading loading={true}></Loading>
             </View>
           ) : 
-          <FlatList
-          data={this.state.data}
-          renderItem={({item})=> this.renderTramite(item)}
-          keyExtractor={(item) => item.id}
-        />
+          <>
+            {
+              this.state.tramitesMunicipales == 'Sin datos.' ?(
+                <Text style={{color: 'gray'}}>No se encontraron trámites.</Text>
+              ) :
+              
+              <FlatList
+              data={this.state.filteredData}
+              renderItem={({ item, index }) => this.renderTramite(item, index)}
+              keyExtractor={(item, index) => index.toString()} />
+
+            }
+            
+
+          </>
         }
 
         </View>
@@ -242,7 +303,7 @@ const styles = StyleSheet.create({
     elevation: 20,
   },
   textInputContainer: {
-    marginTop: 21,
+    marginTop: 5,
     width: 336,
     height: 46,
     alignSelf: 'center',
@@ -262,6 +323,7 @@ const styles = StyleSheet.create({
   },
   textInputStyle: {
     color: 'black',
+    width:300,
   },
   collapsibleContainer:{
     backgroundColor:'white',
@@ -280,7 +342,7 @@ const styles = StyleSheet.create({
     justifyContent:'space-between',
     width: 336,
     height:45,
-    marginTop:30,
+    marginTop:5,
     borderRadius:10,
     backgroundColor:'white',
     shadowColor: 'black',

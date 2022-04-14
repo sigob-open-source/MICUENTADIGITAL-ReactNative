@@ -1,4 +1,4 @@
-import { StyleSheet,View,TouchableWithoutFeedback, Keyboard} from 'react-native'
+import { StyleSheet,View,TouchableWithoutFeedback, Keyboard, TouchableOpacity} from 'react-native'
 import React, {useState} from 'react'
 import Icon from 'react-native-vector-icons/Octicons';
 import useKeyboard from '../utils/keyboardListener';
@@ -7,6 +7,7 @@ const Footer = props => {
   const closeFromFooter = () =>{
     const {back} = props
     return(back)
+
   }
   
   const [showGoBack, setShowGoBack] = useState(props.showBack);
@@ -27,7 +28,9 @@ const Footer = props => {
               <View style={styles.textContainer}></View>}
 
           </TouchableWithoutFeedback><View style={styles.textContainer}>
+            <TouchableOpacity>
               <Icon size={41} name='people' color="black" />
+            </TouchableOpacity>
             </View><View style={styles.textContainer}></View></>
       ) : 
       <><TouchableWithoutFeedback onPress={Keyboard.dismiss}>
