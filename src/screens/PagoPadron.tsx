@@ -96,7 +96,12 @@ const PagoPadron = ({ route }) => {
 
       <View style={{ justifyContent: 'flex-end', flex: 1, marginBottom: 40 }} />
       <View key={modalKey}>
-        <ModalPago cargos={resultCargos || undefined} />
+        <TouchableWithoutFeedback onPress={() => { (isOpen === false) ? setIsOpen(true) : null; }}>
+          <View style={styles.buttonPrint}>
+            <Text style={styles.text}>Realizar Pago</Text>
+          </View>
+
+        </TouchableWithoutFeedback>
       </View>
 
       <Footer style={styles.footer} />
@@ -177,6 +182,20 @@ const styles = StyleSheet.create({
   },
   button: {
     backgroundColor: 'green',
+  },
+  text: {
+    color: 'white',
+    padding: 5,
+    fontFamily: fonts.bold,
+    textAlign: 'center',
+  },
+  buttonPrint: {
+    backgroundColor: 'green',
+    width: Dimensions.get('window').width * 0.85,
+    borderRadius: 10,
+    borderColor: 'gray',
+    borderWidth: 0.6,
+    marginVertical: 5,
   },
 
 });

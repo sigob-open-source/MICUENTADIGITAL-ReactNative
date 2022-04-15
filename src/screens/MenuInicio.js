@@ -1,7 +1,7 @@
-
-import React, { Component} from 'react';
-import {PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, Alert,} from 'react-native';
-
+import React, { Component } from 'react';
+import {
+  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, Alert,
+} from 'react-native';
 
 import Square from '../components/CardPagos';
 import Header from '../components/Header';
@@ -16,7 +16,7 @@ const dataList = [
     enableEntypo: true,
     navegacion: 'pagos',
 
-    necesitaLogin: false
+    necesitaLogin: false,
   },
   {
     isBlank: false,
@@ -25,7 +25,7 @@ const dataList = [
     iconname: 'folder-open',
     enableEntypo: false,
     navegacion: 'tramites',
-    necesitaLogin: false
+    necesitaLogin: false,
   },
   {
     isBlank: false,
@@ -34,7 +34,7 @@ const dataList = [
     iconname: 'file-text',
     enableEntypo: false,
     navegacion: 'solicitudSelect',
-    necesitaLogin: false
+    necesitaLogin: false,
   },
   {
     isBlank: false,
@@ -44,7 +44,7 @@ const dataList = [
     enableEntypo: true,
     navegacion: 'dirfuncionario',
 
-    necesitaLogin: false
+    necesitaLogin: false,
 
   },
   {
@@ -54,7 +54,7 @@ const dataList = [
     iconname: 'tasks',
     enableEntypo: true,
     navegacion: 'peticiones',
-    necesitaLogin: false
+    necesitaLogin: false,
   },
   {
     isBlank: false,
@@ -63,7 +63,7 @@ const dataList = [
     iconname: 'school',
     enableEntypo: true,
     navegacion: 'oficinaAtencion',
-    necesitaLogin: false
+    necesitaLogin: false,
   },
   {
     isBlank: false,
@@ -71,7 +71,7 @@ const dataList = [
     name: 'Facturación',
     iconname: 'id-card-alt',
     enableEntypo: true,
-    necesitaLogin: false
+    necesitaLogin: false,
   },
   {
     isBlank: false,
@@ -79,7 +79,7 @@ const dataList = [
     name: 'Otra\nNormatividad',
     iconname: 'file-text',
     enableEntypo: false,
-    necesitaLogin: false
+    necesitaLogin: false,
   },
 ];
 // recordatorio para remover la propiedad de enableEntypo
@@ -90,7 +90,7 @@ const dataListSecond = [
     name: 'Mis Adeudos',
     iconname: 'chart-bar',
     enableEntypo: true,
-    necesitaLogin: true
+    necesitaLogin: true,
   },
   {
     isBlank: false,
@@ -98,7 +98,7 @@ const dataListSecond = [
     name: 'Mis Citas',
     iconname: 'calendar-alt',
     enableEntypo: true,
-    necesitaLogin: true
+    necesitaLogin: true,
   },
   {
     isBlank: false,
@@ -106,7 +106,7 @@ const dataListSecond = [
     name: 'Mis Trámites',
     iconname: 'folder-open',
     enableEntypo: false,
-    necesitaLogin: true
+    necesitaLogin: true,
   },
   {
     isBlank: false,
@@ -114,7 +114,7 @@ const dataListSecond = [
     name: 'Mi Portafolio',
     iconname: 'folder',
     enableEntypo: true,
-    necesitaLogin: true
+    necesitaLogin: true,
   },
   {
     isBlank: false,
@@ -122,7 +122,7 @@ const dataListSecond = [
     name: 'Mi buzón',
     iconname: 'envelope',
     enableEntypo: true,
-    necesitaLogin: true
+    necesitaLogin: true,
   },
 
 ];
@@ -132,6 +132,12 @@ const numColumns = 3;
 const WIDTH = Dimensions.get('window').width;
 
 class MenuInicio extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      hasSwitchedView: false,
+    };
+  }
 
   formatData = (dataList, numColumns) => {
     const totalRows = Math.floor(dataList.length / numColumns);
@@ -146,24 +152,22 @@ class MenuInicio extends Component {
     return dataList;
   };
 
-  navigateToScreen = (item) =>{
-    if (item.navegacion != null){
-      if (!this.state.hasSwitchedView){
+  navigateToScreen = (item) => {
+    if (item.navegacion != null) {
+      if (!this.state.hasSwitchedView) {
         this.setState({
-          hasSwitchedView:true
-        },this.props.navigation.push(item.navegacion))
+          hasSwitchedView: true,
+        }, this.props.navigation.push(item.navegacion));
         setTimeout(() => {
-          this.state.hasSwitchedView=false
-        },1000);
+          this.state.hasSwitchedView = false;
+        }, 1000);
       }
-    }else{
-      if (item.necesitaLogin){
-        Alert.alert('Aviso','Necesita iniciar sesión para tener acceso a esta opción.')
-      }else{
-        Alert.alert('Aviso','Se está realizando mantenimiento a esta función, favor de intentarlo más tarde.')
-      }
+    } else if (item.necesitaLogin) {
+      Alert.alert('Aviso', 'Necesita iniciar sesión para tener acceso a esta opción.');
+    } else {
+      Alert.alert('Aviso', 'Se está realizando mantenimiento a esta función, favor de intentarlo más tarde.');
     }
-  }
+  };
 
   _renderItem = ({ item, index }) => (
     <TouchableWithoutFeedback onPress={() => this.navigateToScreen(item)}>
