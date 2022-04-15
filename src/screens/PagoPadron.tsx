@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useState } from 'react';
 import {
-  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, TextInput, Touchable,
+  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, TextInput,
 } from 'react-native';
 
 import { Text } from 'react-native-animatable';
@@ -9,49 +9,60 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 
-import getPadrones from '../services/padrones';
+import {
+  getAdeudoVehiculo, getAdeudoPredio, getAdeudoEmpresa, getAdeudoCiudadano,
+} from '../services/padrones';
 import fonts from '../utils/fonts';
 import http from '../services/http';
 import Adeudo from '../components/Adeudo';
+import ModalPago from '../components/ModalPago';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
   const [searchText, setSearchText] = useState();
+  const [resultCargos, setResultCargos] = useState();
+  const [nameSearch, setNameSearch] = useState();
+  const [newData, setNewData] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
+  const [modalKey, setModalKey] = useState(100);
 
   useEffect(() => {
     setPadron(route.params.padron);
   }, []);
 
   const handleSearch = async () => {
+    setNewData(false);
     console.log(searchText);
     let url;
-    if (padron === 'Ciudadano') url = 'cuentaunicasir/ciudadano-caja/';
-    else if (padron === 'Empresa') url = 'empresas/empresa-caja/';
-    else if (padron === 'Predio') url = 'catastro/predio-caja/';
-    else if (padron === 'Vehicular') url = 'recaudacion/vehiculos-caja/';
-
-    await http.get(url).then(
-      (response) => {
-        const result = response.data;
-        console.log(result);
-      },
-      (error) => {
-        console.log(error);
-      },
-    );
+    let response;
+    if (padron === 'Ciudadano') {
+      response = await getAdeudoCiudadano(searchText);
+      console.log(response);
+      setNameSearch(response.first_name);
+    } else if (padron === 'Empresa') {
+      // response = await getAdeudoEmpresa(searchText);
+      // setNameSearch(response.nombre_comercial);
+    } else if (padron === 'Predio') {
+      // response = await getAdeudoPredio(searchText);
+      // setNameSearch(response?.cuenta_unica_de_predial);
+    } else if (padron === 'Vehicular') {
+      // response = await getAdeudoVehiculo(searchText);
+      // setNameSearch(response?.numero_de_placa);
+    }
+    setResultCargos(response.cargos);
+    setModalKey(modalKey + 1);
+    setNewData(true);
   };
 
-  const getSearch = async (url) => {
-    await http.get(url).then(
-      (response) => {
-        const result = response.data;
-        console.log(result);
-      },
-      (error) => {
-        console.log(error);
-      },
-    );
-  };
+  // const handleAdeudo = () => {
+  //   console.log('poads');
+  //   return (
+  //     resultCargos.cargos.map((cargo) => {
+  //       <Adeudo nombre={nameSearch} padron={padron} cantidad={cargo.importe} />;
+  //     })
+
+  //   );
+  // };
 
   return (
     <View style={styles.container}>
@@ -76,21 +87,21 @@ const PagoPadron = ({ route }) => {
 
       </View>
       <View>
-        <Adeudo padron={padron} nombre="Carlos" cantidad="100" />
-        <Adeudo padron={padron} nombre="Carlos" cantidad="100" />
+        {
+          (newData === true)
+            ? resultCargos.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch} padron={padron} cargo={cargo} />))
+            : null
+        }
       </View>
-      <View style={{ justifyContent: 'flex-end', flex: 1, marginBottom: 40 }}>
-        <TouchableWithoutFeedback>
-          <View style={styles.button}>
-            <Text>
-              HOla
-            </Text>
-          </View>
-        </TouchableWithoutFeedback>
+
+      <View style={{ justifyContent: 'flex-end', flex: 1, marginBottom: 40 }} />
+      <View key={modalKey}>
+        <ModalPago cargos={resultCargos || undefined} />
       </View>
 
       <Footer style={styles.footer} />
     </View>
+
   );
 };
 

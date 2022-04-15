@@ -11,34 +11,6 @@ import Footer from '../components/Footer';
 import http from '../services/http';
 import getPadrones from '../services/padrones';
 
-const dataList = [
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Referendos Vehiculares',
-    iconname: 'car-alt',
-    enableEntypo: true,
-  },
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Nomina',
-    iconname: 'file-invoice-dollar',
-    enableEntypo: true,
-    navegacion: 'solicitud',
-  },
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Prediales',
-    iconname: 'file-signature',
-    enableEntypo: true,
-    navegacion: 'solicitud',
-  },
-];
-
-const numColumns = 3;
-
 const Pagos = (props) => {
   const [padrones, setPadrones] = useState();
   const [listPadrones, setListPadrones] = ([]);
@@ -168,7 +140,7 @@ const styles = StyleSheet.create({
   },
 
   menuContainer: {
-    marginVertical: '3%',
+    marginVertical: '6%',
   },
   textInputContainer: {
     marginVertical: 15,
