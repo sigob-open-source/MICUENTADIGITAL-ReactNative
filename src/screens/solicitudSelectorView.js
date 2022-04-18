@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, View, Text, TextInput, TouchableOpacity,
+  StyleSheet, View, TouchableOpacity,
 } from 'react-native';
 
 import Header from '../components/Header';

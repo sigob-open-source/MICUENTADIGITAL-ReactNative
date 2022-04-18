@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, Alert,
+  StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, Alert,
 } from 'react-native';
 
 import Square from '../components/CardPagos';

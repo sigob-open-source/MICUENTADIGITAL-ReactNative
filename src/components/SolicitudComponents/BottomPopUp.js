@@ -1,4 +1,15 @@
-import {Modal, Dimensions, TouchableWithoutFeedback, StyleSheet, View, Text, TouchableOpacity} from 'react-native';
+import {
+  Modal, 
+  Dimensions, 
+  TouchableWithoutFeedback, 
+  StyleSheet, 
+  View, 
+  Text, 
+  TouchableOpacity,
+  Linking,
+  PermissionsAndroid,
+  Alert
+} from 'react-native';
 import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -30,6 +41,54 @@ class BottomPopUp extends React.Component{
       </TouchableWithoutFeedback>
       )
     }
+    
+  selectImage = () =>{
+    const {pain} = this.props
+    return(pain)
+  }
+  
+  takePicture = () =>{
+    const {pain2} = this.props
+    return(pain2)
+  }
+
+  redirectToSettings = async (selectedOption) =>{
+
+    if (selectedOption == 0){
+      const resultGallery = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+      if (resultGallery == false){
+        Alert.alert(
+         'Alerta',
+         'Debe de proporcionar permisos de almacenamiento para poder acceder a la galería.',
+         [
+           {text: 'Cancelar', style: 'cancel'},
+           {text: 'Ir a configuración de la app', onPress: () => Linking.openSettings()},
+         ],
+         { cancelable: false }
+       );
+      }else{
+        this.props.pain()
+      }
+    }////////////////////////
+    
+    if (selectedOption == 1){
+      const resultCamera = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
+      const resultStorage = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.CAMERA);
+      if (resultCamera == false || resultStorage == false){
+        Alert.alert(
+         'Alerta',
+         'Debe de proporcionar los permisos necesarios para poder acceder a la cámara. (Almacenamiento y Cámara).',
+         [
+           {text: 'Cancelar', style: 'cancel'},
+           {text: 'Ir a configuración de la app', onPress: () => Linking.openSettings()},
+         ],
+         { cancelable: false }
+       );
+      }else{
+        this.props.pain2()
+      }
+    }////////////////////////
+  }
 
   renderTitle = () => {
     const {title} = this.props
@@ -46,16 +105,7 @@ class BottomPopUp extends React.Component{
       </View>
     );
   }
-    
-  selectImage = () =>{
-    const {pain} = this.props
-    return(pain)
-  }
 
-  takePicture = () =>{
-    const {pain2} = this.props
-    return(pain2)
-  }
 
   render(){
     let {show} = this.state
@@ -84,7 +134,7 @@ class BottomPopUp extends React.Component{
 
             {this.renderTitle()}
 
-            <TouchableOpacity onPress={this.selectImage(pain) }onPressOut={this.close}>
+            <TouchableOpacity onPress={()=>this.redirectToSettings(0)} onPressOut={this.close}>
               <View style={styles.optionCard}>
                 <View style={styles.collapsibleContent}>
                   <MaterialCommunityIcons size={40} name='image-frame' color={'black'} />
@@ -93,7 +143,7 @@ class BottomPopUp extends React.Component{
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={this.takePicture(pain2)}onPressOut={this.close}>
+            <TouchableOpacity onPress={()=>this.redirectToSettings(1)} onPressOut={this.close}>
               <View style={styles.optionCard}>
                 <View style={styles.collapsibleContent}>
                   <MaterialCommunityIcons size={40} name='camera-outline' color={'black'} />
