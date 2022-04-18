@@ -17,21 +17,21 @@ const getAdeudoCiudadano = async (search) => {
   let result;
   await http.get(`cuentaunicasir/ciudadano-caja-atencion-ciudadana/?q=${search}`).then(
     (response) => {
-      console.log(response);
       result = response.data[0];
     },
+    (error) => { console.error(error); },
   ).then(async () => {
-    await http.post('cuentaunicasir/consulta-caja-atencion-ciudadana/', {
-      ciudadano: result.id,
-      canal_de_pago: 4,
-      entidad_municipal: 1,
-    }).then((response) => {
-      console.log('data de ciudadano');
-      console.log(response.data);
-      result = response.data[0];
-    }).catch((error) => {
-      console.error(error);
-    });
+    if (result !== undefined && result !== null) {
+      await http.post('cuentaunicasir/consulta-caja-atencion-ciudadana/', {
+        ciudadano: result.id,
+        canal_de_pago: 3,
+        entidad_municipal: 1,
+      }).then((response) => {
+        result = response.data[0];
+      }, (error) => { console.error(error); });
+    } else {
+      result = null;
+    }
   });
   return result;
 };
@@ -43,16 +43,20 @@ const getAdeudoVehiculo = async (search) => {
       console.log(response);
       result = response.data[0];
     },
+    (error) => { console.error(error); },
   ).then(async () => {
-    await http.post('recaudacion/consulta-caja/padron/', {
-      padron: 4,
-      padron_id: result.id || 0,
-    }).then((response) => {
-      console.log('data de vehiculos');
-      result = response.data;
-    }).catch((error) => {
-      console.error(error);
-    });
+    if (result !== undefined && result !== null) {
+      await http.post('cuentaunicasir/consulta-caja-atencion-ciudadana/padron/', {
+        padron_id: result.id,
+        padron: 4,
+        canal_de_pago: 3,
+        entidad_municipal: 1,
+      }).then((response) => {
+        result = response.data[0];
+      }, (error) => { console.error(error); });
+    } else {
+      result = null;
+    }
   });
   return result;
 };
@@ -63,16 +67,20 @@ const getAdeudoPredio = async (search) => {
     (response) => {
       result = response.data[0];
     },
+    (error) => { console.error(error); },
   ).then(async () => {
-    await http.post('recaudacion/consulta-caja/padron/', {
-      padron: 3,
-      padron_id: result.id || 0,
-    }).then((response) => {
-      console.log('data de predios');
-      result = response.data;
-    }).catch((error) => {
-      console.error(error);
-    });
+    if (result !== undefined && result !== null) {
+      await http.post('cuentaunicasir/consulta-caja-atencion-ciudadana/padron/', {
+        padron_id: result.id,
+        padron: 3,
+        canal_de_pago: 3,
+        entidad_municipal: 1,
+      }).then((response) => {
+        result = response.data[0];
+      }, (error) => { console.error(error); });
+    } else {
+      result = null;
+    }
   });
   return result;
 };
@@ -82,21 +90,23 @@ const getAdeudoEmpresa = async (search) => {
   await http.get(`cuentaunicasir/empresas-caja-atencion-ciudadana/?q=${search}`).then(
     (response) => {
       result = response.data[0];
-      console.log('infoem');
-      console.log(response.data);
     },
+    (error) => { console.error(error); },
   ).then(async () => {
-    await http.post('recaudacion/consulta-caja/padron/', {
-      padron: 2,
-      padron_id: result.id,
-    }).then((response) => {
-      console.log('data de empresa');
-      console.log(response.data);
-      result = response.data;
-    }).catch((error) => {
-      console.error(error);
-    });
+    if (result !== undefined && result !== null) {
+      await http.post('cuentaunicasir/consulta-caja-atencion-ciudadana/padron/', {
+        padron_id: result.id,
+        padron: 2,
+        canal_de_pago: 3,
+        entidad_municipal: 1,
+      }).then((response) => {
+        result = response.data;
+      }, (error) => { console.error(error); });
+    } else {
+      result = null;
+    }
   });
+  console.log(result);
   return result;
 };
 

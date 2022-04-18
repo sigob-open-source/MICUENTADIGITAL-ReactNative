@@ -11,12 +11,9 @@ import Footer from '../components/Footer';
 import http from '../services/http';
 import getPadrones from '../services/padrones';
 
-
-
 const numColumns = 3;
 
-const Pagos = props => {
-
+const Pagos = (props) => {
   const [padrones, setPadrones] = useState();
   const [listPadrones, setListPadrones] = ([]);
   const [loading, setLoading] = useState();
@@ -145,6 +142,7 @@ const styles = StyleSheet.create({
   },
 
   menuContainer: {
+    marginHorizontal: 6,
     marginVertical: '6%',
   },
   textInputContainer: {

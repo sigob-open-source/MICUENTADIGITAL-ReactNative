@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useState } from 'react';
 import {
-  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, TextInput,
+  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, TextInput, ActivityIndicator, Alert, ScrollView,
 } from 'react-native';
 
 import { Text } from 'react-native-animatable';
@@ -25,33 +25,53 @@ const PagoPadron = ({ route }) => {
   const [newData, setNewData] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [modalKey, setModalKey] = useState(100);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setPadron(route.params.padron);
   }, []);
 
+  const showAlert = () => Alert.alert(
+    'Problema en la busqueda',
+    'No se encontró nada que concuerde con la busqueda.',
+    [
+      {
+        text: 'Entendido',
+        style: 'cancel',
+      },
+    ],
+  );
+
   const handleSearch = async () => {
+    setIsLoading(true);
     setNewData(false);
-    console.log(searchText);
     let url;
     let response;
     if (padron === 'Ciudadano') {
       response = await getAdeudoCiudadano(searchText);
-      console.log(response);
-      setNameSearch(response.first_name);
+      (response !== null) ? setNameSearch(response.first_name) : null;
     } else if (padron === 'Empresa') {
-      // response = await getAdeudoEmpresa(searchText);
+      response = await getAdeudoEmpresa(searchText);
+      (response !== null) ? setNameSearch(response.nombre_comercial) : null;
       // setNameSearch(response.nombre_comercial);
     } else if (padron === 'Predio') {
-      // response = await getAdeudoPredio(searchText);
+      response = await getAdeudoPredio(searchText);
+      (response !== null) ? setNameSearch(response.cuenta_unica_de_predial) : null;
       // setNameSearch(response?.cuenta_unica_de_predial);
     } else if (padron === 'Vehicular') {
-      // response = await getAdeudoVehiculo(searchText);
+      response = await getAdeudoVehiculo(searchText);
+      (response !== null) ? setNameSearch(response.numero_de_placa) : null;
       // setNameSearch(response?.numero_de_placa);
     }
-    setResultCargos(response.cargos);
+    if (response === null || response === undefined) {
+      setIsLoading(false);
+      showAlert();
+    } else {
+      setResultCargos(response?.cargos);
+      setNewData(true);
+    }
     setModalKey(modalKey + 1);
-    setNewData(true);
+    setIsLoading(false);
   };
 
   // const handleAdeudo = () => {
@@ -86,16 +106,21 @@ const PagoPadron = ({ route }) => {
         </TouchableWithoutFeedback>
 
       </View>
-      <View>
+      <ScrollView>
+
         {
-          (newData === true)
-            ? resultCargos.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch} padron={padron} cargo={cargo} />))
+          (newData === true && resultCargos[0] !== null)
+            ? resultCargos.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch || ''} padron={padron} cargo={cargo} />))
             : null
         }
-      </View>
 
-      <View style={{ justifyContent: 'flex-end', flex: 1, marginBottom: 40 }} />
+        {
+        (isLoading) ? <ActivityIndicator style={styles.loading} size="large" color="#fc9696" /> : null
+      }
+      </ScrollView>
+
       <View key={modalKey}>
+
         <TouchableWithoutFeedback onPress={() => { (isOpen === false) ? setIsOpen(true) : null; }}>
           <View style={styles.buttonPrint}>
             <Text style={styles.text}>Realizar Pago</Text>
@@ -196,6 +221,9 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 0.6,
     marginVertical: 5,
+  },
+  loading: {
+
   },
 
 });
