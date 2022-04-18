@@ -7,6 +7,7 @@ import SolicitudCard from './solicitudComponent';
 import ButtonRequest from './Button';
 import { getTiposDeSolicitudes } from '../../services/api';
 import AccordionView from './accordion';
+import Loading from '../loadingAnimation';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -48,21 +49,25 @@ class ModalSolicitud extends React.Component{
   }
 
   createCard = () => {
-    return this.state.motivos.map((item, index)=>{
-      return(
-          <View key={index} >
-            <AccordionView 
-              close = {this.selectMotivo}
-              parentId = {item.id}
-              motivo = {item.descripcion}
-              sampleSolicitud={'nothing'} 
-              titleText={item.descripcion} 
-              iconName='chart-box-outline'
-            />
-          </View>
-        
-      )
-    })
+    if (this.state.motivos != null){
+      return this.state.motivos.map((item, index)=>{
+        return(
+            
+            <View key={index} >
+              <AccordionView 
+                close = {this.selectMotivo}
+                parentId = {item.id}
+                motivo = {item.descripcion}
+                sampleSolicitud={'nothing'} 
+                titleText={item.descripcion} 
+                iconName='chart-box-outline'
+              />
+            </View>
+          
+        )
+      })     
+    }
+
   }
 //Manda los motivos del modal hacia la pantalla donde se debe de mostrar ya el motivo seleccionado junto con su subcategoría
   selectMotivo = (entidad,motivo,descripcion) => {
@@ -131,7 +136,7 @@ class ModalSolicitud extends React.Component{
               {
                 this.state.renderCard ? (
                   this.createCard()
-                ):null
+                ): <Text style={{alignSelf:'center'}}>Cargando Motivos...</Text>
               }
             </ScrollView>
           </View>
