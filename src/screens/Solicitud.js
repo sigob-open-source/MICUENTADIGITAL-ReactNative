@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import {
-  StyleSheet, 
-  View, 
-  Text, 
-  Dimensions, 
-  TouchableOpacity, 
-  ScrollView, 
+  StyleSheet,
+  View,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+  ScrollView,
   Alert,
   PermissionsAndroid,
-  Linking
+  Linking,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { registrarArchivo, registrarSolicitud } from '../services/api';
@@ -40,14 +40,13 @@ const Solicitud = (props) => {
   const [showMotivo, setShowMotivo] = useState(false);
   const [entidadMunicipalId, setEntidadMunicipalId] = useState(null);
   const [archivo, setArchivo] = useState(null);
-  const [hasSwitchedView, setHasSwitchedView] = useState(false)
+  const [hasSwitchedView, setHasSwitchedView] = useState(false);
 
   const submit = async () => {
-    //Validar que el usuario llenó toda la información necesaria para poedr mandar la solicitufd
-    if ((location == 'Sin locacion') || (archivo == null) || (motivo_de_la_solicitud === null) || (comment === 'Sin comentario.' || comment === '')){
-      Alert.alert('Registro fallido', 'Hacen falta uno o más campos, favor de revisar su Solicitud.')
-    }
-    else{
+    // Validar que el usuario llenó toda la información necesaria para poedr mandar la solicitufd
+    if ((location == 'Sin locacion') || (archivo == null) || (motivo_de_la_solicitud === null) || (comment === 'Sin comentario.' || comment === '')) {
+      Alert.alert('Registro fallido', 'Hacen falta uno o más campos, favor de revisar su Solicitud.');
+    } else {
       const response = await registrarSolicitud(
         comment,
         latitud,
@@ -64,13 +63,12 @@ const Solicitud = (props) => {
           response.seguimientos[0].archivos.push(responseFile);
         }
         console.log(JSON.stringify(response, null, 2));
-  
+
         Alert.alert('Registro existoso', 'Su solicitud ha sido procesada con éxito, pronto recibirá informes de su solicitud.');
       } else {
         Alert.alert('Error', 'Ha ocurrido un error, su solicitud no pudo ser registrada. Intente más tarde.');
       }
     }
-
   };
 
   const imageToParent = (imageData) => {
@@ -94,22 +92,20 @@ const Solicitud = (props) => {
     setLongitud(longitud);
   };
 
-  //Evita que se puedan abrir varios modales al spamear los botones
+  // Evita que se puedan abrir varios modales al spamear los botones
   const openModal = (type) => {
-    if (!hasSwitchedView){
-      setHasSwitchedView(true)
-      if (type == 0){
-        onShowCommentPopup()
-      }else{
+    if (!hasSwitchedView) {
+      setHasSwitchedView(true);
+      if (type == 0) {
+        onShowCommentPopup();
+      } else {
         onShowMapPopup();
       }
       setTimeout(() => {
-        setHasSwitchedView(false)
+        setHasSwitchedView(false);
       }, 1000);
     }
-
-  }
-  
+  };
 
   const onShowPopup = () => {
     popupRef.show();
@@ -126,7 +122,7 @@ const Solicitud = (props) => {
   const onCloseCommentPopup = () => {
     popupRef2.close();
   };
-  
+
   const onShowMapPopup = async () => {
     popupRef3.show();
   };
@@ -190,34 +186,33 @@ const Solicitud = (props) => {
 
           <CardSolicitud onPassImage={imageToParent} openMap={onShowMapPopup} getText={comment} getLocation={location} />
 
-          <TouchableOpacity onPress={()=>openModal(0)}>
+          <TouchableOpacity onPress={() => openModal(0)}>
             <ButtonRequest texto="Cambiar Comentario" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>openModal(1)}>
+          <TouchableOpacity onPress={() => openModal(1)}>
             <ButtonRequest texto="Cambiar Dirección" />
           </TouchableOpacity>
 
-          
-            <View style={styles.sendRequestGeneralContainer}>
-              <TouchableOpacity onPress={submit}>
-                <View style={styles.sendRequestStyle}>
-                
-                  <View style={styles.sendRequestContainer}>
-                    <Text style={{
-                      color: 'black',
-                      fontSize: 20,
-                      fontWeight: '500',
-                    }}
-                    >
-                      Enviar Solicitud
-                    </Text>
-                  </View>
-                  
+          <View style={styles.sendRequestGeneralContainer}>
+            <TouchableOpacity onPress={submit}>
+              <View style={styles.sendRequestStyle}>
+
+                <View style={styles.sendRequestContainer}>
+                  <Text style={{
+                    color: 'black',
+                    fontSize: 20,
+                    fontWeight: '500',
+                  }}
+                  >
+                    Enviar Solicitud
+                  </Text>
                 </View>
-              </TouchableOpacity>
-            </View>
-          
+
+              </View>
+            </TouchableOpacity>
+          </View>
+
         </View>
 
       </ScrollView>
@@ -336,7 +331,7 @@ const styles = StyleSheet.create({
   collapsibleContent: {
     marginLeft: '3%',
     flexDirection: 'row',
-    justifyContent:'center',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   collapsibleText: {

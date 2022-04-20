@@ -23,10 +23,16 @@ const Pagos = (props) => {
   }, []);
 
   const getPadronesList = async () => {
+    let data = [];
     await http.get('catalogos/padrones/').then(
       (response) => {
         const result = response.data;
-        setPadrones(result);
+        result.map((padron, index) => {
+          if (typeof (padron) === 'object') {
+            (padron?.descripcion !== 'Todo') ? data = [...data, padron] : null;
+          }
+        });
+        setPadrones(data);
         console.log(padrones);
       },
       (error) => {

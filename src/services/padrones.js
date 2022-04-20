@@ -13,11 +13,26 @@ const getPadrones = async () => {
   );
 };
 
-const getAdeudoCiudadano = async (search) => {
+const getAdeudoCiudadano = async (search, advanceSearch) => {
+  let urlEndpoint = 'cuentaunicasir/ciudadano-caja-atencion-ciudadana/';
+  console.log(`busqueda igual a ${search}`);
+  urlEndpoint = `${urlEndpoint}`
+  + `?q=${search || ''}`
+  + `&clave_ciudadana=${advanceSearch?.clave_ciudadana || ''}`
+  + `&first_name=${advanceSearch?.first_name || ''}`
+  + `&last_name=${advanceSearch?.last_name || ''}`
+  + `&second_last_name=${advanceSearch?.second_last_name || ''}`
+  + `&email=${advanceSearch?.email || ''}`
+  + `&numero_de_celular=${advanceSearch?.numero_de_celular || ''}`
+  + `&CURP=${advanceSearch?.CURP || ''}`
+  + `&RFC=${advanceSearch?.RFC || ''}`;
+  console.log(urlEndpoint);
   let result;
-  await http.get(`cuentaunicasir/ciudadano-caja-atencion-ciudadana/?q=${search}`).then(
+  await http.get(urlEndpoint).then(
     (response) => {
       result = response.data[0];
+      console.log('la primera respuesta');
+      console.log(response);
     },
     (error) => { console.error(error); },
   ).then(async () => {
@@ -85,9 +100,19 @@ const getAdeudoPredio = async (search) => {
   return result;
 };
 
-const getAdeudoEmpresa = async (search) => {
+const getAdeudoEmpresa = async (search, advanceSearch) => {
+  let urlEndpoint = 'cuentaunicasir/empresas-caja-atencion-ciudadana/';
+  urlEndpoint = `${urlEndpoint}`
+  + `&razon_social=${advanceSearch?.razon_social || ''}`
+  + `&nombre_comercial=${advanceSearch?.nombre_comercial || ''}`
+  + `&pagina_web=${advanceSearch?.pagina_web || ''}`
+  + `&RFC=${advanceSearch?.RFC || ''}`
+  + `&tipo_de_establecimiento=${advanceSearch?.tipo_de_establecimiento || ''}`
+  + `&domicilio_fiscal__codigo_postal=${advanceSearch?.codigo_postal || ''}`
+  + `&domicilio_fiscal__calle_principal=${advanceSearch?.calle_principal || ''}`
+  + `&domicilio_fiscal__numero_exterior=${advanceSearch?.numero_exterior || ''}`;
   let result;
-  await http.get(`cuentaunicasir/empresas-caja-atencion-ciudadana/?q=${search}`).then(
+  await http.get(urlEndpoint).then(
     (response) => {
       result = response.data[0];
     },

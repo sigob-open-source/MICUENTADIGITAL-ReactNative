@@ -8,6 +8,7 @@ import axios from 'axios';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import BusquedaAvanzadaCiudadano from '../components/SolicitudComponents/BusquedaAvanzadaCiudadano';
 
 import {
   getAdeudoVehiculo, getAdeudoPredio, getAdeudoEmpresa, getAdeudoCiudadano,
@@ -16,10 +17,11 @@ import fonts from '../utils/fonts';
 import http from '../services/http';
 import Adeudo from '../components/Adeudo';
 import ModalPago from '../components/ModalPago';
+import BusquedaAvanzadaEmpresa from '../components/SolicitudComponents/BusquedaAvanzadaEmpresa';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
-  const [searchText, setSearchText] = useState();
+  const [searchText, setSearchText] = useState('de');
   const [resultCargos, setResultCargos] = useState();
   const [nameSearch, setNameSearch] = useState();
   const [newData, setNewData] = useState(false);
@@ -42,24 +44,23 @@ const PagoPadron = ({ route }) => {
     ],
   );
 
-  const handleSearch = async () => {
+  const handleSearch = async (formData) => {
     setIsLoading(true);
     setNewData(false);
-    let url;
     let response;
     if (padron === 'Ciudadano') {
-      response = await getAdeudoCiudadano(searchText);
+      response = await getAdeudoCiudadano(searchText, formData);
       (response !== null) ? setNameSearch(response.first_name) : null;
     } else if (padron === 'Empresa') {
-      response = await getAdeudoEmpresa(searchText);
+      response = await getAdeudoEmpresa(searchText, formData);
       (response !== null) ? setNameSearch(response.nombre_comercial) : null;
       // setNameSearch(response.nombre_comercial);
     } else if (padron === 'Predio') {
-      response = await getAdeudoPredio(searchText);
+      response = await getAdeudoPredio(searchText, formData);
       (response !== null) ? setNameSearch(response.cuenta_unica_de_predial) : null;
       // setNameSearch(response?.cuenta_unica_de_predial);
     } else if (padron === 'Vehicular') {
-      response = await getAdeudoVehiculo(searchText);
+      response = await getAdeudoVehiculo(searchText, formData);
       (response !== null) ? setNameSearch(response.numero_de_placa) : null;
       // setNameSearch(response?.numero_de_placa);
     }
@@ -104,7 +105,12 @@ const PagoPadron = ({ route }) => {
             />
           </View>
         </TouchableWithoutFeedback>
-
+        {
+          (padron === 'Ciudadano') ? <BusquedaAvanzadaCiudadano onSearch={handleSearch} /> : null
+        }
+        {
+          (padron === 'Empresa') ? <BusquedaAvanzadaEmpresa onSearch={handleSearch} /> : null
+        }
       </View>
       <ScrollView>
 
@@ -127,6 +133,7 @@ const PagoPadron = ({ route }) => {
           </View>
 
         </TouchableWithoutFeedback>
+
       </View>
 
       <Footer style={styles.footer} />
@@ -202,6 +209,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
     height: 46,
     padding: 5,
+    paddingHorizontal: 8,
+
+  },
+  iconAvanzadoContainer: {
+    backgroundColor: '#79142A',
+    height: 46,
+    justifyContent: 'center',
+    paddingHorizontal: 8,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
   },
