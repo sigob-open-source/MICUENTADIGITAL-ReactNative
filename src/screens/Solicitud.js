@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
   StyleSheet, 
   View, 
@@ -7,11 +7,10 @@ import {
   TouchableOpacity, 
   ScrollView, 
   Alert,
-  PermissionsAndroid,
-  Linking
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { registrarArchivo, registrarSolicitud } from '../services/api';
+import axios from 'axios';
 
 import ModalSolicitud from '../components/SolicitudComponents/ModalSolicitud';
 import ComentarioModal from '../components/SolicitudComponents/ComentariosModal';
@@ -20,14 +19,16 @@ import { MapaModal } from '../components/SolicitudComponents/MapaModal';
 import CardSolicitud from '../components/SolicitudComponents/CardSolicitud';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ConfirmacionPopUp from '../components/SolicitudComponents/confirmacionPopUp';
 import ButtonRequest from '../components/SolicitudComponents/Button';
 
 const WIDTH = Dimensions.get('window').width;
 
-const Solicitud = (props) => {
+const Solicitud = props => {
   let popupRef = React.createRef();
   let popupRef2 = React.createRef();
   let popupRef3 = React.createRef();
+  let popupRef4 = React.createRef();
 
   const [comment, setComment] = useState('Sin comentario.');
   const [location, setLocation] = useState('Sin locación');
@@ -39,15 +40,19 @@ const Solicitud = (props) => {
   const [submotivoDesc, setSubMotivoDesc] = useState(null);
   const [showMotivo, setShowMotivo] = useState(false);
   const [entidadMunicipalId, setEntidadMunicipalId] = useState(null);
-  const [archivo, setArchivo] = useState(null);
+  const [archivo, setArchivo] = useState([]);
   const [hasSwitchedView, setHasSwitchedView] = useState(false)
+  const [camposFaltantes, setCamposFaltantes] = useState([])
+
+  useEffect(() => {
+    onShowPopup()
+  }, []);
 
   const submit = async () => {
+    onCloseConfirmationPopUp()
     //Validar que el usuario llenó toda la información necesaria para poedr mandar la solicitufd
-    if ((location == 'Sin locacion') || (archivo == null) || (motivo_de_la_solicitud === null) || (comment === 'Sin comentario.' || comment === '')){
-      Alert.alert('Registro fallido', 'Hacen falta uno o más campos, favor de revisar su Solicitud.')
-    }
-    else{
+
+      const image = archivo
       const response = await registrarSolicitud(
         comment,
         latitud,
@@ -58,19 +63,23 @@ const Solicitud = (props) => {
       if (response) {
         const responseFile = await registrarArchivo(
           response.seguimientos[0].id,
-          archivo,
+          image,
         );
         if (responseFile) {
           response.seguimientos[0].archivos.push(responseFile);
         }
         console.log(JSON.stringify(response, null, 2));
   
-        Alert.alert('Registro existoso', 'Su solicitud ha sido procesada con éxito, pronto recibirá informes de su solicitud.');
+        Alert.alert(
+          'Registro existoso', 
+          'Su solicitud ha sido procesada con éxito, pronto recibirá informes de su solicitud.',
+          [
+            {text:'Aceptar', onPress: () => props.navigation.navigate('verSolicitudes')}
+          ],
+        );
       } else {
         Alert.alert('Error', 'Ha ocurrido un error, su solicitud no pudo ser registrada. Intente más tarde.');
       }
-    }
-
   };
 
   const imageToParent = (imageData) => {
@@ -100,16 +109,35 @@ const Solicitud = (props) => {
       setHasSwitchedView(true)
       if (type == 0){
         onShowCommentPopup()
-      }else{
+      }
+      else if (type == 2){
+        onShowPopup();
+      }
+      else{
         onShowMapPopup();
       }
       setTimeout(() => {
         setHasSwitchedView(false)
-      }, 1000);
+      }, 2000);
     }
 
   }
   
+  const onShowConfirmationPopUp = () =>{
+    if ((location == 'Sin locacion') || (archivo == null) || (motivo_de_la_solicitud === null) || (comment === 'Sin comentario.' || comment === '')){
+      Alert.alert(
+        'Registro fallido', 
+        'Hacen falta uno o más campos, favor de revisar la solicitud.'
+        )
+    }else{
+      popupRef4.show()
+    }
+    
+  }
+
+  const onCloseConfirmationPopUp = () =>{
+    popupRef4.close()
+  }
 
   const onShowPopup = () => {
     popupRef.show();
@@ -174,7 +202,7 @@ const Solicitud = (props) => {
       <ScrollView contentContainerStyle={{ padding: 10, paddingHorizontal: 0 }}>
         <View style={{ flex: 1, marginTop: 9, marginHorizontal: '2%' }}>
 
-          <TouchableOpacity onPress={onShowPopup}>
+          <TouchableOpacity onPress={()=>openModal(2)}>
             <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow />
           </TouchableOpacity>
           {
@@ -188,6 +216,15 @@ const Solicitud = (props) => {
             ) : null
           }
 
+          <ConfirmacionPopUp 
+            ref={(target) => popupRef4 = target}
+            onTouchOutside={onClosePopup}
+            nombreSolicitud={motivoDesc} 
+            comentario={comment} 
+            ubicacion={location} 
+            confirmacion={submit}
+          />
+
           <CardSolicitud onPassImage={imageToParent} openMap={onShowMapPopup} getText={comment} getLocation={location} />
 
           <TouchableOpacity onPress={()=>openModal(0)}>
@@ -200,7 +237,7 @@ const Solicitud = (props) => {
 
           
             <View style={styles.sendRequestGeneralContainer}>
-              <TouchableOpacity onPress={submit}>
+              <TouchableOpacity onPress={onShowConfirmationPopUp}>
                 <View style={styles.sendRequestStyle}>
                 
                   <View style={styles.sendRequestContainer}>
