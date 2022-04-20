@@ -11,12 +11,9 @@ import Footer from '../components/Footer';
 import http from '../services/http';
 import getPadrones from '../services/padrones';
 
-
-
 const numColumns = 3;
 
-const Pagos = props => {
-
+const Pagos = (props) => {
   const [padrones, setPadrones] = useState();
   const [listPadrones, setListPadrones] = ([]);
   const [loading, setLoading] = useState();
@@ -26,10 +23,16 @@ const Pagos = props => {
   }, []);
 
   const getPadronesList = async () => {
+    let data = [];
     await http.get('catalogos/padrones/').then(
       (response) => {
         const result = response.data;
-        setPadrones(result);
+        result.map((padron, index) => {
+          if (typeof (padron) === 'object') {
+            (padron?.descripcion !== 'Todo') ? data = [...data, padron] : null;
+          }
+        });
+        setPadrones(data);
         console.log(padrones);
       },
       (error) => {
@@ -145,6 +148,7 @@ const styles = StyleSheet.create({
   },
 
   menuContainer: {
+    marginHorizontal: 6,
     marginVertical: '6%',
   },
   textInputContainer: {

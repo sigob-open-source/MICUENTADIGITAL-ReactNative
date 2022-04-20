@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useState } from 'react';
 import {
-  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, TextInput,
+  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, TextInput, ActivityIndicator, Alert, ScrollView,
 } from 'react-native';
 
 import { Text } from 'react-native-animatable';
@@ -8,6 +8,7 @@ import axios from 'axios';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import BusquedaAvanzadaCiudadano from '../components/SolicitudComponents/BusquedaAvanzadaCiudadano';
 
 import {
   getAdeudoVehiculo, getAdeudoPredio, getAdeudoEmpresa, getAdeudoCiudadano,
@@ -16,42 +17,62 @@ import fonts from '../utils/fonts';
 import http from '../services/http';
 import Adeudo from '../components/Adeudo';
 import ModalPago from '../components/ModalPago';
+import BusquedaAvanzadaEmpresa from '../components/SolicitudComponents/BusquedaAvanzadaEmpresa';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
-  const [searchText, setSearchText] = useState();
+  const [searchText, setSearchText] = useState('de');
   const [resultCargos, setResultCargos] = useState();
   const [nameSearch, setNameSearch] = useState();
   const [newData, setNewData] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [modalKey, setModalKey] = useState(100);
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
     setPadron(route.params.padron);
   }, []);
 
-  const handleSearch = async () => {
+  const showAlert = () => Alert.alert(
+    'Problema en la busqueda',
+    'No se encontró nada que concuerde con la busqueda.',
+    [
+      {
+        text: 'Entendido',
+        style: 'cancel',
+      },
+    ],
+  );
+
+  const handleSearch = async (formData) => {
+    setIsLoading(true);
     setNewData(false);
-    console.log(searchText);
-    let url;
     let response;
     if (padron === 'Ciudadano') {
-      response = await getAdeudoCiudadano(searchText);
-      console.log(response);
-      setNameSearch(response.first_name);
+      response = await getAdeudoCiudadano(searchText, formData);
+      (response !== null) ? setNameSearch(response.first_name) : null;
     } else if (padron === 'Empresa') {
-      // response = await getAdeudoEmpresa(searchText);
+      response = await getAdeudoEmpresa(searchText, formData);
+      (response !== null) ? setNameSearch(response.nombre_comercial) : null;
       // setNameSearch(response.nombre_comercial);
     } else if (padron === 'Predio') {
-      // response = await getAdeudoPredio(searchText);
+      response = await getAdeudoPredio(searchText, formData);
+      (response !== null) ? setNameSearch(response.cuenta_unica_de_predial) : null;
       // setNameSearch(response?.cuenta_unica_de_predial);
     } else if (padron === 'Vehicular') {
-      // response = await getAdeudoVehiculo(searchText);
+      response = await getAdeudoVehiculo(searchText, formData);
+      (response !== null) ? setNameSearch(response.numero_de_placa) : null;
       // setNameSearch(response?.numero_de_placa);
     }
-    setResultCargos(response.cargos);
+    if (response === null || response === undefined) {
+      setIsLoading(false);
+      showAlert();
+    } else {
+      setResultCargos(response?.cargos);
+      setNewData(true);
+    }
     setModalKey(modalKey + 1);
-    setNewData(true);
+    setIsLoading(false);
   };
 
   // const handleAdeudo = () => {
@@ -84,24 +105,35 @@ const PagoPadron = ({ route }) => {
             />
           </View>
         </TouchableWithoutFeedback>
-
-      </View>
-      <View>
         {
-          (newData === true)
-            ? resultCargos.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch} padron={padron} cargo={cargo} />))
-            : null
+          (padron === 'Ciudadano') ? <BusquedaAvanzadaCiudadano onSearch={handleSearch} /> : null
+        }
+        {
+          (padron === 'Empresa') ? <BusquedaAvanzadaEmpresa onSearch={handleSearch} /> : null
         }
       </View>
+      <ScrollView>
 
-      <View style={{ justifyContent: 'flex-end', flex: 1, marginBottom: 40 }} />
+        {
+          (newData === true && resultCargos[0] !== null)
+            ? resultCargos.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch || ''} padron={padron} cargo={cargo} />))
+            : null
+        }
+
+        {
+        (isLoading) ? <ActivityIndicator style={styles.loading} size="large" color="#fc9696" /> : null
+      }
+      </ScrollView>
+
       <View key={modalKey}>
+
         <TouchableWithoutFeedback onPress={() => { (isOpen === false) ? setIsOpen(true) : null; }}>
           <View style={styles.buttonPrint}>
             <Text style={styles.text}>Realizar Pago</Text>
           </View>
 
         </TouchableWithoutFeedback>
+
       </View>
 
       <Footer style={styles.footer} />
@@ -177,6 +209,14 @@ const styles = StyleSheet.create({
     backgroundColor: 'gray',
     height: 46,
     padding: 5,
+    paddingHorizontal: 8,
+
+  },
+  iconAvanzadoContainer: {
+    backgroundColor: '#79142A',
+    height: 46,
+    justifyContent: 'center',
+    paddingHorizontal: 8,
     borderTopRightRadius: 10,
     borderBottomRightRadius: 10,
   },
@@ -196,6 +236,9 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     borderWidth: 0.6,
     marginVertical: 5,
+  },
+  loading: {
+
   },
 
 });

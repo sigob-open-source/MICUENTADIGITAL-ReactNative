@@ -1,12 +1,14 @@
 import React, { useState,useEffect } from 'react';
 import {
-  StyleSheet, 
-  View, 
-  Text, 
-  Dimensions, 
-  TouchableOpacity, 
-  ScrollView, 
+  StyleSheet,
+  View,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+  ScrollView,
   Alert,
+  PermissionsAndroid,
+  Linking,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { registrarArchivo, registrarSolicitud } from '../services/api';
@@ -80,6 +82,7 @@ const Solicitud = props => {
       } else {
         Alert.alert('Error', 'Ha ocurrido un error, su solicitud no pudo ser registrada. Intente más tarde.');
       }
+
   };
 
   const imageToParent = (imageData) => {
@@ -103,8 +106,9 @@ const Solicitud = props => {
     setLongitud(longitud);
   };
 
-  //Evita que se puedan abrir varios modales al spamear los botones
+  // Evita que se puedan abrir varios modales al spamear los botones
   const openModal = (type) => {
+
     if (!hasSwitchedView){
       setHasSwitchedView(true)
       if (type == 0){
@@ -139,6 +143,7 @@ const Solicitud = props => {
     popupRef4.close()
   }
 
+
   const onShowPopup = () => {
     popupRef.show();
   };
@@ -154,7 +159,7 @@ const Solicitud = props => {
   const onCloseCommentPopup = () => {
     popupRef2.close();
   };
-  
+
   const onShowMapPopup = async () => {
     popupRef3.show();
   };
@@ -227,11 +232,11 @@ const Solicitud = props => {
 
           <CardSolicitud onPassImage={imageToParent} openMap={onShowMapPopup} getText={comment} getLocation={location} />
 
-          <TouchableOpacity onPress={()=>openModal(0)}>
+          <TouchableOpacity onPress={() => openModal(0)}>
             <ButtonRequest texto="Cambiar Comentario" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={()=>openModal(1)}>
+          <TouchableOpacity onPress={() => openModal(1)}>
             <ButtonRequest texto="Cambiar Dirección" />
           </TouchableOpacity>
 
@@ -251,10 +256,13 @@ const Solicitud = props => {
                     </Text>
                   </View>
                   
+
                 </View>
-              </TouchableOpacity>
-            </View>
-          
+
+              </View>
+            </TouchableOpacity>
+          </View>
+
         </View>
 
       </ScrollView>
@@ -373,7 +381,7 @@ const styles = StyleSheet.create({
   collapsibleContent: {
     marginLeft: '3%',
     flexDirection: 'row',
-    justifyContent:'center',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   collapsibleText: {
