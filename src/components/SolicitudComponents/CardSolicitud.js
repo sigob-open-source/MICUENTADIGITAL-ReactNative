@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect  } from 'react';
 import {
   StyleSheet, 
   Text, 
@@ -17,7 +17,11 @@ import BottomPopUp from './BottomPopUp';
 const CardSolicitud = (props) => {
   let popupRef = React.createRef();
   const onShowPopup = () => {
-    popupRef.show();
+    console.log(props.timeout)
+    if (props.timeout == true){
+      popupRef.show();
+    }
+    
   };
   const onClosePopup = () => {
     popupRef.close();
@@ -28,6 +32,7 @@ const CardSolicitud = (props) => {
   const [changeTextImage, setChangeTextImage] = useState(true);
   const [image, setImage] = useState('../../assets/imagenes/none.jpg');
   const [nombreArchivo, setNombreArchivo] = useState('');
+  const [archivo, setArchivo] = useState(null)
 
   const normalizeObject = (file) => ({
     uri: file.path,
@@ -36,8 +41,16 @@ const CardSolicitud = (props) => {
     size: file.size,
   });
 
-  const passImage = async (archivo) => {
-    const foto = await archivo;
+  useEffect(() => {
+    if (props.timeout == true){onClosePopup()}
+
+    if (archivo != null) {
+      passImage()
+    }
+  }, [archivo]);
+  
+  const passImage = () => {
+    console.log(archivo)
     props.onPassImage(archivo);
   };
 
@@ -50,12 +63,12 @@ const CardSolicitud = (props) => {
         multiple: false,
         useFrontCamera: false,
       });
+      setArchivo(normalizeObject(img));
       setShowImage(true);
       setImage(img.path);
       setChangeTextImage(false);
       setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined));
       setShouldShow(false);
-      passImage(normalizeObject(img));
     } catch (error) {
       console.error(error);
     }
@@ -70,22 +83,16 @@ const CardSolicitud = (props) => {
         multiple: false,
         useFrontCamera: false,
       });
+      setArchivo(normalizeObject(img));
       setShowImage(true);
       setImage(img.path);
       setChangeTextImage(false);
       setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined));
       setShouldShow(false);
-
-      passImage(normalizeObject(img));
     } catch (error) {
       
     }
   };
-
-  const openMap = () => {
-    console.log("I should be opening the FUCKING map")
-    props.openMap
-  }
 
   return (
     <View>
