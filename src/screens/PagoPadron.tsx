@@ -1,23 +1,23 @@
 import React, { Component, useEffect, useState } from 'react';
 import {
-  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, TextInput, ActivityIndicator, Alert, ScrollView,
+  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, TextInput, ActivityIndicator, Alert, ScrollView,Text
 } from 'react-native';
 
-import { Text } from 'react-native-animatable';
-import axios from 'axios';
+import fonts from '../utils/fonts';
 import Icon from 'react-native-vector-icons/FontAwesome';
+
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import BusquedaAvanzadaCiudadano from '../components/SolicitudComponents/BusquedaAvanzadaCiudadano';
+import BusquedaAvanzadaCiudadano from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaCiudadano';
+import BusquedaAvanzadaEmpresa from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaEmpresa';
+import BusquedaAvanzadaPredio from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaPredio';
+import BusquedaAvanzadaVehiculo from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaVehiculo';
+import Adeudo from '../components/Adeudo';
 
 import {
   getAdeudoVehiculo, getAdeudoPredio, getAdeudoEmpresa, getAdeudoCiudadano,
 } from '../services/padrones';
-import fonts from '../utils/fonts';
-import http from '../services/http';
-import Adeudo from '../components/Adeudo';
-import ModalPago from '../components/ModalPago';
-import BusquedaAvanzadaEmpresa from '../components/SolicitudComponents/BusquedaAvanzadaEmpresa';
+
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
@@ -110,6 +110,12 @@ const PagoPadron = ({ route }) => {
         }
         {
           (padron === 'Empresa') ? <BusquedaAvanzadaEmpresa onSearch={handleSearch} /> : null
+        }
+        {
+          (padron === 'Predio') ? <BusquedaAvanzadaPredio onSearch={handleSearch} /> : null
+        }
+        {
+          (padron === 'Vehicular') ? <BusquedaAvanzadaVehiculo onSearch={handleSearch} /> : null
         }
       </View>
       <ScrollView>

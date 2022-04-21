@@ -1,6 +1,7 @@
 import http from './http';
 
 const getPadrones = async () => {
+
   await http.get('catalogos/padrones/').then(
     (response) => {
       const result = response.data;
@@ -15,7 +16,6 @@ const getPadrones = async () => {
 
 const getAdeudoCiudadano = async (search, advanceSearch) => {
   let urlEndpoint = 'cuentaunicasir/ciudadano-caja-atencion-ciudadana/';
-  console.log(`busqueda igual a ${search}`);
   urlEndpoint = `${urlEndpoint}`
   + `?q=${search || ''}`
   + `&clave_ciudadana=${advanceSearch?.clave_ciudadana || ''}`
@@ -26,7 +26,6 @@ const getAdeudoCiudadano = async (search, advanceSearch) => {
   + `&numero_de_celular=${advanceSearch?.numero_de_celular || ''}`
   + `&CURP=${advanceSearch?.CURP || ''}`
   + `&RFC=${advanceSearch?.RFC || ''}`;
-  console.log(urlEndpoint);
   let result;
   await http.get(urlEndpoint).then(
     (response) => {
@@ -52,6 +51,15 @@ const getAdeudoCiudadano = async (search, advanceSearch) => {
 };
 
 const getAdeudoVehiculo = async (search) => {
+  let urlEndpoint = 'recaudacion/vehiculos-caja/';
+  urlEndpoint = `${urlEndpoint}`
+  + `?q=${search || ''}`
+  + `&numero_de_placa=${advanceSearch?.numero_de_placa || ''}`
+  + `&tipo_de_vehiculo=${advanceSearch?.tipo_de_vehiculo || ''}`
+  + `&linea=${advanceSearch?.linea || ''}`
+  + `&clase_del_vehiculo=${advanceSearch?.clase_del_vehiculo || ''}`
+  + `&servicio=${advanceSearch?.servicio || ''}`
+  + `&estatus_del_vehiculo=${advanceSearch?.estatus_del_vehiculo || ''}`;
   let result;
   await http.get(`recaudacion/vehiculos-caja/?q=${search}`).then(
     (response) => {
@@ -76,9 +84,27 @@ const getAdeudoVehiculo = async (search) => {
   return result;
 };
 
-const getAdeudoPredio = async (search) => {
+const getAdeudoPredio = async (search, advanceSearch) => {
+  let urlEndpoint = `catastro/predio-caja/`;
+  urlEndpoint = `${urlEndpoint}`
+  + `?q=${search}`
+  + `&razon_social=${advanceSearch?.razon_social || ''}`
+  + `&nombre_comercial=${advanceSearch?.nombre_comercial || ''}`
+  + `&pagina_web=${advanceSearch?.pagina_web || ''}`
+  + `&RFC=${advanceSearch?.RFC || ''}`
+  + `&tipo_de_establecimiento=${advanceSearch?.tipo_de_establecimiento || ''}`
+  + `&domicilio_fiscal__codigo_postal=${advanceSearch?.codigo_postal || ''}`
+  + `&domicilio_fiscal__calle_principal=${advanceSearch?.calle_principal || ''}`
+  + `&domicilio_fiscal__numero_exterior=${advanceSearch?.numero_exterior || ''}`;
+  + `&cuenta_unica_de_predial=${advanceSearch?.cuenta_unica_de_predial || ''}`
+  + `&CURT=${advanceSearch?.CURT || ''}`
+  + `&clave_catastral_estandar=${advanceSearch?.clave_catastral_estandar || ''}`
+  + `&clave_catastral_municipal=${advanceSearch?.clave_catastral_municipal || ''}`
+  + `&direccion__codigo_postal=${advanceSearch?.direccion_codigo_postal || ''}`
+  + `&direccion__calle_principal=${advanceSearch?.direccion_calle_principal || ''}`
+  + `&direccion_numero_exterior=${advanceSearch?.direccion_numero_exterior || ''}`;
   let result;
-  await http.get(`catastro/predio-caja/?q=${search}`).then(
+  await http.get(urlEndpoint).then(
     (response) => {
       result = response.data[0];
     },

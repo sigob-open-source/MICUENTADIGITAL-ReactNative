@@ -240,7 +240,7 @@ const Solicitud = props => {
             <ButtonRequest texto="Cambiar Dirección" />
           </TouchableOpacity>
 
-          
+          <View>
             <View style={styles.sendRequestGeneralContainer}>
               <TouchableOpacity onPress={onShowConfirmationPopUp}>
                 <View style={styles.sendRequestStyle}>
@@ -259,10 +259,10 @@ const Solicitud = props => {
 
                 </View>
 
-              </View>
+             
             </TouchableOpacity>
-          </View>
-
+            </View>
+         </View>
         </View>
 
       </ScrollView>
