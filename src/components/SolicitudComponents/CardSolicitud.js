@@ -16,13 +16,11 @@ import BottomPopUp from './BottomPopUp';
 
 const CardSolicitud = (props) => {
   let popupRef = React.createRef();
+
   const onShowPopup = () => {
-    console.log(props.timeout)
-    if (props.timeout == true){
       popupRef.show();
-    }
-    
   };
+  
   const onClosePopup = () => {
     popupRef.close();
   };
