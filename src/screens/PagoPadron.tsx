@@ -12,6 +12,7 @@ import BusquedaAvanzadaCiudadano from '../components/BusquedaAvanzadaComponents/
 import BusquedaAvanzadaEmpresa from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaEmpresa';
 import BusquedaAvanzadaPredio from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaPredio';
 import BusquedaAvanzadaVehiculo from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaVehiculo';
+import ModalOpciones from '../components/BusquedaAvanzadaComponents/modalOpciones';
 import Adeudo from '../components/Adeudo';
 
 import {
@@ -21,7 +22,7 @@ import {
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
-  const [searchText, setSearchText] = useState('de');
+  const [searchText, setSearchText] = useState('');
   const [resultCargos, setResultCargos] = useState();
   const [nameSearch, setNameSearch] = useState();
   const [newData, setNewData] = useState(false);
@@ -117,6 +118,10 @@ const PagoPadron = ({ route }) => {
         {
           (padron === 'Vehicular') ? <BusquedaAvanzadaVehiculo onSearch={handleSearch} /> : null
         }
+        {
+          (padron !== 'Vehicular' && padron !== 'Predio' && padron !== 'Ciudadano' && padron !== 'Empresa') ? <BusquedaAvanzadaEmpresa onSearch={handleSearch} /> : null
+        }
+        
       </View>
       <ScrollView>
 
