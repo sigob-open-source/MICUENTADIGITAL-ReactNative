@@ -1,4 +1,4 @@
-import {Modal, Dimensions, TouchableWithoutFeedback, StyleSheet, View, Text, TouchableOpacity, ScrollView} from 'react-native';
+import {Modal, Dimensions, TouchableWithoutFeedback, StyleSheet, View, Text, TouchableOpacity, ScrollView, Alert} from 'react-native';
 import React from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getTiposDeSolicitudes } from '../../services/api';
@@ -27,9 +27,19 @@ class MotivoPopUp extends React.Component{
 
   getData = async () => {
     const id = 1;
-    const tipos = await getTiposDeSolicitudes(id);
-    this.state.motivos=tipos
-    this.state.entidad = id
+    try {
+      const tipos = await getTiposDeSolicitudes(id);
+      if (tipos){
+        this.state.motivos=tipos
+        this.state.entidad = id
+      }else{
+        Alert.alert('Error','Ha ocurrido un error al comunicarse con el servidor, por favor intentelo de nuevo más tarde.')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+    
+
   };
 
   close = () => {

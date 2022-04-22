@@ -1,6 +1,13 @@
 import React, { Component } from 'react';
 import {
-  StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, Alert,
+  StyleSheet, 
+  View,
+  FlatList, 
+  Dimensions,
+  TouchableWithoutFeedback, 
+  Alert,
+  PermissionsAndroid,
+  Linking
 } from 'react-native';
 
 import Square from '../components/CardPagos';
@@ -152,21 +159,46 @@ class MenuInicio extends Component {
     return dataList;
   };
 
-  navigateToScreen = (item) => {
-    if (item.navegacion != null) {
-      if (!this.state.hasSwitchedView) {
-        this.setState({
-          hasSwitchedView: true,
-        }, this.props.navigation.push(item.navegacion));
-        setTimeout(() => {
-          this.state.hasSwitchedView = false;
-        }, 1000);
+  navigateToScreen = async (item) => {
+    if (item.name === 'Oficinas de Atención'){
+      const resultLocation = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION)
+      if (resultLocation){
+        if (!this.state.hasSwitchedView) {
+          this.setState({
+            hasSwitchedView: true,
+          }, this.props.navigation.push(item.navegacion));
+          setTimeout(() => {
+            this.state.hasSwitchedView = false;
+          }, 1000);
+        }
+      }else{
+        Alert.alert(
+          'Alerta',
+          'Debe de proporcionar los permisos necesarios para poder seleccionar su ubicación',
+          [
+            {text: 'Cancelar', style: 'cancel'},
+            {text: 'Ir a configuración de la app', onPress: () => Linking.openSettings()},
+          ],
+          { cancelable: false }
+        );      
       }
-    } else if (item.necesitaLogin) {
-      Alert.alert('Aviso', 'Necesita iniciar sesión para tener acceso a esta opción.');
-    } else {
-      Alert.alert('Aviso', 'Se está realizando mantenimiento a esta función, favor de intentarlo más tarde.');
+    }else{
+      if (item.navegacion != null) {
+        if (!this.state.hasSwitchedView) {
+          this.setState({
+            hasSwitchedView: true,
+          }, this.props.navigation.push(item.navegacion));
+          setTimeout(() => {
+            this.state.hasSwitchedView = false;
+          }, 1000);
+        }
+      } else if (item.necesitaLogin) {
+        Alert.alert('Aviso', 'Necesita iniciar sesión para tener acceso a esta opción.');
+      } else {
+        Alert.alert('Aviso', 'Se está realizando mantenimiento a esta función, favor de intentarlo más tarde.');
+      }
     }
+
   };
 
   _renderItem = ({ item, index }) => (

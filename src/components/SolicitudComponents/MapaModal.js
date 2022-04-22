@@ -20,7 +20,6 @@ import MapboxGL from '@react-native-mapbox-gl/maps';
 
 import Footer from '../Footer'
 
-MapBoxGL.requestAndroidLocationPermissions()
 MapBoxGL.setAccessToken("pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ")
 MapBoxGL.geo
 

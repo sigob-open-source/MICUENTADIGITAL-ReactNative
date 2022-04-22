@@ -1,8 +1,21 @@
-import {PermissionsAndroid, Dimensions, StyleSheet, View, Text, TextInput} from 'react-native';
-import MapBoxGL from '@react-native-mapbox-gl/maps';
-import Fontisto from 'react-native-vector-icons/Fontisto';
+import {
+  StyleSheet, 
+  View, 
+  Text, 
+  Dimensions,
+  TextInput,
+  TouchableOpacity,
+  Animated,
+  Easing
+} from 'react-native';
+import React, {useState, useRef ,useEffect} from 'react';
 
-import React from 'react';
+import MapBoxGL from '@react-native-mapbox-gl/maps';
+import axios from "axios";
+import Fontisto from 'react-native-vector-icons/Fontisto';
+import Geolocation from 'react-native-geolocation-service';
+
+
 import Header from '../components/Header';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import Footer from '../components/Footer';
@@ -14,34 +27,54 @@ const deviceHeight = Dimensions.get("window").height
 
 const OficinasAtencion = props =>{
 
+  const translation = useRef(new Animated.Value(0)).current;
+  const translation2 = useRef(new Animated.Value(0)).current;
+
+  const [street, setStreet] = useState(null);
+  const [latitude, setLatitude] = useState(0);
+  const [longitude, setLongitude] = useState(0);
+  const [coords, setCoords] = useState([0,0]);
+  const [oficinaAtencion1, setOficinaAtencion1] = useState([-114.73939380952801, 32.440140135692374])
+  const [oficinaAtencion2, setOficinaAtencion2] = useState([-114.76148149851659, 32.43726940246955])
+  const [oficinaAtencion3, setOficinaAtencion3] = useState([-114.75967905407789, 32.4570431663667])
+
   const goBack = () => {
     props.navigation.goBack();
   }
-  
-  componentDidMount = () =>{
-    PermissionsAndroid.requestMultiple(
-      [PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION],
-      {
-        title: 'Give Location Permission',
-        message: 'App needs location permission to find your position.'
-      }
-    )
+
+  const apihandler=()=>{
+    try{
+      axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+coords+'.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ')
+      .then(response => {
+        const posts = response.data.features[0].place_name;
+        setStreet(posts)
+      })
+    }catch(error){
+      console.log(error)
+    }
   }
 
-  renderTitle = () => {
-    const {title} = this.props
-    return(
-      <View>
-        <Text style={{
-          color:'#8F8F8F',
-          fontSize:16,
-          margin:15, }}>
-          {title}
-        </Text>
-      </View>
+  const goToOficina = (oficina) =>{
+
+    setCoords(oficina)
+  }
+
+  const GetLocation = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        setCoords([position.coords.longitude,position.coords.latitude])
+        setLongitude([position.coords.longitude])
+        setLatitude([position.coords.latitude])
+        
+      },
+      (error) => this.setState({ error: error.message }),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   }
+
+  useEffect(() => {
+    GetLocation()
+  }, []);
 
   return(
     <View style={{flex:1,}}> 
@@ -58,17 +91,30 @@ const OficinasAtencion = props =>{
             style={{flex:1}}>
 
             <MapBoxGL.Camera
-              zoomLevel={17}
-              followUserLocation={true}
+              centerCoordinate={coords}
+              zoomLevel={12}
               animationMode={'flyTo'}
               animationDuration={0}>              
             </MapBoxGL.Camera>
 
             <MapBoxGL.MarkerView
-              //solo una coordenada de reemplazo en lo que se añade la funcionalidad para añadir marcadores con un onPress dell mapView
-              coordinate={[-114.73939380952801, 32.440140135692374]}>
-              <Fontisto style={{alignSelf:'flex-end',}}size={60} name='map-marker-alt' color={'#79142A'} />
+              anchor={{ x: 0.5, y: 0.9 }}
+              coordinate={oficinaAtencion1}>
+              <Fontisto style={{alignSelf:'flex-end',}}size={50} name='map-marker-alt' color={'#79142A'} />
             </MapBoxGL.MarkerView>
+
+            <MapBoxGL.MarkerView
+              anchor={{ x: 0.5, y: 0.9 }}
+              coordinate={oficinaAtencion2}>
+              <Fontisto style={{alignSelf:'flex-end',}}size={50} name='map-marker-alt' color={'#79142A'} />
+            </MapBoxGL.MarkerView>
+
+            <MapBoxGL.MarkerView
+              anchor={{ x: 0.5, y: 0.9 }}
+              coordinate={oficinaAtencion3}>
+              <Fontisto style={{alignSelf:'flex-end',}}size={50} name='map-marker-alt' color={'#79142A'} />
+            </MapBoxGL.MarkerView>
+
           </MapboxGL.MapView>
 
         </View>
@@ -84,17 +130,23 @@ const OficinasAtencion = props =>{
         <TextInput  placeholderTextColor={'#C4C4C4'} style={{paddingLeft:14}}placeholder='Buscar Oficinas...'/>
         <View style={styles.buttonRowsStyle}>
 
+        <TouchableOpacity onPress={()=> goToOficina(oficinaAtencion1)}>
           <View style={styles.SearchButtons}>
             <Text style={styles.textStyle}>Oficina 1</Text>
           </View>
+        </TouchableOpacity>
 
+        <TouchableOpacity onPress={()=> goToOficina(oficinaAtencion2)}>
           <View style={styles.SearchButtons}>
             <Text style={styles.textStyle}>Oficina 2</Text>
           </View>
+        </TouchableOpacity>
 
+        <TouchableOpacity onPress={()=> goToOficina(oficinaAtencion3)}>
           <View style={styles.SearchButtons}>
             <Text style={styles.textStyle}>Oficina 3</Text>
           </View>
+        </TouchableOpacity>
 
         </View>
       </View>      
