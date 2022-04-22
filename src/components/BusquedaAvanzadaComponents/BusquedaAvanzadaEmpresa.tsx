@@ -2,10 +2,11 @@ import React, { useState, useEffect } from 'react';
 import {
   StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, Modal, TextInput,
 } from 'react-native';
-import DropDownPicker from 'react-native-dropdown-picker';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { getAdeudoEmpresa } from '../../services/padrones.js';
+import DropDownPicker from 'react-native-dropdown-picker';
+
 
 import fonts from '../../utils/fonts';
 
@@ -14,6 +15,26 @@ const BusquedaAvanzadaEmpresa = ({ cargos, onSearch }) => {
   const [metodo, setMetodo] = useState();
   const [importe, setImporte] = useState(0.00);
   const [form, setForm] = useState({});
+   const [opened, setOpened] = useState(false);
+  const [selectedValue, setSelectedValue] = useState('');
+  const [opciones, setOpciones] = useState([
+    {
+      label: 'Único',
+      value: 1,
+    },
+    {
+      label: 'Matriz',
+      value: 2
+    },
+    {
+      label: 'Sucursal',
+      value: 3
+    },
+    {
+      label: 'Bodega',
+      value: 4
+    },
+  ]);
 
   useEffect(() => {
 
@@ -32,9 +53,6 @@ const BusquedaAvanzadaEmpresa = ({ cargos, onSearch }) => {
     onSearch(form);
   };
 
-  const onSubmit = (data: FormData) => {
-    Alert.alert('data', JSON.stringify(data));
-  };
 
   return (
     <>
@@ -79,7 +97,16 @@ const BusquedaAvanzadaEmpresa = ({ cargos, onSearch }) => {
             <View style={styles.textInput}>
               <Text style={styles.label}>Tipo de Establecimiento </Text>
               <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('tipo_de_establecimiento', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Tipo de Establecimiento" />
+                <DropDownPicker
+                    style={styles.textInputContainer}
+                    items={opciones}
+                    placeholderStyle={{color: 'gray', marginLeft: 5}}
+                    placeholder={selectedValue || "Tipo de Establecimiento"}
+                    dropDownDirection="TOP"
+                    open={opened}
+                    onPress={()=> {(opened) ? setOpened(false): setOpened(true);}}
+                    onSelectItem={(item)=> {{handleChange('tipo_de_establecimiento',item.value); setSelectedValue(item.label) }}}
+                  />
               </View>
             </View>
             <View style={styles.textInput}>

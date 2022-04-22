@@ -18,11 +18,12 @@ type FormData = {
   rfc: string,
 };
 
-const BusquedaAvanzadaCiudadano = ({ cargos, onSearch }) => {
+const BusquedaAvanzadaCiudadano = ({ onSearch }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [metodo, setMetodo] = useState();
   const [importe, setImporte] = useState(0.00);
   const [form, setForm] = useState({});
+  
 
   useEffect(() => {
 
@@ -37,9 +38,12 @@ const BusquedaAvanzadaCiudadano = ({ cargos, onSearch }) => {
   };
 
   const handleSearch = () => {
+    
     onSearch(form);
     setIsOpen(false);
   };
+
+  
 
   const onSubmit = (data: FormData) => {
     Alert.alert('data', JSON.stringify(data));
@@ -67,18 +71,19 @@ const BusquedaAvanzadaCiudadano = ({ cargos, onSearch }) => {
           <View style={styles.modal}>
             <Text style={styles.textHeader}>Busqueda Avanzada</Text>
             <View style={styles.line} />
+             <View style={styles.textInput}>
+              <Text style={styles.label}>Clave Ciudadana </Text>
+              <View style={styles.textInputContainer}>
+                <TextInput onChangeText={(text) => handleChange('clave_ciudadana', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Clave Ciudadana" />
+              </View>
+            </View>
             <View style={styles.textInput}>
               <Text style={styles.label}>Nombre </Text>
               <View style={styles.textInputContainer}>
                 <TextInput onChangeText={(text) => handleChange('first_name', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Nombre" />
               </View>
             </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Clave Ciudadana </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('clave_ciudadana', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Clave Ciudadana" />
-              </View>
-            </View>
+           
             <View style={styles.textInput}>
               <Text style={styles.label}>Apellido Paterno </Text>
               <View style={styles.textInputContainer}>

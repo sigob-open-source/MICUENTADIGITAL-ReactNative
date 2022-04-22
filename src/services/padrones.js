@@ -50,7 +50,7 @@ const getAdeudoCiudadano = async (search, advanceSearch) => {
   return result;
 };
 
-const getAdeudoVehiculo = async (search) => {
+const getAdeudoVehiculo = async (search, advanceSearch) => {
   let urlEndpoint = 'recaudacion/vehiculos-caja/';
   urlEndpoint = `${urlEndpoint}`
   + `?q=${search || ''}`
