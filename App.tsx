@@ -4,7 +4,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './src/types/navigation';
 
 // Screens
-import SolicitudSelector from './src/screens/solicitudSelectorView'
+import SolicitudSelector from './src/screens/solicitudSelectorView';
 import VerSolicitudes from './src/screens/VerSolicitudes';
 import VerSolicitud from './src/screens/VerSolicitud';
 import HomeScreen from './src/screens/Home';
@@ -16,6 +16,7 @@ import OficinasAtencion from './src/screens/OficinasAtencion';
 import Pagos from './src/screens/Pagos';
 import PagoPadron from './src/screens/PagoPadron';
 import Tramites from './src/screens/tramites';
+import NetpayPago from './src/screens/netpayPago';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -37,6 +38,7 @@ const AppContainer = () => (
       <Stack.Screen name="solicitudSelect" component={SolicitudSelector} />
       <Stack.Screen name="verSolicitudes" component={VerSolicitudes} />
       <Stack.Screen name="tramites" component={Tramites} />
+      <Stack.Screen name="netpaypago" options={{ animation: 'none' }} component={NetpayPago} />
 
     </Stack.Navigator>
   </NavigationContainer>

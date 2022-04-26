@@ -1,5 +1,5 @@
 // Constants
-import {LOGIN, SET_ACCESS_TOKEN, CLEAR_AUTH} from '../reducers/auth';
+import { LOGIN, SET_ACCESS_TOKEN, CLEAR_AUTH } from '../reducers/auth';
 
 const dispatchLogin = (dispatch, session) => {
   dispatch({
@@ -15,10 +15,10 @@ const dispatchSetToken = (dispatch, token) => {
   });
 };
 
-const dispatchClearAuth = dispatch => {
+const dispatchClearAuth = (dispatch) => {
   dispatch({
     type: CLEAR_AUTH,
   });
 };
 
-export {dispatchLogin, dispatchSetToken, dispatchClearAuth};
+export { dispatchLogin, dispatchSetToken, dispatchClearAuth };

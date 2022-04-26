@@ -11,18 +11,18 @@
 		13B07FBC1A68108700A75B9A /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.m */; };
 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
+		2CAFCA3E584C47CEB9D3C141 /* Inter-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B1DE369776F4B2E81B28D3E /* Inter-Thin.ttf */; };
+		397477E454254FCDBCC766D8 /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3AA53A58F3D54C6FB04D9E0D /* Inter-Regular.ttf */; };
+		4740C49B57EC4D80AFC0B94C /* Inter-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 58350A4E0DF44BA5B3330B29 /* Inter-ExtraBold.ttf */; };
+		59864CB4D1244769AD39D506 /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C392463BE59B4F5EA324C116 /* Inter-SemiBold.ttf */; };
 		6172F2D35A4C3AA820D92908 /* libPods-ExamenRNAbiel.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 6423831EA8574132BED9D8CC /* libPods-ExamenRNAbiel.a */; };
+		71B39D34ACED459CAD8E2824 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 84CC3230E3A5477CAD91031E /* Inter-Medium.ttf */; };
 		7EF68E3733C33B6898317E18 /* libPods-ExamenRNAbiel-ExamenRNAbielTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = ABFE59519B596E51CEFDCCC0 /* libPods-ExamenRNAbiel-ExamenRNAbielTests.a */; };
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
-		A9F36099B624485895FEABC1 /* Inter-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9ED171CC6E9D49F7A264CEC4 /* Inter-Black.ttf */; };
 		A324034DC14B45A198772C45 /* Inter-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 781172BD85E148B2BA550920 /* Inter-Bold.ttf */; };
-		4740C49B57EC4D80AFC0B94C /* Inter-ExtraBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 58350A4E0DF44BA5B3330B29 /* Inter-ExtraBold.ttf */; };
-		F4CD7510AB1B47628866DAC2 /* Inter-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0017A57C6BB4D4DB6DD48C7 /* Inter-ExtraLight.ttf */; };
+		A9F36099B624485895FEABC1 /* Inter-Black.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 9ED171CC6E9D49F7A264CEC4 /* Inter-Black.ttf */; };
 		C47EBE08F6C943E1B7F849CA /* Inter-Light.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A9A941385A884CAF990CD840 /* Inter-Light.ttf */; };
-		71B39D34ACED459CAD8E2824 /* Inter-Medium.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 84CC3230E3A5477CAD91031E /* Inter-Medium.ttf */; };
-		397477E454254FCDBCC766D8 /* Inter-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 3AA53A58F3D54C6FB04D9E0D /* Inter-Regular.ttf */; };
-		59864CB4D1244769AD39D506 /* Inter-SemiBold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C392463BE59B4F5EA324C116 /* Inter-SemiBold.ttf */; };
-		2CAFCA3E584C47CEB9D3C141 /* Inter-Thin.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 7B1DE369776F4B2E81B28D3E /* Inter-Thin.ttf */; };
+		F4CD7510AB1B47628866DAC2 /* Inter-ExtraLight.ttf in Resources */ = {isa = PBXBuildFile; fileRef = C0017A57C6BB4D4DB6DD48C7 /* Inter-ExtraLight.ttf */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -46,22 +46,22 @@
 		13B07FB61A68108700A75B9A /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = ExamenRNAbiel/Info.plist; sourceTree = "<group>"; };
 		13B07FB71A68108700A75B9A /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = ExamenRNAbiel/main.m; sourceTree = "<group>"; };
 		1D0AE47A65C8663E3B452821 /* Pods-ExamenRNAbiel-ExamenRNAbielTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExamenRNAbiel-ExamenRNAbielTests.release.xcconfig"; path = "Target Support Files/Pods-ExamenRNAbiel-ExamenRNAbielTests/Pods-ExamenRNAbiel-ExamenRNAbielTests.release.xcconfig"; sourceTree = "<group>"; };
+		3AA53A58F3D54C6FB04D9E0D /* Inter-Regular.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Regular.ttf"; path = "../assets/fonts/Inter-Regular.ttf"; sourceTree = "<group>"; };
+		58350A4E0DF44BA5B3330B29 /* Inter-ExtraBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraBold.ttf"; path = "../assets/fonts/Inter-ExtraBold.ttf"; sourceTree = "<group>"; };
 		6423831EA8574132BED9D8CC /* libPods-ExamenRNAbiel.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExamenRNAbiel.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		6C97AB639B58BBB4B15BBE30 /* Pods-ExamenRNAbiel-ExamenRNAbielTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExamenRNAbiel-ExamenRNAbielTests.debug.xcconfig"; path = "Target Support Files/Pods-ExamenRNAbiel-ExamenRNAbielTests/Pods-ExamenRNAbiel-ExamenRNAbielTests.debug.xcconfig"; sourceTree = "<group>"; };
+		781172BD85E148B2BA550920 /* Inter-Bold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Bold.ttf"; path = "../assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; };
+		7B1DE369776F4B2E81B28D3E /* Inter-Thin.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Thin.ttf"; path = "../assets/fonts/Inter-Thin.ttf"; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = ExamenRNAbiel/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		84CC3230E3A5477CAD91031E /* Inter-Medium.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Medium.ttf"; path = "../assets/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; };
+		9ED171CC6E9D49F7A264CEC4 /* Inter-Black.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Black.ttf"; path = "../assets/fonts/Inter-Black.ttf"; sourceTree = "<group>"; };
+		A9A941385A884CAF990CD840 /* Inter-Light.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-Light.ttf"; path = "../assets/fonts/Inter-Light.ttf"; sourceTree = "<group>"; };
 		ABFE59519B596E51CEFDCCC0 /* libPods-ExamenRNAbiel-ExamenRNAbielTests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-ExamenRNAbiel-ExamenRNAbielTests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C0017A57C6BB4D4DB6DD48C7 /* Inter-ExtraLight.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-ExtraLight.ttf"; path = "../assets/fonts/Inter-ExtraLight.ttf"; sourceTree = "<group>"; };
 		C0A881CF5CF3F2B244570E2A /* Pods-ExamenRNAbiel.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExamenRNAbiel.debug.xcconfig"; path = "Target Support Files/Pods-ExamenRNAbiel/Pods-ExamenRNAbiel.debug.xcconfig"; sourceTree = "<group>"; };
+		C392463BE59B4F5EA324C116 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = undefined; includeInIndex = 0; lastKnownFileType = unknown; name = "Inter-SemiBold.ttf"; path = "../assets/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; };
 		D00AAFFCFCFDA5787532823F /* Pods-ExamenRNAbiel.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-ExamenRNAbiel.release.xcconfig"; path = "Target Support Files/Pods-ExamenRNAbiel/Pods-ExamenRNAbiel.release.xcconfig"; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
-		9ED171CC6E9D49F7A264CEC4 /* Inter-Black.ttf */ = {isa = PBXFileReference; name = "Inter-Black.ttf"; path = "../assets/fonts/Inter-Black.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		781172BD85E148B2BA550920 /* Inter-Bold.ttf */ = {isa = PBXFileReference; name = "Inter-Bold.ttf"; path = "../assets/fonts/Inter-Bold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		58350A4E0DF44BA5B3330B29 /* Inter-ExtraBold.ttf */ = {isa = PBXFileReference; name = "Inter-ExtraBold.ttf"; path = "../assets/fonts/Inter-ExtraBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		C0017A57C6BB4D4DB6DD48C7 /* Inter-ExtraLight.ttf */ = {isa = PBXFileReference; name = "Inter-ExtraLight.ttf"; path = "../assets/fonts/Inter-ExtraLight.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		A9A941385A884CAF990CD840 /* Inter-Light.ttf */ = {isa = PBXFileReference; name = "Inter-Light.ttf"; path = "../assets/fonts/Inter-Light.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		84CC3230E3A5477CAD91031E /* Inter-Medium.ttf */ = {isa = PBXFileReference; name = "Inter-Medium.ttf"; path = "../assets/fonts/Inter-Medium.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		3AA53A58F3D54C6FB04D9E0D /* Inter-Regular.ttf */ = {isa = PBXFileReference; name = "Inter-Regular.ttf"; path = "../assets/fonts/Inter-Regular.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		C392463BE59B4F5EA324C116 /* Inter-SemiBold.ttf */ = {isa = PBXFileReference; name = "Inter-SemiBold.ttf"; path = "../assets/fonts/Inter-SemiBold.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
-		7B1DE369776F4B2E81B28D3E /* Inter-Thin.ttf */ = {isa = PBXFileReference; name = "Inter-Thin.ttf"; path = "../assets/fonts/Inter-Thin.ttf"; sourceTree = "<group>"; fileEncoding = undefined; lastKnownFileType = unknown; explicitFileType = undefined; includeInIndex = 0; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -156,20 +156,8 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		E233CBF5F47BEE60B243DCF8 /* Pods */ = {
-			isa = PBXGroup;
-			children = (
-				C0A881CF5CF3F2B244570E2A /* Pods-ExamenRNAbiel.debug.xcconfig */,
-				D00AAFFCFCFDA5787532823F /* Pods-ExamenRNAbiel.release.xcconfig */,
-				6C97AB639B58BBB4B15BBE30 /* Pods-ExamenRNAbiel-ExamenRNAbielTests.debug.xcconfig */,
-				1D0AE47A65C8663E3B452821 /* Pods-ExamenRNAbiel-ExamenRNAbielTests.release.xcconfig */,
-			);
-			name = Pods;
-			path = Pods;
-			sourceTree = "<group>";
-		};
 		DB83934050CC4AF79AB41425 /* Resources */ = {
-			isa = "PBXGroup";
+			isa = PBXGroup;
 			children = (
 				9ED171CC6E9D49F7A264CEC4 /* Inter-Black.ttf */,
 				781172BD85E148B2BA550920 /* Inter-Bold.ttf */,
@@ -182,8 +170,20 @@
 				7B1DE369776F4B2E81B28D3E /* Inter-Thin.ttf */,
 			);
 			name = Resources;
-			sourceTree = "<group>";
 			path = "";
+			sourceTree = "<group>";
+		};
+		E233CBF5F47BEE60B243DCF8 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				C0A881CF5CF3F2B244570E2A /* Pods-ExamenRNAbiel.debug.xcconfig */,
+				D00AAFFCFCFDA5787532823F /* Pods-ExamenRNAbiel.release.xcconfig */,
+				6C97AB639B58BBB4B15BBE30 /* Pods-ExamenRNAbiel-ExamenRNAbielTests.debug.xcconfig */,
+				1D0AE47A65C8663E3B452821 /* Pods-ExamenRNAbiel-ExamenRNAbielTests.release.xcconfig */,
+			);
+			name = Pods;
+			path = Pods;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 

@@ -187,7 +187,12 @@ class MenuInicio extends Component {
   render() {
     return (
       <View style={styles.container}>
-        <Header style={styles.header} item="Inicio" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
+        <Header
+          style={styles.header}
+          item="Inicio"
+          imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
+        />
+
         <View style={{ flex: 1, marginHorizontal: '2%' }}>
           <FlatList
             data={this.formatData(dataList, numColumns)}
@@ -261,18 +266,6 @@ const styles = StyleSheet.create({
     width: 39,
     height: 30,
     margin: 5,
-  },
-  header: {
-    flexDirection: 'row',
-    height: 64,
-    width: '100%',
-    backgroundColor: '#79142A',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomEndRadius: 15,
-    borderBottomLeftRadius: 15,
-    padding: 20,
-    marginBottom: 14,
   },
   footer: {
     flexDirection: 'row',

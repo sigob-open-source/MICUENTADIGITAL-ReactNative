@@ -1,12 +1,12 @@
-import React, { useState,useEffect  } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet, 
-  Text, 
-  View, 
-  Image, 
+  StyleSheet,
+  Text,
+  View,
+  Image,
   TouchableOpacity,
   TouchableWithoutFeedback,
-  Linking
+  Linking,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -18,9 +18,9 @@ const CardSolicitud = (props) => {
   let popupRef = React.createRef();
 
   const onShowPopup = () => {
-      popupRef.show();
+    popupRef.show();
   };
-  
+
   const onClosePopup = () => {
     popupRef.close();
   };
@@ -30,7 +30,7 @@ const CardSolicitud = (props) => {
   const [changeTextImage, setChangeTextImage] = useState(true);
   const [image, setImage] = useState('../../assets/imagenes/none.jpg');
   const [nombreArchivo, setNombreArchivo] = useState('');
-  const [archivo, setArchivo] = useState(null)
+  const [archivo, setArchivo] = useState(null);
 
   const normalizeObject = (file) => ({
     uri: file.path,
@@ -40,15 +40,15 @@ const CardSolicitud = (props) => {
   });
 
   useEffect(() => {
-    if (props.timeout == true){onClosePopup()}
+    if (props.timeout == true) { onClosePopup(); }
 
     if (archivo != null) {
-      passImage()
+      passImage();
     }
   }, [archivo]);
-  
+
   const passImage = () => {
-    console.log(archivo)
+    console.log(archivo);
     props.onPassImage(archivo);
   };
 
@@ -88,7 +88,7 @@ const CardSolicitud = (props) => {
       setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined));
       setShouldShow(false);
     } catch (error) {
-      
+
     }
   };
 

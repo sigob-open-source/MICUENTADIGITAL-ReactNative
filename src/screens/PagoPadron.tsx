@@ -1,10 +1,22 @@
 import React, { Component, useEffect, useState } from 'react';
 import {
-  PermissionsAndroid, StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, TextInput, ActivityIndicator, Alert, ScrollView,Text
+  StyleSheet,
+  View,
+  Dimensions,
+  TouchableWithoutFeedback,
+  TextInput,
+  ActivityIndicator,
+  Alert,
+  ScrollView,
+  Text,
 } from 'react-native';
 
-import fonts from '../utils/fonts';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import fonts from '../utils/fonts';
+
+import { tokenizeAmount } from '../services/netpay';
 
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -18,7 +30,6 @@ import {
   getAdeudoVehiculo, getAdeudoPredio, getAdeudoEmpresa, getAdeudoCiudadano,
 } from '../services/padrones';
 
-
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
   const [searchText, setSearchText] = useState('de');
@@ -28,6 +39,9 @@ const PagoPadron = ({ route }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalKey, setModalKey] = useState(100);
   const [isLoading, setIsLoading] = useState(false);
+  const [totalAmount, setTotalAmount] = useState(0);
+
+  const navigation = useNavigation();
 
   useEffect(() => {
     setPadron(route.params.padron);
@@ -84,10 +98,20 @@ const PagoPadron = ({ route }) => {
 
   //   );
   // };
+  const dopayment = async () => {
+    const sumall = resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0);
+    console.log('suma', sumall);
+
+    const responseNetpay = await tokenizeAmount(sumall.toFixed(2));
+
+    if (responseNetpay) {
+      navigation.push('netpaypago', { responseNetpay });
+    }
+  };
 
   return (
     <View style={styles.container}>
-      <Header style={styles.header} item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
+      <Header item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
       <Text style={styles.headText}>
         {route.params.padron}
       </Text>
@@ -118,8 +142,9 @@ const PagoPadron = ({ route }) => {
           (padron === 'Vehicular') ? <BusquedaAvanzadaVehiculo onSearch={handleSearch} /> : null
         }
       </View>
+      {console.log('estos son los cargos', resultCargos)}
+      {console.log('este es el total', totalAmount)}
       <ScrollView>
-
         {
           (newData === true && resultCargos[0] !== null)
             ? resultCargos.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch || ''} padron={padron} cargo={cargo} />))
@@ -132,12 +157,10 @@ const PagoPadron = ({ route }) => {
       </ScrollView>
 
       <View key={modalKey}>
-
-        <TouchableWithoutFeedback onPress={() => { (isOpen === false) ? setIsOpen(true) : null; }}>
+        <TouchableWithoutFeedback onPress={dopayment}>
           <View style={styles.buttonPrint}>
             <Text style={styles.text}>Realizar Pago</Text>
           </View>
-
         </TouchableWithoutFeedback>
 
       </View>

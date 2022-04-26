@@ -4,20 +4,16 @@ export const SET_ACCESS_TOKEN = 'AUTH_SET_ACCESS_TOKEN';
 export const CLEAR_AUTH = 'AUTH_CLEAR_AUTH';
 
 // Action handlers
-const loginHandler = (state, action) => {
-  return {
-    ...state,
-    accessToken: action.payload.access,
-    refreshToken: action.payload.refresh,
-  };
-};
+const loginHandler = (state, action) => ({
+  ...state,
+  accessToken: action.payload.access,
+  refreshToken: action.payload.refresh,
+});
 
-const setTokenHandler = (state, action) => {
-  return {
-    ...state,
-    accessToken: action.payload,
-  };
-};
+const setTokenHandler = (state, action) => ({
+  ...state,
+  accessToken: action.payload,
+});
 
 const clearAuthHandler = () => ({
   accessToken: null,

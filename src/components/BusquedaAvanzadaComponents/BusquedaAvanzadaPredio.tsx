@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, Modal, TextInput, ScrollView
+  StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback, Modal, TextInput, ScrollView,
 } from 'react-native';
 import DropDownPicker from 'react-native-dropdown-picker';
 
@@ -59,99 +59,99 @@ const BusquedaAvanzadaPredio = ({ cargos, onSearch }) => {
             <Text style={styles.textHeader}>Busqueda Avanzada</Text>
             <View style={styles.line} />
             <ScrollView>
-              
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Razón Social </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('razon_social', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Razón Social" />
+
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Razón Social </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('razon_social', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Razón Social" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Nombre Comercial </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('nombre_comercial', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Nombre Comercial" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Nombre Comercial </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('nombre_comercial', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Nombre Comercial" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Pagina Web </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('pagina_web', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Pagina Web" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Pagina Web </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('pagina_web', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Pagina Web" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Tipo de Establecimiento </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('tipo_de_establecimiento', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Tipo de Establecimiento" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Tipo de Establecimiento </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('tipo_de_establecimiento', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Tipo de Establecimiento" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>RFC </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('RFC', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="RFC" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>RFC </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('RFC', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="RFC" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Código Postal </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('codigo_postal', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Código Postal" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Código Postal </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('codigo_postal', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Código Postal" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Número Exterior </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('numero_exterior', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Número Exterior" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Número Exterior </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('numero_exterior', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Número Exterior" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Calle Principal </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('calle_principal', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Calle Principal" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Calle Principal </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('calle_principal', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Calle Principal" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Cuenta Única Predial </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('cuenta_unica_predial', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Cuenta Única Predial" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Cuenta Única Predial </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('cuenta_unica_predial', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Cuenta Única Predial" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>CURT </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('CURT', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="CURT" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>CURT </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('CURT', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="CURT" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Clave Catastral Estándar </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('clave_catastral_estandar', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Clave Catastral Estándar" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Clave Catastral Estándar </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('clave_catastral_estandar', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Clave Catastral Estándar" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Clave Catastral Municipal </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('clave_catastral_municipal', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Clave Catastral Municipal" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Clave Catastral Municipal </Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('clave_catastral_municipal', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Clave Catastral Municipal" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Dirección Código Postal</Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('direccion_codigo_postal', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Dirección Código Postal" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Dirección Código Postal</Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('direccion_codigo_postal', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Dirección Código Postal" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Dirección Calle Principal</Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('direccion_calle_principal', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Dirección Calle Principal" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Dirección Calle Principal</Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('direccion_calle_principal', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Dirección Calle Principal" />
+                </View>
               </View>
-            </View>
-            <View style={styles.textInput}>
-              <Text style={styles.label}>Dirección Número Exterior</Text>
-              <View style={styles.textInputContainer}>
-                <TextInput onChangeText={(text) => handleChange('direccion_numero_exterior', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Dirección Número Exterior" />
+              <View style={styles.textInput}>
+                <Text style={styles.label}>Dirección Número Exterior</Text>
+                <View style={styles.textInputContainer}>
+                  <TextInput onChangeText={(text) => handleChange('direccion_numero_exterior', text)} color="black" placeholderTextColor="#919191" style={styles.textInputStyle} placeholder="Dirección Número Exterior" />
+                </View>
               </View>
-            </View>
             </ScrollView>
-            
+
             <TouchableWithoutFeedback onPress={handleSearch}>
               <View style={styles.buttonPrint}>
                 <Text style={styles.text}>Buscar</Text>

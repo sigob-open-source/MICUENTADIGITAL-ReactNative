@@ -7,7 +7,7 @@ import {
   TouchableWithoutFeedback,
   TouchableOpacity,
   TextInput,
-  FlatList
+  FlatList,
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
 import Accordion from 'react-native-collapsible/Accordion';
@@ -22,139 +22,137 @@ import Loading from '../components/loadingAnimation';
 
 const WIDTH = Dimensions.get('window').width;
 
-class Tramites extends Component{
-  constructor(props){
-    super(props)
-    this.state={
+class Tramites extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
       collapsed: true,
-      selectedDependency:null,
+      selectedDependency: null,
       data: null,
       filteredData: [],
       tramitesMunicipales: null,
-      selectedTramite:null,
-      tramiteDesc:null,
-      tramiteRequisitos:null,
-      department:null
-    }
+      selectedTramite: null,
+      tramiteDesc: null,
+      tramiteRequisitos: null,
+      department: null,
+    };
   }
+
   popupRef = React.createRef();
+
   controller = new AbortController();
-  onShowPopup = (tramite,descTramite,departamento,requisitos) => {
-    if (this.state.tramitesMunicipales!= null)
-    {
+
+  onShowPopup = (tramite, descTramite, departamento, requisitos) => {
+    if (this.state.tramitesMunicipales != null) {
       this.setState({
-        selectedTramite:tramite,
-        tramiteDesc:descTramite,
-        department:departamento,
-        tramiteRequisitos:requisitos,
-      },this.popupRef.show)
+        selectedTramite: tramite,
+        tramiteDesc: descTramite,
+        department: departamento,
+        tramiteRequisitos: requisitos,
+      }, this.popupRef.show);
     }
-
-  }
-
-  onClosePopup = () => {
-    this.popupRef.close()
   };
 
-  componentDidMount(){
-    this.getDependencyList()
+  onClosePopup = () => {
+    this.popupRef.close();
+  };
+
+  componentDidMount() {
+    this.getDependencyList();
   }
 
-  componentWillUnmount(){
-    this.controller.abort()
+  componentWillUnmount() {
+    this.controller.abort();
   }
-  
-  getDependencyList = async () =>{
+
+  getDependencyList = async () => {
     await http.get('tramites/plantillas-tramites-atencion-ciudadana/?entidad_municipal=1').then(
       (response) => {
         const result = response.data;
-        if (result.length>0){
+        if (result.length > 0) {
           this.setState({
-            data:result,
-            filteredData:result,
-            selectedDependency:result[0].departamentos[0].unidad_operativa.descripcion,
-            tramitesMunicipales:result[0].nombre
-          })
-        }else{
+            data: result,
+            filteredData: result,
+            selectedDependency: result[0].departamentos[0].unidad_operativa.descripcion,
+            tramitesMunicipales: result[0].nombre,
+          });
+        } else {
           this.setState({
-            selectedDependency:'No hay datos.',
-            tramitesMunicipales:'Sin datos.'
-          })  
+            selectedDependency: 'No hay datos.',
+            tramitesMunicipales: 'Sin datos.',
+          });
         }
       },
       (error) => {
         this.setState({
-          selectedDependency:'No se encontraron dependencias.',
-          tramitesMunicipales:'Sin datos.'
-        })  
+          selectedDependency: 'No se encontraron dependencias.',
+          tramitesMunicipales: 'Sin datos.',
+        });
         console.log(error);
       },
     );
-  }
+  };
 
-  setDependency = (item) =>
-  {
+  setDependency = (item) => {
     this.setState({
-      selectedDependency:item,
-      collapsed:true
+      selectedDependency: item,
+      collapsed: true,
     });
-  }
+  };
 
-  renderItem = (item) => {
-    return(
-      <View>
-        <TouchableOpacity onPress={()=>this.setState(this.setDependency(item.descripcion))}>
-          <View style={styles.content}>
-            <Text style={styles.collapsibleText}>{item.descripcion}</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    )
-  }
+  renderItem = (item) => (
+    <View>
+      <TouchableOpacity onPress={() => this.setState(this.setDependency(item.descripcion))}>
+        <View style={styles.content}>
+          <Text style={styles.collapsibleText}>{item.descripcion}</Text>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
 
-  renderTramite = (item,index) =>{
-    if (this.state.selectedDependency == item.departamentos[index].unidad_operativa.descripcion){
-      return(
-        <TouchableOpacity  onPress={()=>this.onShowPopup(
+  renderTramite = (item, index) => {
+    if (this.state.selectedDependency == item.departamentos[index].unidad_operativa.descripcion) {
+      return (
+        <TouchableOpacity onPress={() => this.onShowPopup(
           item.nombre,
           item.descripcion,
           item.departamentos[index].descripcion,
-          item.requisitos)}>
+          item.requisitos,
+        )}
+        >
 
           <View style={styles.tramiteView}>
             <Text style={styles.collapsibleText}>{item.nombre}</Text>
           </View>
         </TouchableOpacity>
-      )
+      );
     }
-
-  }
+  };
 
   toggleExpanded = () => {
-    if (this.state.data != null){
+    if (this.state.data != null) {
       this.setState({ collapsed: !this.state.collapsed });
     }
-    
   };
-  
+
   goBack = () => {
     this.props.navigation.goBack();
   };
 
-  //Buscar un tramite en especifico filtrando dependiendo de lo que se devuelva en el campo de texto
-  searchTramite(tramiteToSearch){
-    if (this.state.data != null){
+  // Buscar un tramite en especifico filtrando dependiendo de lo que se devuelva en el campo de texto
+  searchTramite(tramiteToSearch) {
+    if (this.state.data != null) {
       this.setState({
-        filteredData:this.state.data.filter(item=>item.nombre.toLowerCase().includes(tramiteToSearch.toLowerCase()))
-      })
+        filteredData: this.state.data.filter((item) => item.nombre.toLowerCase().includes(tramiteToSearch.toLowerCase())),
+      });
     }
   }
 
-  render(){
+  render() {
     return (
       <View style={{ flex: 1, height: '100%' }}>
         <View style={{ flex: 1, alignItems: 'center' }}>
-          <PopUpTramites 
+          <PopUpTramites
             ref={(target) => this.popupRef = target}
             onTouchOutside={this.onClosePopup}
             nombreTramite={this.state.selectedTramite}
@@ -170,80 +168,95 @@ class Tramites extends Component{
           />
 
           <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}> Filtrar por dependencia </Text>
-  
+
           <TouchableWithoutFeedback onPress={this.toggleExpanded}>
             <View style={styles.collapsibleHeader}>
               {
                 this.state.selectedDependency == null ? (
-                  <Loading loading={true}></Loading>
+                  <Loading loading />
                 ) : <Text style={styles.headerText}>{this.state.selectedDependency}</Text>
               }
-              
+
               {
-                this.state.collapsed ?(
-                  <MaterialIcons style={{alignSelf:'flex-end'}}size={40} name='keyboard-arrow-down' color={'black'} />
-                ):<MaterialIcons style={{alignSelf:'flex-end'}}size={40} name='keyboard-arrow-up' color={'black'} />
+                this.state.collapsed ? (
+                  <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-down" color="black" />
+                ) : <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-up" color="black" />
               }
-              
+
             </View>
           </TouchableWithoutFeedback>
           <View style={styles.collapsibleContainer}>
             <Collapsible collapsed={this.state.collapsed}>
               <FlatList
                 data={this.state.data}
-                renderItem={({item,index})=> this.renderItem(item.departamentos[index].unidad_operativa)}
-                keyExtractor={(item,index) => index.toString()}
+                renderItem={({ item, index }) => this.renderItem(item.departamentos[index].unidad_operativa)}
+                keyExtractor={(item, index) => index.toString()}
               />
             </Collapsible>
           </View>
 
-            <Text style={{ 
-              color: 'black',
-              fontSize: 20,
-              fontWeight: '700',
-              marginTop:5,
-            }}> Busqueda </Text>
-
-            <View style={styles.textInputContainer}>
-              <TextInput style={styles.textInputStyle} 
-                placeholder="Buscar..." 
-                placeholderTextColor="gray" 
-                onChangeText={text=>{this.searchTramite(text)}}
-              />
-              <TouchableOpacity>
-                <View style={{borderRadius:10,width:46, height:46,justifyContent:'center'}}>
-                </View>
-              </TouchableOpacity>
-            </View>
-            
-          <Text style={{ 
-            color: 'black', 
-            fontSize: 20, 
+          <Text style={{
+            color: 'black',
+            fontSize: 20,
             fontWeight: '700',
-            marginTop:30,
-          }}> Trámites Municipales </Text>
+            marginTop: 5,
+          }}
+          >
+            {' '}
+            Busqueda
+          </Text>
 
-        {
+          <View style={styles.textInputContainer}>
+            <TextInput
+              style={styles.textInputStyle}
+              placeholder="Buscar..."
+              placeholderTextColor="gray"
+              onChangeText={(text) => { this.searchTramite(text); }}
+            />
+            <TouchableOpacity>
+              <View style={{
+                borderRadius: 10, width: 46, height: 46, justifyContent: 'center',
+              }}
+              />
+            </TouchableOpacity>
+          </View>
+
+          <Text style={{
+            color: 'black',
+            fontSize: 20,
+            fontWeight: '700',
+            marginTop: 30,
+          }}
+          >
+            {' '}
+            Trámites Municipales
+          </Text>
+
+          {
           this.state.tramitesMunicipales == null ? (
             <View style={styles.tramiteView}>
-              <Loading loading={true}></Loading>
+              <Loading loading />
             </View>
-          ) : 
-          <>
-            {
-              this.state.tramitesMunicipales == 'Sin datos.' ?(
-                <Text style={{color: 'gray'}}>No se encontraron trámites.</Text>
-              ) :
-              
-              <FlatList
-              data={this.state.filteredData}
-              renderItem={({ item, index }) => this.renderTramite(item, index)}
-              keyExtractor={(item, index) => index.toString()} />
+          )
+            : (
+              <>
+                {
+              this.state.tramitesMunicipales == 'Sin datos.' ? (
+                <Text style={{ color: 'gray' }}>No se encontraron trámites.</Text>
+              )
+
+                : (
+                  <FlatList
+                    data={this.state.filteredData}
+                    renderItem={({ item, index }) => this.renderTramite(item, index)}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                )
 
             }
-            
 
-          </>
+              </>
+            )
         }
 
         </View>
@@ -253,12 +266,11 @@ class Tramites extends Component{
           showBack
           style={styles.footer}
         />
-  
+
       </View>
     );
   }
-
-};
+}
 
 const styles = StyleSheet.create({
   searchButton: {
@@ -307,9 +319,9 @@ const styles = StyleSheet.create({
     width: 336,
     height: 46,
     alignSelf: 'center',
-    flexDirection:'row',
+    flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems:'center',
+    alignItems: 'center',
     borderRadius: 10,
     backgroundColor: 'white',
     borderWidth: 2,
@@ -323,28 +335,28 @@ const styles = StyleSheet.create({
   },
   textInputStyle: {
     color: 'black',
-    width:300,
+    width: 300,
   },
-  collapsibleContainer:{
-    backgroundColor:'white',
-    width:336,
+  collapsibleContainer: {
+    backgroundColor: 'white',
+    width: 336,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 7,
     shadowOpacity: 0.09,
     elevation: 5,
-    marginTop:5,
-    borderRadius:10,
-  }, 
+    marginTop: 5,
+    borderRadius: 10,
+  },
   collapsibleHeader: {
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'space-between',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     width: 336,
-    height:45,
-    marginTop:5,
-    borderRadius:10,
-    backgroundColor:'white',
+    height: 45,
+    marginTop: 5,
+    borderRadius: 10,
+    backgroundColor: 'white',
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 7,
@@ -352,39 +364,39 @@ const styles = StyleSheet.create({
     elevation: 5,
   },
   headerText: {
-    fontWeight:'500',
-    marginLeft:'3%',
-    fontSize:20,
-    color:'black',
+    fontWeight: '500',
+    marginLeft: '3%',
+    fontSize: 20,
+    color: 'black',
   },
   content: {
-    width:295,
-    height:50,
-    flexDirection:'row',
-    alignItems:'center',
-    backgroundColor:'transparent'
+    width: 295,
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'transparent',
   },
-  contentContainerStyle:{
-    width:336,
-    backgroundColor:'#e6e6e6',
+  contentContainerStyle: {
+    width: 336,
+    backgroundColor: '#e6e6e6',
   },
-  collapsibleText:{
+  collapsibleText: {
     flexShrink: 1,
-    flex:1,
-    flexWrap:'wrap',
-    fontWeight:'500',
-    marginLeft:'1.5%',
-    fontSize:0.05*WIDTH,
-    color:'black',
+    flex: 1,
+    flexWrap: 'wrap',
+    fontWeight: '500',
+    marginLeft: '1.5%',
+    fontSize: 0.05 * WIDTH,
+    color: 'black',
   },
-  tramiteView:{
-    width:WIDTH,
-    height:50,
-    marginTop:20,
-    flexDirection:'row',
-    alignItems:'center',
-    backgroundColor:'white',
-  }
+  tramiteView: {
+    width: WIDTH,
+    height: 50,
+    marginTop: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
 });
 
 export default Tramites;

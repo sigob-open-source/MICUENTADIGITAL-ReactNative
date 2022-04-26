@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,8 +11,8 @@ import {
   Linking,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { registrarArchivo, registrarSolicitud } from '../services/api';
 import axios from 'axios';
+import { registrarArchivo, registrarSolicitud } from '../services/api';
 
 import ModalSolicitud from '../components/SolicitudComponents/ModalSolicitud';
 import ComentarioModal from '../components/SolicitudComponents/ComentariosModal';
@@ -26,7 +26,7 @@ import ButtonRequest from '../components/SolicitudComponents/Button';
 
 const WIDTH = Dimensions.get('window').width;
 
-const Solicitud = props => {
+const Solicitud = (props) => {
   let popupRef = React.createRef();
   let popupRef2 = React.createRef();
   let popupRef3 = React.createRef();
@@ -43,46 +43,45 @@ const Solicitud = props => {
   const [showMotivo, setShowMotivo] = useState(false);
   const [entidadMunicipalId, setEntidadMunicipalId] = useState(null);
   const [archivo, setArchivo] = useState([]);
-  const [hasSwitchedView, setHasSwitchedView] = useState(false)
-  const [camposFaltantes, setCamposFaltantes] = useState([])
+  const [hasSwitchedView, setHasSwitchedView] = useState(false);
+  const [camposFaltantes, setCamposFaltantes] = useState([]);
 
   useEffect(() => {
-    onShowPopup()
+    onShowPopup();
   }, []);
 
   const submit = async () => {
-    onCloseConfirmationPopUp()
-    //Validar que el usuario llenó toda la información necesaria para poedr mandar la solicitufd
+    onCloseConfirmationPopUp();
+    // Validar que el usuario llenó toda la información necesaria para poedr mandar la solicitufd
 
-      const image = archivo
-      const response = await registrarSolicitud(
-        comment,
-        latitud,
-        longitud,
-        motivo_de_la_solicitud,
-        entidadMunicipalId,
+    const image = archivo;
+    const response = await registrarSolicitud(
+      comment,
+      latitud,
+      longitud,
+      motivo_de_la_solicitud,
+      entidadMunicipalId,
+    );
+    if (response) {
+      const responseFile = await registrarArchivo(
+        response.seguimientos[0].id,
+        image,
       );
-      if (response) {
-        const responseFile = await registrarArchivo(
-          response.seguimientos[0].id,
-          image,
-        );
-        if (responseFile) {
-          response.seguimientos[0].archivos.push(responseFile);
-        }
-        console.log(JSON.stringify(response, null, 2));
-  
-        Alert.alert(
-          'Registro existoso', 
-          'Su solicitud ha sido procesada con éxito, pronto recibirá informes de su solicitud.',
-          [
-            {text:'Aceptar', onPress: () => props.navigation.navigate('verSolicitudes')}
-          ],
-        );
-      } else {
-        Alert.alert('Error', 'Ha ocurrido un error, su solicitud no pudo ser registrada. Intente más tarde.');
+      if (responseFile) {
+        response.seguimientos[0].archivos.push(responseFile);
       }
+      console.log(JSON.stringify(response, null, 2));
 
+      Alert.alert(
+        'Registro existoso',
+        'Su solicitud ha sido procesada con éxito, pronto recibirá informes de su solicitud.',
+        [
+          { text: 'Aceptar', onPress: () => props.navigation.navigate('verSolicitudes') },
+        ],
+      );
+    } else {
+      Alert.alert('Error', 'Ha ocurrido un error, su solicitud no pudo ser registrada. Intente más tarde.');
+    }
   };
 
   const imageToParent = (imageData) => {
@@ -108,41 +107,35 @@ const Solicitud = props => {
 
   // Evita que se puedan abrir varios modales al spamear los botones
   const openModal = (type) => {
-
-    if (!hasSwitchedView){
-      setHasSwitchedView(true)
-      if (type == 0){
-        onShowCommentPopup()
-      }
-      else if (type == 2){
+    if (!hasSwitchedView) {
+      setHasSwitchedView(true);
+      if (type == 0) {
+        onShowCommentPopup();
+      } else if (type == 2) {
         onShowPopup();
-      }
-      else{
+      } else {
         onShowMapPopup();
       }
       setTimeout(() => {
-        setHasSwitchedView(false)
+        setHasSwitchedView(false);
       }, 2000);
     }
+  };
 
-  }
-  
-  const onShowConfirmationPopUp = () =>{
-    if ((location == 'Sin locacion') || (archivo == null) || (motivo_de_la_solicitud === null) || (comment === 'Sin comentario.' || comment === '')){
+  const onShowConfirmationPopUp = () => {
+    if ((location == 'Sin locacion') || (archivo == null) || (motivo_de_la_solicitud === null) || (comment === 'Sin comentario.' || comment === '')) {
       Alert.alert(
-        'Registro fallido', 
-        'Hacen falta uno o más campos, favor de revisar la solicitud.'
-        )
-    }else{
-      popupRef4.show()
+        'Registro fallido',
+        'Hacen falta uno o más campos, favor de revisar la solicitud.',
+      );
+    } else {
+      popupRef4.show();
     }
-    
-  }
+  };
 
-  const onCloseConfirmationPopUp = () =>{
-    popupRef4.close()
-  }
-
+  const onCloseConfirmationPopUp = () => {
+    popupRef4.close();
+  };
 
   const onShowPopup = () => {
     popupRef.show();
@@ -207,7 +200,7 @@ const Solicitud = props => {
       <ScrollView contentContainerStyle={{ padding: 10, paddingHorizontal: 0 }}>
         <View style={{ flex: 1, marginTop: 9, marginHorizontal: '2%' }}>
 
-          <TouchableOpacity onPress={()=>openModal(2)}>
+          <TouchableOpacity onPress={() => openModal(2)}>
             <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow />
           </TouchableOpacity>
           {
@@ -221,12 +214,12 @@ const Solicitud = props => {
             ) : null
           }
 
-          <ConfirmacionPopUp 
+          <ConfirmacionPopUp
             ref={(target) => popupRef4 = target}
             onTouchOutside={onClosePopup}
-            nombreSolicitud={motivoDesc} 
-            comentario={comment} 
-            ubicacion={location} 
+            nombreSolicitud={motivoDesc}
+            comentario={comment}
+            ubicacion={location}
             confirmacion={submit}
           />
 
@@ -244,7 +237,7 @@ const Solicitud = props => {
             <View style={styles.sendRequestGeneralContainer}>
               <TouchableOpacity onPress={onShowConfirmationPopUp}>
                 <View style={styles.sendRequestStyle}>
-                
+
                   <View style={styles.sendRequestContainer}>
                     <Text style={{
                       color: 'black',
@@ -255,14 +248,12 @@ const Solicitud = props => {
                       Enviar Solicitud
                     </Text>
                   </View>
-                  
 
                 </View>
 
-             
-            </TouchableOpacity>
+              </TouchableOpacity>
             </View>
-         </View>
+          </View>
         </View>
 
       </ScrollView>

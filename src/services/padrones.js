@@ -1,7 +1,6 @@
 import http from './http';
 
 const getPadrones = async () => {
-
   await http.get('catalogos/padrones/').then(
     (response) => {
       const result = response.data;
@@ -85,7 +84,7 @@ const getAdeudoVehiculo = async (search) => {
 };
 
 const getAdeudoPredio = async (search, advanceSearch) => {
-  let urlEndpoint = `catastro/predio-caja/`;
+  let urlEndpoint = 'catastro/predio-caja/';
   urlEndpoint = `${urlEndpoint}`
   + `?q=${search}`
   + `&razon_social=${advanceSearch?.razon_social || ''}`
@@ -96,8 +95,8 @@ const getAdeudoPredio = async (search, advanceSearch) => {
   + `&domicilio_fiscal__codigo_postal=${advanceSearch?.codigo_postal || ''}`
   + `&domicilio_fiscal__calle_principal=${advanceSearch?.calle_principal || ''}`
   + `&domicilio_fiscal__numero_exterior=${advanceSearch?.numero_exterior || ''}`;
-  + `&cuenta_unica_de_predial=${advanceSearch?.cuenta_unica_de_predial || ''}`
-  + `&CURT=${advanceSearch?.CURT || ''}`
+  `${+`&cuenta_unica_de_predial=${advanceSearch?.cuenta_unica_de_predial || ''}`
+  }&CURT=${advanceSearch?.CURT || ''}`
   + `&clave_catastral_estandar=${advanceSearch?.clave_catastral_estandar || ''}`
   + `&clave_catastral_municipal=${advanceSearch?.clave_catastral_municipal || ''}`
   + `&direccion__codigo_postal=${advanceSearch?.direccion_codigo_postal || ''}`

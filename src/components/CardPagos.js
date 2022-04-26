@@ -7,7 +7,7 @@ import fonts from '../utils/fonts';
 const Card = (props) => {
   const [isBlank, blank] = useState(props.isBlank);
   const [isIconType, setIsIconType] = useState(props.enableEntypo);
-  const [needsLogin, setNeedsLogin] = useState(props.necesitaLogin)
+  const [needsLogin, setNeedsLogin] = useState(props.necesitaLogin);
 
   if (isBlank) {
     return (
