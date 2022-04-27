@@ -55,7 +55,6 @@ const OficinasAtencion = props =>{
   }
 
   const goToOficina = (oficina) =>{
-    getData()
     setCoords(oficina)
   }
 
