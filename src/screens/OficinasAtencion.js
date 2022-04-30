@@ -5,85 +5,182 @@ import {
   Dimensions,
   TextInput,
   TouchableOpacity,
-  Animated,
-  Easing
+  FlatList,
+  Keyboard,
+  TouchableWithoutFeedback,
 } from 'react-native';
-import React, {useState, useRef ,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 
 import MapBoxGL from '@react-native-mapbox-gl/maps';
-import axios from "axios";
+import useKeyboard from '../utils/keyboardListener';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Geolocation from 'react-native-geolocation-service';
+import { getOficinas } from '../services/api';
 
 import Header from '../components/Header';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import Footer from '../components/Footer';
+import ModalOficinasAtencion from '../components/modalOficinasAtencion';
 
 MapBoxGL.setAccessToken("pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ")
 MapBoxGL.geo
 
 const deviceHeight = Dimensions.get("window").height
+const WIDTH = Dimensions.get('window').width;
 
 const OficinasAtencion = props =>{
-
-  const translation = useRef(new Animated.Value(0)).current;
-  const translation2 = useRef(new Animated.Value(0)).current;
+  let popupRef = React.createRef();
 
   const [street, setStreet] = useState(null);
   const [latitude, setLatitude] = useState(0);
   const [longitude, setLongitude] = useState(0);
   const [coords, setCoords] = useState([0,0]);
   const [isLoading, setIsLoading] = useState([false]);
-  const [oficinaAtencion1, setOficinaAtencion1] = useState([-114.73939380952801, 32.440140135692374])
-  const [oficinaAtencion2, setOficinaAtencion2] = useState([-114.76148149851659, 32.43726940246955])
-  const [oficinaAtencion3, setOficinaAtencion3] = useState([-114.75967905407789, 32.4570431663667])
+  const [oficinas, setOficinas] = useState(null)
+  const [filteredOficinas, setFilteredOficinas] = useState(null)
+  const [renderPoints, setRenderPoints] = useState(false)
+  const [id, setId] = useState(null)
+  const [desc, setDesc] = useState(null)
+  const [selectedCoords, setSelectedCoords] = useState(null)
+  const [collapsed, setCollapsed] = useState(true)
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [numberOfElements, setNumberOfElements] = useState(0)
+
+  const toggleExpanded = () => {
+    if (oficinas != null){
+      setNumberOfElements(filteredOficinas.length)
+      setCollapsed(collapsed => !collapsed)
+    }
+  };
+
+  const onShowPopup = (id, lat, long, desc) => {
+    setId(id)
+    setSelectedCoords([lat,long])
+    setDesc(desc)
+  };
+
+  const onClosePopup = () => {
+    popupRef.close();
+  };
 
   const goBack = () => {
     props.navigation.goBack();
   }
 
-  const apihandler=()=>{
-    try{
-      axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+coords+'.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ')
-      .then(response => {
-        const posts = response.data.features[0].place_name;
-        setStreet(posts)
-      })
-    }catch(error){
-      console.log(error)
-    }
+  const getData = async () =>{
+    const response = await getOficinas()
+    setOficinas(response)
+    setFilteredOficinas(response)
+    setRenderPoints(true)
   }
 
-  const goToOficina = (oficina) =>{
-    setCoords(oficina)
+  const goToOficina = (id, lat, long, desc) =>{
+    onShowPopup(id, lat, long, desc)
+    setCoords([lat,long])
   }
 
   const GetLocation = () => {
-    
+    getData()
     Geolocation.getCurrentPosition(
       (position) => {
         setCoords([position.coords.longitude,position.coords.latitude])
         setLongitude([position.coords.longitude])
         setLatitude([position.coords.latitude])
-        
       },
       (error) => this.setState({ error: error.message }),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   }
 
+  const renderItem = (item) => {
+    return(
+        <TouchableOpacity activeOpacity={.5} onPressIn={()=> goToOficina(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
+          <View style={styles.content}>
+            <Text style={styles.collapsibleText}>{item.descripcion}</Text>
+          </View>
+        </TouchableOpacity>
+    );
+  }
+
+  // Buscar un tramite en especifico filtrando dependiendo de lo que se devuelva en el campo de texto
+  const searchOficina = (oficinaToSearch) => {
+    if (oficinas != null) {
+        const filteredOficces = oficinas.filter((item) => {
+          return item.descripcion.toLowerCase().includes(oficinaToSearch.toLowerCase())
+        });
+        setFilteredOficinas(filteredOficces)
+    }
+  }
+
+  const createOficinaMasUsada = () =>{
+    if (oficinas != null) {
+      var offices = oficinas.slice(0, 3);
+      return offices.map((item, index) => (
+        <TouchableOpacity key={index} onPress={()=> goToOficina(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
+          <View style={styles.SearchButtons}>
+            <Text style={styles.textStyle}>Oficina {item.id}</Text>
+          </View>
+        </TouchableOpacity>
+      ));
+    }    
+  }
+
+  const createOficina = () => {
+    if (oficinas != null) {
+      return oficinas.map((item, index) => (
+        <TouchableOpacity key={index} onPress={()=>onShowPopup(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
+          <MapBoxGL.MarkerView
+            anchor={{ x: 0.5, y: 0.9 }}
+            coordinate={[item.direccion.longitud, item.direccion.latitud]}>
+            <Fontisto style={{alignSelf:'flex-end',}}size={50} name='map-marker-alt' color={'#79142A'} />
+          </MapBoxGL.MarkerView>
+        </TouchableOpacity>
+      ));
+    }
+  };
   useEffect(() => {
-    GetLocation()
-  }, []);
+    if (renderPoints){
+      popupRef.show();
+    }
+    if (!renderPoints){
+      GetLocation()
+    }
+    
+    const keyboardDidShowListener = Keyboard.addListener(
+      'keyboardDidShow',
+      () => {
+        setKeyboardVisible(true); // or some other action
+      }
+    );
+    const keyboardDidHideListener = Keyboard.addListener(
+      'keyboardDidHide',
+      () => {
+        setKeyboardVisible(false); // or some other action
+      }
+    );
+
+    return () => {
+      keyboardDidHideListener.remove();
+      keyboardDidShowListener.remove();
+    };    
+  }, [selectedCoords]);
 
   return(
     <View style={{flex:1,}}> 
       <Header style={styles.header}item="Oficinas de atención" imgnotif={require("../../assets/imagenes/notificationGet_icon.png")} img={require("../../assets/imagenes/header_logo.png")}/>
+      
+      <ModalOficinasAtencion
+        ref={(target) => popupRef = target}
+        onTouchOutside={onClosePopup}      
+        id={id}
+        coords={selectedCoords}
+        desc={desc}
+      />
+
       <View style={{flex:1}}> 
         <View style={{position:'absolute',flex:1,height:deviceHeight,width:'100%',borderRadius:90}}>
 
           <MapboxGL.MapView
-            onPress={(feature)=>console.log('Coords:', feature.geometry.coordinates)}
             localizeLabels={true}
             styleURL={MapBoxGL.StyleURL.Street}
             zoomLevel={17}
@@ -97,23 +194,11 @@ const OficinasAtencion = props =>{
               animationDuration={0}>              
             </MapBoxGL.Camera>
 
-            <MapBoxGL.MarkerView
-              anchor={{ x: 0.5, y: 0.9 }}
-              coordinate={oficinaAtencion1}>
-              <Fontisto style={{alignSelf:'flex-end',}}size={50} name='map-marker-alt' color={'#79142A'} />
-            </MapBoxGL.MarkerView>
-
-            <MapBoxGL.MarkerView
-              anchor={{ x: 0.5, y: 0.9 }}
-              coordinate={oficinaAtencion2}>
-              <Fontisto style={{alignSelf:'flex-end',}}size={50} name='map-marker-alt' color={'#79142A'} />
-            </MapBoxGL.MarkerView>
-
-            <MapBoxGL.MarkerView
-              anchor={{ x: 0.5, y: 0.9 }}
-              coordinate={oficinaAtencion3}>
-              <Fontisto style={{alignSelf:'flex-end',}}size={50} name='map-marker-alt' color={'#79142A'} />
-            </MapBoxGL.MarkerView>
+            {
+              renderPoints ? (
+                createOficina()
+              ) : null
+            }
 
           </MapboxGL.MapView>
 
@@ -124,49 +209,73 @@ const OficinasAtencion = props =>{
         back={goBack}
         showBack={true} 
         style={styles.footer} />
-
+      
       <View style={styles.textInputStyle}>
 
-        <TextInput  placeholderTextColor={'#C4C4C4'} style={{paddingLeft:14}}placeholder='Buscar Oficinas...'/>
-        <View style={styles.buttonRowsStyle}>
+        <TextInput 
+          onChangeText={(text)=> searchOficina(text)} 
+          onPressIn={()=> toggleExpanded()} 
+          placeholderTextColor={'#C4C4C4'} 
+          style={{paddingLeft:14}}
+          placeholder='Buscar Oficinas...'
+        >
+        </TextInput>
 
-        <TouchableOpacity onPress={()=> goToOficina(oficinaAtencion1)}>
-          <View style={styles.SearchButtons}>
-            <Text style={styles.textStyle}>Oficina 1</Text>
-          </View>
-        </TouchableOpacity>
+        {
+          isKeyboardVisible ?(
+            
+            <View style={{height:numberOfElements*50}}>
+              <FlatList
+                keyboardShouldPersistTaps="always"
+                data={filteredOficinas}
+                renderItem={({ item, index }) => renderItem(item)}
+                keyExtractor={(item, index) => index.toString()}
+              />
+            </View>     
+          ) :
+            <View style={styles.buttonRowsStyle}>
 
-        <TouchableOpacity onPress={()=> goToOficina(oficinaAtencion2)}>
-          <View style={styles.SearchButtons}>
-            <Text style={styles.textStyle}>Oficina 2</Text>
-          </View>
-        </TouchableOpacity>
-
-        <TouchableOpacity onPress={()=> goToOficina(oficinaAtencion3)}>
-          <View style={styles.SearchButtons}>
-            <Text style={styles.textStyle}>Oficina 3</Text>
-          </View>
-        </TouchableOpacity>
-
-        </View>
-      </View>      
+            {
+              renderPoints ? (
+                createOficinaMasUsada()
+              ) : null
+            }
+    
+            </View>
+        }
+      </View>            
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  header:{
-    zIndex:10,
-    position:'absolute',
-    flexDirection:'row',
-    height:64,
+  content: {
+    width: 333,
+    height: 50,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+  },
+  collapsibleText: {
+    flexShrink: 1,
+    flex: 1,
+    flexWrap: 'wrap',
+    fontWeight: '500',
+    marginLeft: '1.5%',
+    fontSize: 0.05 * WIDTH,
+    color: 'black',
+  },
+  header: {
+    flexDirection: 'row',
+    height: 64,
     width: '100%',
-    backgroundColor:'#79142A',
-    justifyContent:'center',
-    alignItems:'center',
-    borderBottomEndRadius:15,
-    borderBottomLeftRadius:15,
-    padding:20,
+    backgroundColor: '#79142A',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderBottomEndRadius: 15,
+    borderBottomLeftRadius: 15,
+    padding: 20,
+    marginBottom: 14,
   },
   footer:{
     flexDirection:'row',
