@@ -10,7 +10,7 @@ const Header = (props) => (
     <View style={styles.logoContainer}>
       <Image
         style={styles.logo}
-        source={require('../../assets/imagenes/logoNayarit.png')}
+        source={require('../../assets/imagenes/logo_horizontal.png')}
       />
     </View>
 
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 66,
     width: '100%',
-    backgroundColor: '#4F494C',
+    backgroundColor: colors.principal,
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomEndRadius: 15,
@@ -65,9 +65,9 @@ const styles = StyleSheet.create({
     borderColor: colors.secundario,
   },
   logo: {
-    resizeMode: 'stretch',
+    resizeMode: 'contain',
     height: 43,
-    width: 43,
+    width: 100,
   },
 });
 

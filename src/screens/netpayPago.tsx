@@ -7,6 +7,17 @@ import { WebView } from 'react-native-webview';
 import Header from '../components/Header';
 
 const netpayPago = ({ route: { params: { responseNetpay } } }) => {
+  function onMessage(data) {
+    // Intentar parsear el JSON
+    let json;
+    try {
+      json = JSON.parse(data.nativeEvent.data);
+    } catch (error) {
+      console.log(error);
+    }
+
+    console.log(json);
+  }
   const html = `<!DOCTYPE html>
 <html>
 
@@ -25,6 +36,7 @@ const netpayPago = ({ route: { params: { responseNetpay } } }) => {
   </div>
   <script src="https://docs.netpay.mx/cdn/js/latest/checkout.plus.dev.js"></script>
   <script>
+
     window.onload = () => {
       const btn = document.getElementById('netpay-checkout');
       btn.click();
@@ -32,11 +44,11 @@ const netpayPago = ({ route: { params: { responseNetpay } } }) => {
     NetPay.init('pk_netpay_uppwsWcVEwjcMTKhExsKENZif')
     NetPay.setSandboxMode(true)
     function onPaymentSuccess(r) {
-      console.log('Success!', r)
+      window.ReactNativeWebView.postMessage(JSON.stringify(r))
     }
 
     function onPaymentError(r) {
-      console.log('Error!', r)
+      window.ReactNativeWebView.postMessage(JSON.stringify(r))
     }
   </script>
 </body>
@@ -53,6 +65,7 @@ const netpayPago = ({ route: { params: { responseNetpay } } }) => {
         <WebView
           originWhitelist={['*']}
           source={{ html }}
+          onMessage={onMessage}
         />
       </View>
     </View>

@@ -1,8 +1,8 @@
 const colors = {
-  principal: '#4F494C',
-  secundario: '#841F37',
-  secundary: '#cc3461',
-  alternativo: '#E7D0BA',
+  principal: '#C5B099',
+  secundario: '#79142A',
+  secundary: '#CDB19C',
+  alternativo: '#60595D',
   text: '#ffffff',
 };
 

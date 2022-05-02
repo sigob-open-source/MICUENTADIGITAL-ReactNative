@@ -15,9 +15,9 @@ const Adeudo = ({
   const [cargos, setCargos] = useState();
 
   useEffect(() => {
-    console.log('newAdeudo');
-    console.log(cargo || 0);
-    setCargos(reduceArrCargos());
+    if (cargo !== null) {
+      setCargos(reduceArrCargos());
+    }
     // (cargo !== null) ? cargo = Number(cargo.toFixed(2)) : null;
   }, []);
 
@@ -222,7 +222,7 @@ const Adeudo = ({
               <Text style={styles.textLeft}>
                 $
                 {' '}
-                {cargos?.descuentos_de_actualizaciones_str || '0.00'}
+                {cargo?.descuentos_de_actualizaciones_str || '0.00'}
               </Text>
             </View>
           </View>
@@ -234,7 +234,7 @@ const Adeudo = ({
               <Text style={styles.textLeft}>
                 $
                 {' '}
-                {cargos?.descuentos_de_recargos_str || '0.00'}
+                {cargo?.descuentos_de_recargos_str || '0.00'}
               </Text>
             </View>
           </View>
@@ -256,7 +256,7 @@ const Adeudo = ({
               <Text style={styles.textLeft}>
                 $
                 {' '}
-                {cargos?.descuentos_de_gastos_str || '0.00'}
+                {cargo?.descuentos_de_gastos_str || '0.00'}
               </Text>
             </View>
           </View>

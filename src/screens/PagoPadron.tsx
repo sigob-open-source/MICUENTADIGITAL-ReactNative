@@ -98,6 +98,7 @@ const PagoPadron = ({ route }) => {
 
   //   );
   // };
+
   const dopayment = async () => {
     const sumall = resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0);
     console.log('suma', sumall);
@@ -150,6 +151,16 @@ const PagoPadron = ({ route }) => {
             ? resultCargos.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch || ''} padron={padron} cargo={cargo} />))
             : null
         }
+
+        {newData === true && resultCargos[0] === undefined ? (
+          <Adeudo
+            nombre={
+              nameSearch
+            }
+            padron={padron}
+            cargo={null}
+          />
+        ) : null}
 
         {
         (isLoading) ? <ActivityIndicator style={styles.loading} size="large" color="#fc9696" /> : null

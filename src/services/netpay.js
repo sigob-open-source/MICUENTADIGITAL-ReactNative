@@ -16,6 +16,7 @@ const tokenizeAmount = async (total) => {
   } catch (error) {
     // todo: do something
   }
+  console.log(token);
   return token;
 };
 
