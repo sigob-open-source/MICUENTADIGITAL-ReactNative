@@ -24,6 +24,17 @@ const getSolicitudes = async (entidadMunicipalId, page) => {
     return [];
   }
 };
+//http://localhost:8000/configuracion/unidades-de-recaudacion-public/
+//http://localhost:8000/configuracion/caar-public/
+
+const getOficinas = async () =>{
+  try {
+    const response = await http.get(`configuracion/unidades-de-recaudacion-public/`);
+    return response?.data ?? [];    
+  } catch (error) {
+    
+  }
+}
 
 const registrarSolicitud = async (
   comentario,
@@ -74,4 +85,5 @@ export {
   getSolicitudes,
   registrarSolicitud,
   registrarArchivo,
+  getOficinas
 };
