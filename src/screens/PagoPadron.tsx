@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -13,7 +13,6 @@ import {
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fonts from '../utils/fonts';
 
 import { tokenizeAmount } from '../services/netpay';
@@ -27,8 +26,14 @@ import BusquedaAvanzadaVehiculo from '../components/BusquedaAvanzadaComponents/B
 import Adeudo from '../components/Adeudo';
 
 import {
-  getAdeudoVehiculo, getAdeudoPredio, getAdeudoEmpresa, getAdeudoCiudadano,
+  getAdeudoVehiculo,
+  getAdeudoPredio,
+  getAdeudoEmpresa,
+  getAdeudoCiudadano,
 } from '../services/padrones';
+
+import { getReferencia } from '../services/recaudacion';
+import { useNotification } from '../components/DropDowAlertProvider';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
@@ -41,10 +46,17 @@ const PagoPadron = ({ route }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0);
 
+  const notify = useNotification();
+
   const navigation = useNavigation();
 
   useEffect(() => {
     setPadron(route.params.padron);
+    notify({
+      type: 'warn',
+      title: 'LLenar todos los datos requeridos',
+      message: 'para realizar el pago ocupo el dato xxxx',
+    });
   }, []);
 
   const showAlert = () => Alert.alert(
@@ -62,18 +74,18 @@ const PagoPadron = ({ route }) => {
     setIsLoading(true);
     setNewData(false);
     let response;
-    if (padron === 'Ciudadano') {
+    if (padron.descripcion === 'Ciudadano') {
       response = await getAdeudoCiudadano(searchText, formData);
       (response !== null) ? setNameSearch(response.first_name) : null;
-    } else if (padron === 'Empresa') {
+    } else if (padron.descripcion === 'Empresa') {
       response = await getAdeudoEmpresa(searchText, formData);
       (response !== null) ? setNameSearch(response.nombre_comercial) : null;
       // setNameSearch(response.nombre_comercial);
-    } else if (padron === 'Predio') {
+    } else if (padron.descripcion === 'Predio') {
       response = await getAdeudoPredio(searchText, formData);
       (response !== null) ? setNameSearch(response.cuenta_unica_de_predial) : null;
       // setNameSearch(response?.cuenta_unica_de_predial);
-    } else if (padron === 'Vehicular') {
+    } else if (padron.descripcion === 'Vehicular') {
       response = await getAdeudoVehiculo(searchText, formData);
       (response !== null) ? setNameSearch(response.numero_de_placa) : null;
       // setNameSearch(response?.numero_de_placa);
@@ -82,6 +94,8 @@ const PagoPadron = ({ route }) => {
       setIsLoading(false);
       showAlert();
     } else {
+      console.log('datainfo', response);
+
       setResultCargos(response?.cargos);
       setNewData(true);
     }
@@ -89,22 +103,16 @@ const PagoPadron = ({ route }) => {
     setIsLoading(false);
   };
 
-  // const handleAdeudo = () => {
-  //   console.log('poads');
-  //   return (
-  //     resultCargos.cargos.map((cargo) => {
-  //       <Adeudo nombre={nameSearch} padron={padron} cantidad={cargo.importe} />;
-  //     })
-
-  //   );
-  // };
-
   const dopayment = async () => {
     const sumall = resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0);
     console.log('suma', sumall);
 
     const responseNetpay = await tokenizeAmount(sumall.toFixed(2));
-
+    // const reponseReferencia = await getReferencia(
+    //   sumall.toFixed(2),
+    //   resultCargos.map((c) => c.id),
+    //   padron.id,
+    // );
     if (responseNetpay) {
       navigation.push('netpaypago', { responseNetpay });
     }
@@ -114,13 +122,13 @@ const PagoPadron = ({ route }) => {
     <View style={styles.container}>
       <Header item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
       <Text style={styles.headText}>
-        {route.params.padron}
+        {padron?.descripcion}
       </Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 30 }}>
         <View style={styles.textInputContainer}>
           <TextInput color="black" placeholderTextColor="#C4C4C4" onChangeText={(text) => setSearchText(text)} style={styles.textInputStyle} placeholder="Buscar..." />
-
         </View>
+
         <TouchableWithoutFeedback onPress={() => { handleSearch(); }}>
           <View style={styles.iconContainer}>
             <Icon
@@ -131,24 +139,24 @@ const PagoPadron = ({ route }) => {
           </View>
         </TouchableWithoutFeedback>
         {
-          (padron === 'Ciudadano') ? <BusquedaAvanzadaCiudadano onSearch={handleSearch} /> : null
+          (padron?.descripcion === 'Ciudadano') ? <BusquedaAvanzadaCiudadano onSearch={handleSearch} /> : null
         }
         {
-          (padron === 'Empresa') ? <BusquedaAvanzadaEmpresa onSearch={handleSearch} /> : null
+          (padron?.descripcion === 'Empresa') ? <BusquedaAvanzadaEmpresa onSearch={handleSearch} /> : null
         }
         {
-          (padron === 'Predio') ? <BusquedaAvanzadaPredio onSearch={handleSearch} /> : null
+          (padron?.descripcion === 'Predio') ? <BusquedaAvanzadaPredio onSearch={handleSearch} /> : null
         }
         {
-          (padron === 'Vehicular') ? <BusquedaAvanzadaVehiculo onSearch={handleSearch} /> : null
+          (padron?.descripcion === 'Vehicular') ? <BusquedaAvanzadaVehiculo onSearch={handleSearch} /> : null
         }
       </View>
       {console.log('estos son los cargos', resultCargos)}
       {console.log('este es el total', totalAmount)}
       <ScrollView>
         {
-          (newData === true && resultCargos[0] !== null)
-            ? resultCargos.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch || ''} padron={padron} cargo={cargo} />))
+          (newData === true && resultCargos?.[0] !== null)
+            ? resultCargos?.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch || ''} padron={padron?.descripcion} cargo={cargo} />))
             : null
         }
 
@@ -157,7 +165,7 @@ const PagoPadron = ({ route }) => {
             nombre={
               nameSearch
             }
-            padron={padron}
+            padron={padron?.descripcion}
             cargo={null}
           />
         ) : null}

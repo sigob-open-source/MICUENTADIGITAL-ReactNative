@@ -36,9 +36,10 @@ const getAdeudoCiudadano = async (search, advanceSearch) => {
   ).then(async () => {
     if (result !== undefined && result !== null) {
       await http.post('cuentaunicasir/consulta-caja-atencion-ciudadana/', {
-        ciudadano: result.id,
-        canal_de_pago: 3,
+        canal_de_pago: 1,
         entidad_municipal: 1,
+        ciudadano: result.id,
+        padron_id: 1,
       }).then((response) => {
         result = response.data[0];
       }, (error) => { console.error(error); });
