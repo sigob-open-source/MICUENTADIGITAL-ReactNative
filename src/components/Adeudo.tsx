@@ -198,7 +198,7 @@ const Adeudo = ({
               <Text style={styles.textLeft}>
                 $
                 {' '}
-                {cargo?.importe.toFixed(2) || 0}
+                {cargos?.adeudo_total || 0}
               </Text>
             </View>
           </View>
@@ -222,7 +222,7 @@ const Adeudo = ({
               <Text style={styles.textLeft}>
                 $
                 {' '}
-                {cargo?.descuentos_de_actualizaciones_str || '0.00'}
+                {cargos?.descuentos_de_actualizaciones_str || '0.00'}
               </Text>
             </View>
           </View>
@@ -234,7 +234,7 @@ const Adeudo = ({
               <Text style={styles.textLeft}>
                 $
                 {' '}
-                {cargo?.descuentos_de_recargos_str || '0.00'}
+                {cargos?.descuentos_de_recargos_str || '0.00'}
               </Text>
             </View>
           </View>
@@ -256,7 +256,7 @@ const Adeudo = ({
               <Text style={styles.textLeft}>
                 $
                 {' '}
-                {cargo?.descuentos_de_gastos_str || '0.00'}
+                {cargos?.descuentos_de_gastos_str || '0.00'}
               </Text>
             </View>
           </View>

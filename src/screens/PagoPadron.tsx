@@ -26,10 +26,11 @@ import BusquedaAvanzadaVehiculo from '../components/BusquedaAvanzadaComponents/B
 import Adeudo from '../components/Adeudo';
 
 import {
-  getAdeudoVehiculo,
-  getAdeudoPredio,
-  getAdeudoEmpresa,
-  getAdeudoCiudadano,
+  getVehiculo,
+  getPredio,
+  getEmpresa,
+  getCiudadano,
+  getAdeudoPadron,
 } from '../services/padrones';
 
 import { getReferencia } from '../services/recaudacion';
@@ -74,20 +75,25 @@ const PagoPadron = ({ route }) => {
     setIsLoading(true);
     setNewData(false);
     let response;
+    let numeroDePadron;
     if (padron.descripcion === 'Ciudadano') {
-      response = await getAdeudoCiudadano(searchText, formData);
-      (response !== null) ? setNameSearch(response.first_name) : null;
+      response = await getCiudadano(searchText, formData);
+      numeroDePadron = 1;
+      (response !== null) ? setNameSearch(response?.first_name) : null;
     } else if (padron.descripcion === 'Empresa') {
-      response = await getAdeudoEmpresa(searchText, formData);
-      (response !== null) ? setNameSearch(response.nombre_comercial) : null;
+      response = await getEmpresa(searchText, formData);
+      numeroDePadron = 2;
+      (response !== null) ? setNameSearch(response?.nombre_comercial) : null;
       // setNameSearch(response.nombre_comercial);
     } else if (padron.descripcion === 'Predio') {
-      response = await getAdeudoPredio(searchText, formData);
-      (response !== null) ? setNameSearch(response.cuenta_unica_de_predial) : null;
+      response = await getPredio(searchText, formData);
+      numeroDePadron = 3;
+      (response !== null) ? setNameSearch(response?.cuenta_unica_de_predial) : null;
       // setNameSearch(response?.cuenta_unica_de_predial);
     } else if (padron.descripcion === 'Vehicular') {
-      response = await getAdeudoVehiculo(searchText, formData);
-      (response !== null) ? setNameSearch(response.numero_de_placa) : null;
+      response = await getVehiculo(searchText, formData);
+      numeroDePadron = 4;
+      (response !== null) ? setNameSearch(response?.numero_de_placa) : null;
       // setNameSearch(response?.numero_de_placa);
     }
     if (response === null || response === undefined) {
@@ -95,7 +101,7 @@ const PagoPadron = ({ route }) => {
       showAlert();
     } else {
       console.log('datainfo', response);
-
+      response = await getAdeudoPadron(response, numeroDePadron);
       setResultCargos(response?.cargos);
       setNewData(true);
     }
@@ -116,6 +122,154 @@ const PagoPadron = ({ route }) => {
     if (responseNetpay) {
       navigation.push('netpaypago', { responseNetpay });
     }
+  };
+
+  // Calcula los totales y descuentas
+  const reduceArrCargos = (cargo) => {
+    const {
+      descuentos_especiales,
+      actualizaciones,
+      recargos,
+      descuentos_aplicables,
+      gastos,
+      importe,
+    } = cargo;
+    let adeudo_total;
+    let descuentos_de_actualizacion = 0;
+    let descuentos_de_recargos = 0;
+    let descuentos_gastos_totales = 0;
+    let multa_recargos = 0;
+    let multa_gastos = 0;
+    let descuentos_de_recargos_str = '';
+    let descuentos_de_actualizaciones_str = '';
+    let descuentos_de_gastos_str = '';
+    const recargo_total = recargos.reduce(
+      (accum, curr) => accum + curr.importe_total,
+      0,
+    );
+
+    recargos.forEach((item) => {
+      const { descuentos } = item;
+      let ttlDesc;
+      let ttlMultaRec;
+      if (descuentos.length) {
+        ttlDesc = descuentos.reduce(
+          (accum, curr) => accum + curr.importe_total,
+          0,
+        );
+        descuentos.forEach((i) => {
+          descuentos_de_recargos_str += `\n\r-${i.comentarios} `;
+        });
+      } else {
+        ttlDesc = 0;
+      }
+      if (item?.es_multa) {
+        const filteredRecargos = recargos.filter(
+          (recargo) => recargo.es_multa === true,
+        );
+        ttlMultaRec = filteredRecargos.reduce(
+          (accum, curr) => accum + curr.importe_total,
+          0,
+        );
+      } else {
+        ttlMultaRec = 0;
+      }
+      multa_recargos += ttlMultaRec;
+      descuentos_de_recargos += ttlDesc;
+    });
+    gastos.forEach((item) => {
+      const { descuentos } = item;
+      let ttlDesc;
+      let ttlMultaGto;
+      if (descuentos.length) {
+        ttlDesc = descuentos.reduce(
+          (accum, curr) => accum + curr.importe_total,
+          0,
+        );
+        descuentos.forEach((i) => {
+          descuentos_de_gastos_str += `\n\r-${i.comentarios} `;
+        });
+      } else {
+        ttlDesc = 0;
+      }
+      if (item.es_multa) {
+        const filteredMultas = gastos.filter((gasto) => gasto.es_multa === true);
+        ttlMultaGto = filteredMultas.reduce(
+          (accum, curr) => accum + curr.importe,
+          0,
+        );
+      } else {
+        ttlMultaGto = 0;
+      }
+      descuentos_gastos_totales += ttlDesc;
+      multa_gastos += ttlMultaGto;
+    });
+
+    actualizaciones.forEach((item) => {
+      const { descuentos } = item;
+      let ttlDesc;
+      if (descuentos.length) {
+        ttlDesc = descuentos.reduce(
+          (accum, curr) => accum + curr.importe_total,
+          0,
+        );
+        descuentos.forEach((i) => {
+          descuentos_de_actualizaciones_str += `\n\r-${i.comentarios} `;
+        });
+      } else {
+        ttlDesc = 0;
+      }
+      descuentos_de_actualizacion += ttlDesc;
+    });
+
+    const descuentos_especiales_totales = descuentos_especiales.reduce(
+      (accum, curr) => accum + curr.importe_total,
+      0,
+    );
+
+    const descuentos_aplicables_total = descuentos_aplicables.reduce(
+      (accum, curr) => accum + curr.importe_total,
+      0,
+    );
+
+    const actualizaciones_totales = actualizaciones.reduce(
+      (accum, curr) => accum + curr.importe_total,
+      0,
+    );
+
+    const gastos_totales = gastos.reduce(
+      (accum, curr) => accum + curr.importe,
+      0,
+    );
+
+    const descuentos_totales = descuentos_aplicables_total + descuentos_especiales_totales;
+    const multas_totales = multa_gastos + multa_recargos;
+    adeudo_total = importe
+      - descuentos_totales
+      + (recargo_total - descuentos_de_recargos)
+      + (actualizaciones_totales - descuentos_de_actualizacion)
+      + (gastos_totales - descuentos_gastos_totales)
+      + multas_totales;
+    adeudo_total = adeudo_total;
+
+    return {
+      descuentos_de_actualizaciones_str,
+      descuentos_de_recargos_str,
+      descuentos_de_gastos_str,
+      descuentos_gastos_totales,
+      descuentos_de_recargos,
+      descuentos_de_actualizacion,
+      descuentos_aplicables_total,
+      descuentos_especiales_totales,
+      descuentos_totales,
+      multas_totales,
+      multa_recargos,
+      multa_gastos,
+      actualizaciones_totales,
+      recargo_total: recargo_total - multa_recargos,
+      adeudo_total,
+      gastos_totales: gastos_totales - multa_gastos,
+    };
   };
 
   return (
@@ -155,7 +309,7 @@ const PagoPadron = ({ route }) => {
       {console.log('este es el total', totalAmount)}
       <ScrollView>
         {
-          (newData === true && resultCargos?.[0] !== null)
+          (newData === true && resultCargos[0])
             ? resultCargos?.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch || ''} padron={padron?.descripcion} cargo={cargo} />))
             : null
         }
