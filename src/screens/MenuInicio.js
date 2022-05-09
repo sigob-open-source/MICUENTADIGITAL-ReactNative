@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import {
   StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, Alert,
 } from 'react-native';
@@ -131,15 +131,11 @@ const numColumns = 3;
 
 const WIDTH = Dimensions.get('window').width;
 
-class MenuInicio extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      hasSwitchedView: false,
-    };
-  }
+const MenuInicio = props =>{
 
-  formatData = (dataList, numColumns) => {
+  const [hasSwitchedView, setHasSwitchedView] = useState(false)
+
+  const formatData = (dataList, numColumns) => {
     const totalRows = Math.floor(dataList.length / numColumns);
     let totalLastRow = dataList.length - (totalRows * numColumns);
 
@@ -152,14 +148,13 @@ class MenuInicio extends Component {
     return dataList;
   };
 
-  navigateToScreen = (item) => {
+  const navigateToScreen = (item) => {
     if (item.navegacion != null) {
-      if (!this.state.hasSwitchedView) {
-        this.setState({
-          hasSwitchedView: true,
-        }, this.props.navigation.push(item.navegacion));
+      if (!hasSwitchedView) {
+        setHasSwitchedView(true)
+        props.navigation.push(item.navegacion);
         setTimeout(() => {
-          this.state.hasSwitchedView = false;
+          setHasSwitchedView(false)
         }, 1000);
       }
     } else if (item.necesitaLogin) {
@@ -169,8 +164,8 @@ class MenuInicio extends Component {
     }
   };
 
-  _renderItem = ({ item, index }) => (
-    <TouchableWithoutFeedback onPress={() => this.navigateToScreen(item)}>
+  const _renderItem = ({ item, index }) => (
+    <TouchableWithoutFeedback onPress={() => navigateToScreen(item)}>
       <View style={{ flex: 1, alignItems: 'center' }}>
         <Square
           col={item.color}
@@ -184,37 +179,35 @@ class MenuInicio extends Component {
     </TouchableWithoutFeedback>
   );
 
-  render() {
-    return (
-      <View style={styles.container}>
-        <Header
-          style={styles.header}
-          item="Inicio"
-          imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
-        />
+  return (
+    <View style={styles.container}>
+      <Header
+        style={styles.header}
+        item="Inicio"
+        imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
+      />
 
-        <View style={{ flex: 1, marginHorizontal: '2%' }}>
-          <FlatList
-            data={this.formatData(dataList, numColumns)}
-            renderItem={this._renderItem}
-            keyExtractor={(item, index) => index.toString()}
-            numColumns={numColumns}
-          />
-        </View>
-        <View style={styles.separator} />
-        <View style={{ marginHorizontal: '2%' }}>
-          <FlatList
-            style={{ marginBottom: '6%' }}
-            data={this.formatData(dataListSecond, numColumns)}
-            renderItem={this._renderItem}
-            keyExtractor={(item, index) => index.toString()}
-            numColumns={numColumns}
-          />
-        </View>
-        <Footer style={styles.footer} />
+      <View style={{ flex: 1, marginHorizontal: '2%' }}>
+        <FlatList
+          data={formatData(dataList, numColumns)}
+          renderItem={_renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          numColumns={numColumns}
+        />
       </View>
-    );
-  }
+      <View style={styles.separator} />
+      <View style={{ marginHorizontal: '2%' }}>
+        <FlatList
+          style={{ marginBottom: '6%' }}
+          data={formatData(dataListSecond, numColumns)}
+          renderItem={_renderItem}
+          keyExtractor={(item, index) => index.toString()}
+          numColumns={numColumns}
+        />
+      </View>
+    <Footer style={styles.footer} />
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({

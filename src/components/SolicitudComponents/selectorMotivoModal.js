@@ -1,48 +1,41 @@
 import {
   Modal, Dimensions, TouchableWithoutFeedback, StyleSheet, View, Text, TouchableOpacity, ScrollView,
 } from 'react-native';
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getTiposDeSolicitudes } from '../../services/api';
 
 const deviceHeight = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 
-class MotivoPopUp extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      show: false,
-      lista: [],
-      motivos: null,
-      descripcion: null,
-      entidad: null,
-    };
-  }
+const MotivoPopUp = props => {
+  const [lista, setLista] = useState(null);
+  const [motivos, setMotivos] = useState(null);
+  const [descripcion, setDescripcion] = useState(null);
+  const [entidad, setEntidad] = useState(null);
 
+  useEffect(() => {
+    show();
+  }, []);
   // obtiene la lista de los motivos desde accordion.js para así poder mostrarlos dentro del modal
-  show = async () => {
-    const lista = await this.props.listaMotivos;
-    this.getData();
-    this.setState({ show: true, lista });
+  const show = async () => {
+    const lista = await props.listaMotivos;
+    getData();
   };
 
-  getData = async () => {
+  const getData = async () => {
     const id = 1;
     const tipos = await getTiposDeSolicitudes(id);
-    this.state.motivos = tipos;
-    this.state.entidad = id;
+    setMotivos(tipos);
+    setEntidad(id);
+    console.log("kidsjgsijfgdspij")
   };
 
-  close = () => {
-    this.setState({ show: false });
+  const sendData = (entidad, motivo, descripcion) => {
+    props.close(entidad, motivo, descripcion);
   };
 
-  sendData = (entidad, motivo, descripcion) => {
-    this.props.close(entidad, motivo, descripcion);
-  };
-
-  renderOutsideTouchable(onTouch) {
+  const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
 
@@ -53,8 +46,7 @@ class MotivoPopUp extends React.Component {
     );
   }
 
-  renderTitle = () => {
-    const { title } = this.props;
+  const renderTitle = () => {
     return (
       <View>
         <Text style={{
@@ -64,26 +56,26 @@ class MotivoPopUp extends React.Component {
           textAlign: 'center',
         }}
         >
-          {title}
+          {props.title}
         </Text>
       </View>
     );
   };
 
-  renderMotivos = () => {
-    if (this.state.show) {
+  const renderMotivos = () => {
+    if (props.open) {
       // recorrer la lista para renderizar los motivos disponibles
-      return this.state.lista.map((item, index) => (
+      return lista.map((item, index) => (
         <View key={index}>
           <ScrollView>
-            <TouchableOpacity onPress={() => this.sendData(
-              this.state.entidad,
+            <TouchableOpacity onPress={() => sendData(
+              entidad,
               item.id,
-              `${this.props.motivo} / ${item.descripcion}`,
+              `${props.motivo} / ${item.descripcion}`,
             )}
             >
               <View style={styles.content}>
-                <MaterialCommunityIcons size={40} name={this.props.iconName} color="black" />
+                <MaterialCommunityIcons size={40} name={props.iconName} color="black" />
                 <Text style={styles.collapsibleText}>{item.descripcion}</Text>
               </View>
               <View style={{ width: '100%', height: 1, backgroundColor: '#b8b8b8' }} />
@@ -94,16 +86,12 @@ class MotivoPopUp extends React.Component {
     }
   };
 
-  render() {
-    const { show } = this.state;
-    const { onTouchOutside } = this.props;
     return (
 
       <Modal
         animationType="fade"
         transparent
-        visible={show}
-        onRequestClose={this.close}
+        visible={false}
       >
 
         <View style={{
@@ -113,7 +101,7 @@ class MotivoPopUp extends React.Component {
         }}
         >
 
-          {this.renderOutsideTouchable(onTouchOutside)}
+          {renderOutsideTouchable(props.onTouchOutside)}
 
           <View style={{
             backgroundColor: 'white',
@@ -124,11 +112,11 @@ class MotivoPopUp extends React.Component {
           }}
           >
 
-            {this.renderTitle()}
+            {renderTitle()}
 
             {
-              this.state.lista.length > 0 ? (
-                this.renderMotivos()
+              lista != null ? (
+                renderMotivos()
               ) : null
             }
 
@@ -137,7 +125,6 @@ class MotivoPopUp extends React.Component {
       </Modal>
 
     );
-  }
 }
 
 const styles = StyleSheet.create({

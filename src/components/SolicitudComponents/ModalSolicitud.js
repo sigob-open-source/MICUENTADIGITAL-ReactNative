@@ -1,7 +1,14 @@
 import {
-  Modal, TouchableWithoutFeedback, Dimensions, StyleSheet, View, Text, ScrollView,
+  Modal, 
+  TouchableWithoutFeedback, 
+  Dimensions, 
+  StyleSheet, 
+  View, 
+  Text, 
+  ScrollView,
 } from 'react-native';
-import React from 'react';
+
+import React, { useState, useEffect } from 'react';
 import Accordion from 'react-native-collapsible/Accordion';
 
 import Footer from '../Footer';
@@ -13,49 +20,53 @@ import Loading from '../loadingAnimation';
 
 const WIDTH = Dimensions.get('window').width;
 
-class ModalSolicitud extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      show: false,
-      motivos: [],
-      renderCard: false,
-      motivoParentId: [],
-      motivoDesc: '',
-      entidadId: '',
-      motivoID: null,
-    };
-  }
+const ModalSolicitud = props => {
+  const [motivos, setMotivos] = useState(null);
+  const [renderCard, setRenderCard] = useState(null);
+  const [motivoParentId, setMotivoParentId] = useState(null);
+  const [motivoDesc, setMotivoDesc] = useState(null);
+  const [entidadId, setEntidadId] = useState(null);
+  const [motivoID, setMotivoID] = useState(null);
 
-  show = () => {
-    this.getData();
-    this.setState({ show: true });
-  };
+  useEffect(() => {
+    getData();
+  }, []);
 
-  getData = async () => {
+  const getData = async () => {
     const id = 1;
     const tipos = await getTiposDeSolicitudes(id);
-    this.state.motivos = tipos;
-
-    if (this.state.motivos.length > 0) {
-      this.setState({
-        entidadId: id,
-        renderCard: true,
-      });
+    setMotivos(tipos)
+    console.log(tipos)
+    if (motivos != null) {
+      setEntidadId(id);
+      setRenderCard(true);
+      console.log("shouldBeWorking")
     }
-  };
+  }
+  const renderTitle = () => {
+    return (
 
-  close = () => {
-    this.setState({ show: false });
-  };
+      <View>
+        <Text style={{
+          color: '#182E44',
+          fontSize: 20,
+          fontWeight: '500',
+          margin: 15,
+          textAlign: 'center',
+        }}
+        >
+          {props.title}
+        </Text>
+      </View>
 
-  createCard = () => {
-    if (this.state.motivos != null) {
-      return this.state.motivos.map((item, index) => (
+    );
+  };
+  const createCard = () => {
+    if (motivos != null || motivos.length > 0) {
+      return motivos.map((item, index) => (
 
         <View key={index}>
           <AccordionView
-            close={this.selectMotivo}
             parentId={item.id}
             motivo={item.descripcion}
             sampleSolicitud="nothing"
@@ -69,16 +80,15 @@ class ModalSolicitud extends React.Component {
   };
 
   // Manda los motivos del modal hacia la pantalla donde se debe de mostrar ya el motivo seleccionado junto con su subcategoría
-  selectMotivo = (entidad, motivo, descripcion) => {
-    this.props.onclose(
+  const selectMotivo = (entidad, motivo, descripcion) => {
+    props.onclose(
       entidad,
       motivo,
       descripcion,
     );
-    this.close();
   };
 
-  renderOutsideTouchable(onTouch) {
+  const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
     return (
@@ -90,70 +100,43 @@ class ModalSolicitud extends React.Component {
     );
   }
 
-  renderTitle = () => {
-    const { title } = this.props;
-    return (
+  return (
+    <Modal
+      animationType="fade"
+      transparent
+      visible={props.open}
+    >
 
-      <View>
-        <Text style={{
-          color: '#182E44',
-          fontSize: 20,
-          fontWeight: '500',
-          margin: 15,
-          textAlign: 'center',
+      <View style={{
+        flex: 1,
+        backgroundColor: '#000000AA',
+      }}
+      >
+        {renderOutsideTouchable(props.onTouchOutside)}
+        <View style={{
+          backgroundColor: 'white',
+          width: '100%',
+          height: '100%',
         }}
         >
-          {title}
-        </Text>
+
+          <ScrollView>
+            {renderTitle()}
+            {
+              renderCard ? (
+                createCard()
+              ) : <Text style={{ alignSelf: 'center' }}>Cargando Motivos...</Text>
+            }
+          </ScrollView>
+        </View>
       </View>
 
-    );
-  };
-
-  render() {
-    const { show } = this.state;
-    const { onTouchOutside, title } = this.props;
-    return (
-      <Modal
-        animationType="fade"
-        transparent
-        visible={show}
-        onRequestClose={this.close}
-      >
-
-        <View style={{
-          flex: 1,
-          backgroundColor: '#000000AA',
-        }}
-        >
-          {this.renderOutsideTouchable(onTouchOutside)}
-          <View style={{
-            backgroundColor: 'white',
-            width: '100%',
-            height: '100%',
-          }}
-          >
-
-            <ScrollView>
-              {this.renderTitle()}
-              {
-                this.state.renderCard ? (
-                  this.createCard()
-                ) : <Text style={{ alignSelf: 'center' }}>Cargando Motivos...</Text>
-              }
-            </ScrollView>
-          </View>
-        </View>
-
-        <Footer
-          back={this.close}
-          showBack
-          style={styles.footer}
-        />
-      </Modal>
-
-    );
-  }
+      <Footer
+        showBack
+        style={styles.footer}
+      />
+    </Modal>
+  );
 }
 
 const styles = StyleSheet.create({

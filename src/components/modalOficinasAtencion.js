@@ -1,37 +1,40 @@
-import React, { Component } from 'react';
+import React, { useState, useContext } from 'react';
 import {
-  View, Text, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity,
+  View, 
+  Text, 
+  StyleSheet, 
+  Modal, 
+  TouchableWithoutFeedback, 
+  TouchableOpacity,
 } from 'react-native';
+
+import { ubicacionOficinaContext } from '../helpers/Context';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
 
-class ModalOficinasAtencion extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      show: false,
-      nombreOficina: null,
-      ubicacion: null,
-      coords: null
-    };
-  }
+const ModalOficinasAtencion = props => {
 
-  apihandler=(coords)=>{
+  const [nombrOficina, setNombreOficina] = useState(null);
+  const [ubicacion, setUbicacion] = useState(null);
+  const [coords, setCoords] = useState(null);
+  const {selectedCoords, setSelectedCoords} = useContext(ubicacionOficinaContext)
+
+  const apihandler=()=>{
     try{
-      axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+coords+'.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ')
+      axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+props.coords+'.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ')
       .then(response => {
         const posts = response.data.features[0].place_name;
-        this.setState({
-          ubicacion: posts
-        })
-      })
+        console.log(posts)
+        setUbicacion(posts)
+      });
     }catch(error){
       console.log(error)
     }
   }
 
 
-  renderOutsideTouchable(onTouch) {
+  const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
     return (
@@ -41,73 +44,72 @@ class ModalOficinasAtencion extends React.Component {
     );
   }
 
-  show = async () => {
-    const coordinates = await this.props.coords
-    this.setState({
-      show: true,
-    },this.apihandler(coordinates));
+  const show = async () => {
+    const coordinates = await props.coords
+    console.log("test oppen")
+    apihandler(coordinates);
   };
 
-  close = () => {
-    this.setState({ show: false });
-  };
-
-  render() {
-    const { show } = this.state;
-    const { onTouchOutside } = this.props;
-    return (
-      <Modal
-        transparent
-        animationType="fade"
-        visible={show}
-        onRequestClose={this.close}
+  return (
+    <Modal
+      transparent
+      animationType="fade"
+      onShow={apihandler}
+      visible={props.open}
+    >
+      <View style={{
+        flex: 1,
+        backgroundColor: '#000000AA',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
       >
-        <View style={{
-          flex: 1,
-          backgroundColor: '#000000AA',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        >
 
-          {this.renderOutsideTouchable(onTouchOutside)}
+        {renderOutsideTouchable(props.onTouchOutside)}
 
-          <View style={styles.whiteSquareContainer}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Text style={styles.titleText}>Detalles de oficina</Text>
-              <TouchableOpacity onPress={() => this.close()}>
-                <MaterialCommunityIcons style={{ marginRight: 15 }} size={30} name="arrow-left" color="black" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
-
-            <Text style={{
-              fontWeight: '500',
-              marginLeft: 15,
-              fontSize: 22,
-              alignSelf: 'flex-start',
-              marginVertical: 10,
-              color: 'black',
-            }}
-            >
-              Oficina de atención {this.props.id}
-            </Text>
-
-            <Text style={styles.textStyle}>
-              Oficina: {this.props.desc}
-            </Text>
-            <Text style={styles.textStyle}>
-              Ubicación: {this.state.ubicacion}
-            </Text>
-
+        <View style={styles.whiteSquareContainer}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={styles.titleText}>Detalles de oficina</Text>
+            <TouchableOpacity onPress={props.onTouchOutside}>
+              <MaterialCommunityIcons style={{ marginRight: 15 }} size={30} name="arrow-left" color="black" />
+            </TouchableOpacity>
           </View>
+
+          <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
+
+          <Text style={{
+            fontWeight: '500',
+            marginLeft: 15,
+            fontSize: 22,
+            alignSelf: 'flex-start',
+            marginVertical: 10,
+            color: 'black',
+          }}
+          >
+            Oficina de atención {props.id}
+          </Text>
+
+          <Text style={styles.textStyle}>
+            Oficina: {props.desc}
+          </Text>
+
+          {
+            selectedCoords == null ?(
+              <Text style={styles.textStyle}>
+                Ubicación: Cargando...
+              </Text>
+            ) :
+              <Text style={styles.textStyle}>
+                Ubicación: {ubicacion}
+              </Text> 
+          }
 
         </View>
 
-      </Modal>
-    );
-  }
+      </View>
+
+    </Modal>
+  );
 }
 
 const styles = StyleSheet.create({

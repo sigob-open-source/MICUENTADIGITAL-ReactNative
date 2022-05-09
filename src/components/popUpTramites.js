@@ -1,22 +1,18 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
 import {
   View, Text, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-class PopUpTramites extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      show: false,
-      nombreTramite: null,
-      descTramite: null,
-      nombreDepartamento: null,
-      requisitos: 'Sin requisitos',
-    };
-  }
+const PopUpTramites = props => {
 
-  renderOutsideTouchable(onTouch) {
+  const [showM, setShowM] = useState(false);
+  const [nombreTramite, setNombreTramite] = useState(null);
+  const [descTramite, setDescTramite] = useState(null);
+  const [nombreDepartamento, setNombreDepartamento] = useState(null);
+  const [requisitos, setRequisitos] = useState('Sin requisitos');
+
+  const renderOutsideTouchable = (onTouch) =>  {
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
     return (
@@ -26,79 +22,73 @@ class PopUpTramites extends React.Component {
     );
   }
 
-  show = () => {
-    this.setState({
-      show: true,
-      nombreTramite: this.props.nombreTramite,
-      descTramite: this.props.descTramite,
-      nombreDepartamento: this.props.nombreDepartamento,
-      requisitos: this.props.requisitos,
-    });
+  const show = () => {
+    setShowM(true);
+    setNombreTramite(props.nombreTramite);
+    setDescTramite(props.descTramite);
+    setNombreDepartamento(props.nombreDepartamento);
+    setRequisitos(props.requisitos);
   };
 
-  close = () => {
-    this.setState({ show: false });
+  const close = () => {
+    setShowM(false)
   };
 
-  render() {
-    const { show } = this.state;
-    const { onTouchOutside } = this.props;
-    return (
-      <Modal
-        transparent
-        animationType="fade"
-        visible={show}
-        onRequestClose={this.close}
+  return (
+    <Modal
+      transparent
+      animationType="fade"
+      visible={showM}
+      onRequestClose={close}
+    >
+      <View style={{
+        flex: 1,
+        backgroundColor: '#000000AA',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
       >
-        <View style={{
-          flex: 1,
-          backgroundColor: '#000000AA',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        >
 
-          {this.renderOutsideTouchable(onTouchOutside)}
+        {renderOutsideTouchable(props.onTouchOutside)}
 
-          <View style={styles.whiteSquareContainer}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Text style={styles.titleText}>Requisitos del trámite</Text>
-              <TouchableOpacity onPress={() => this.close()}>
-                <MaterialCommunityIcons style={{ marginRight: 15 }} size={30} name="arrow-left" color="black" />
-              </TouchableOpacity>
-            </View>
-
-            <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
-
-            <Text style={{
-              fontWeight: '500',
-              marginLeft: 15,
-              fontSize: 22,
-              alignSelf: 'flex-start',
-              marginVertical: 10,
-              color: 'black',
-            }}
-            >
-              {this.state.nombreTramite}
-            </Text>
-
-            <Text style={styles.textStyle}>
-              Descripción:
-              {this.state.descTramite}
-            </Text>
-            <Text style={styles.textStyle}>Departamentos:</Text>
-            <Text style={styles.textStyle2}>
-              Nombre:
-              {this.state.nombreDepartamento}
-            </Text>
-            <Text style={styles.textStyle}>Requisitos: Sin requisitos.</Text>
+        <View style={styles.whiteSquareContainer}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={styles.titleText}>Requisitos del trámite</Text>
+            <TouchableOpacity onPress={() => close()}>
+              <MaterialCommunityIcons style={{ marginRight: 15 }} size={30} name="arrow-left" color="black" />
+            </TouchableOpacity>
           </View>
 
+          <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
+
+          <Text style={{
+            fontWeight: '500',
+            marginLeft: 15,
+            fontSize: 22,
+            alignSelf: 'flex-start',
+            marginVertical: 10,
+            color: 'black',
+          }}
+          >
+            {nombreTramite}
+          </Text>
+
+           <Text style={styles.textStyle}>
+             Descripción:
+             {descTramite}
+          </Text>
+          <Text style={styles.textStyle}>Departamentos:</Text>
+          <Text style={styles.textStyle2}>
+            Nombre:
+            {nombreDepartamento}
+          </Text>
+          <Text style={styles.textStyle}>Requisitos: Sin requisitos.</Text>
         </View>
 
-      </Modal>
-    );
-  }
+      </View>
+
+    </Modal>
+  );
 }
 
 const styles = StyleSheet.create({

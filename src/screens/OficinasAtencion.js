@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   FlatList,
   Keyboard,
-  TouchableWithoutFeedback,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
 
@@ -16,6 +15,7 @@ import useKeyboard from '../utils/keyboardListener';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Geolocation from 'react-native-geolocation-service';
 import { getOficinas } from '../services/api';
+import { ubicacionOficinaContext } from '../helpers/Context';
 
 import Header from '../components/Header';
 import MapboxGL from '@react-native-mapbox-gl/maps';
@@ -44,7 +44,9 @@ const OficinasAtencion = props =>{
   const [selectedCoords, setSelectedCoords] = useState(null)
   const [collapsed, setCollapsed] = useState(true)
   const [isKeyboardVisible, setKeyboardVisible] = useState(false);
-  const [numberOfElements, setNumberOfElements] = useState(0)
+  const [numberOfElements, setNumberOfElements] = useState(0);
+  const [open, setOpen] = useState(false)
+  const [error, setError] = useState(null)
 
   const toggleExpanded = () => {
     if (oficinas != null){
@@ -53,14 +55,16 @@ const OficinasAtencion = props =>{
     }
   };
 
-  const onShowPopup = (id, lat, long, desc) => {
+  const onShowPopup = async (id, lat, long, desc) => {
+    const location = await lat
     setId(id)
     setSelectedCoords([lat,long])
     setDesc(desc)
+    setOpen(true);
   };
 
   const onClosePopup = () => {
-    popupRef.close();
+    setOpen(false);
   };
 
   const goBack = () => {
@@ -87,7 +91,7 @@ const OficinasAtencion = props =>{
         setLongitude([position.coords.longitude])
         setLatitude([position.coords.latitude])
       },
-      (error) => this.setState({ error: error.message }),
+      (error) => console.log(error),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   }
@@ -140,7 +144,7 @@ const OficinasAtencion = props =>{
   };
   useEffect(() => {
     if (renderPoints){
-      popupRef.show();
+      setOpen(true);
     }
     if (!renderPoints){
       GetLocation()
@@ -168,14 +172,16 @@ const OficinasAtencion = props =>{
   return(
     <View style={{flex:1,}}> 
       <Header style={styles.header}item="Oficinas de atención" imgnotif={require("../../assets/imagenes/notificationGet_icon.png")} img={require("../../assets/imagenes/header_logo.png")}/>
-      
-      <ModalOficinasAtencion
-        ref={(target) => popupRef = target}
-        onTouchOutside={onClosePopup}      
-        id={id}
-        coords={selectedCoords}
-        desc={desc}
-      />
+     
+      <ubicacionOficinaContext.Provider value={{selectedCoords,setSelectedCoords}}>
+        <ModalOficinasAtencion
+          open={open}
+          onTouchOutside={onClosePopup}      
+          id={id}
+          coords={selectedCoords}
+          desc={desc}
+        />
+      </ubicacionOficinaContext.Provider>
 
       <View style={{flex:1}}> 
         <View style={{position:'absolute',flex:1,height:deviceHeight,width:'100%',borderRadius:90}}>

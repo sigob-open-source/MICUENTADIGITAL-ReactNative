@@ -45,11 +45,10 @@ const Solicitud = (props) => {
   const [archivo, setArchivo] = useState([]);
   const [hasSwitchedView, setHasSwitchedView] = useState(false);
   const [camposFaltantes, setCamposFaltantes] = useState([]);
-
-  useEffect(() => {
-    onShowPopup();
-  }, []);
-
+  const [motivoOpen, setMotivoOpen] = useState(true);
+  const [comentarioOpen, setComentarioOpen] = useState(false);
+  const [mapaOpen, setMapaOpen] = useState(false);
+  
   const submit = async () => {
     onCloseConfirmationPopUp();
     // Validar que el usuario llenó toda la información necesaria para poedr mandar la solicitufd
@@ -109,12 +108,10 @@ const Solicitud = (props) => {
   const openModal = (type) => {
     if (!hasSwitchedView) {
       setHasSwitchedView(true);
-      if (type == 0) {
-        onShowCommentPopup();
-      } else if (type == 2) {
-        onShowPopup();
-      } else {
-        onShowMapPopup();
+      switch(type){
+        case 0: setMotivoOpen(true); setMapaOpen(false); setComentarioOpen(false);break;
+        case 1: setMapaOpen(true); setMotivoOpen(false); setMapaOpen(false);  break;
+        case 2: setComentarioOpen(true); setMotivoOpen(false); setMapaOpen(false);break;
       }
       setTimeout(() => {
         setHasSwitchedView(false);
@@ -129,37 +126,10 @@ const Solicitud = (props) => {
         'Hacen falta uno o más campos, favor de revisar la solicitud.',
       );
     } else {
-      popupRef4.show();
+      
     }
   };
 
-  const onCloseConfirmationPopUp = () => {
-    popupRef4.close();
-  };
-
-  const onShowPopup = () => {
-    popupRef.show();
-  };
-
-  const onClosePopup = () => {
-    popupRef.close();
-  };
-
-  const onShowCommentPopup = () => {
-    popupRef2.show();
-  };
-
-  const onCloseCommentPopup = () => {
-    popupRef2.close();
-  };
-
-  const onShowMapPopup = async () => {
-    popupRef3.show();
-  };
-
-  const onCloseMapPopup = () => {
-    popupRef3.close();
-  };
 
   const goBack = () => {
     props.navigation.goBack();
@@ -171,8 +141,8 @@ const Solicitud = (props) => {
 
       <ModalSolicitud
         title="Elegir Motivo"
-        ref={(target) => popupRef = target}
-        onTouchOutside={onClosePopup}
+        open={motivoOpen}
+
         onclose={motivoToParent}
       />
 
@@ -186,14 +156,12 @@ const Solicitud = (props) => {
 
       <ComentarioModal
         title="Escribe tu comentario"
-        ref={(target) => popupRef2 = target}
-        onTouchOutside={onClosePopup}
+
         modalToParent={modalToParent}
       />
 
       <MapaModal
-        ref={(target) => popupRef3 = target}
-        onTouchOutside={onClosePopup}
+
         mapToParent={mapToParent}
       />
 
@@ -215,15 +183,18 @@ const Solicitud = (props) => {
           }
 
           <ConfirmacionPopUp
-            ref={(target) => popupRef4 = target}
-            onTouchOutside={onClosePopup}
+
             nombreSolicitud={motivoDesc}
             comentario={comment}
             ubicacion={location}
             confirmacion={submit}
           />
 
-          <CardSolicitud onPassImage={imageToParent} openMap={onShowMapPopup} getText={comment} getLocation={location} />
+          <CardSolicitud 
+          onPassImage={imageToParent} 
+          open={mapaOpen}
+          getText={comment} 
+          getLocation={location} />
 
           <TouchableOpacity onPress={() => openModal(0)}>
             <ButtonRequest texto="Cambiar Comentario" />
