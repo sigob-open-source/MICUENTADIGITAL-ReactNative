@@ -15,6 +15,8 @@ const Adeudo = ({
   const [cargos, setCargos] = useState();
 
   useEffect(() => {
+    console.log('cargo a manejar');
+    console.log(cargo);
     if (cargo !== null) {
       setCargos(reduceArrCargos());
     }
@@ -159,9 +161,9 @@ const Adeudo = ({
             <Text numberOfLines={1} style={styles.text}>
               {padron}
               :
-              {(nombre.length < 35)
+              {(nombre?.length < 35)
                 ? `${nombre}`
-                : `${nombre.substring(0, 32)}...`}
+                : `${nombre?.substring(0, 32)}...`}
             </Text>
             <Text style={styles.text}>
               $

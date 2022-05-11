@@ -43,7 +43,7 @@ const getCiudadano = async (search, advanceSearch) => {
   return result;
 };
 
-const getVehiculo = async (search) => {
+const getVehiculo = async (search, advanceSearch) => {
   const urlEndpoint = 'recaudacion/vehiculos-caja/';
   let result;
   await http
@@ -125,7 +125,7 @@ const getEmpresa = async (search, advanceSearch) => {
     })
     .then(
       (response) => {
-        result = response.data;
+        result = response.data[0];
       },
       (error) => {
         console.error(error);
@@ -138,20 +138,21 @@ const getEmpresa = async (search, advanceSearch) => {
 const getAdeudoPadron = async (padron, numeroPadron) => {
   let result;
   console.log('info despue');
-  console.log(padron.id);
+  console.log(padron?.id);
   console.log(numeroPadron);
   if (padron !== undefined && padron !== null) {
     await http
       .post('cuentaunicasir/consulta-caja-atencion-ciudadana/padron/', {
-        padron_id: padron.id,
+        padron_id: padron?.id,
         padron: numeroPadron,
         canal_de_pago: 3,
         entidad_municipal: 2,
       })
       .then(
         (response) => {
+          console.log('respuesta cc');
           console.log(response);
-          result = response.data;
+          result = response?.data;
         },
         (error) => {
           console.error(error);

@@ -60,37 +60,32 @@ const PagoPadron = ({ route }) => {
     });
   }, []);
 
-  const showAlert = () => Alert.alert(
-    'Problema en la busqueda',
-    'No se encontró nada que concuerde con la busqueda.',
-    [
-      {
-        text: 'Entendido',
-        style: 'cancel',
-      },
-    ],
-  );
+  const showAlert = () => notify({
+    type: 'error',
+    title: 'Error de busqueda',
+    message: 'No se encontró nada que concuerde con la busqueda',
+  });
 
   const handleSearch = async (formData) => {
     setIsLoading(true);
     setNewData(false);
     let response;
     let numeroDePadron;
-    if (padron.descripcion === 'Ciudadano') {
+    if (padron?.descripcion === 'Ciudadano') {
       response = await getCiudadano(searchText, formData);
       numeroDePadron = 1;
-      (response !== null) ? setNameSearch(response?.first_name) : null;
-    } else if (padron.descripcion === 'Empresa') {
+      (response !== null) ? setNameSearch(response?.nombre_completo) : null;
+    } else if (padron?.descripcion === 'Empresa') {
       response = await getEmpresa(searchText, formData);
       numeroDePadron = 2;
-      (response !== null) ? setNameSearch(response?.nombre_comercial) : null;
+      (response !== null) ? setNameSearch(response?.razon_social) : null;
       // setNameSearch(response.nombre_comercial);
-    } else if (padron.descripcion === 'Predio') {
+    } else if (padron?.descripcion === 'Predio') {
       response = await getPredio(searchText, formData);
       numeroDePadron = 3;
       (response !== null) ? setNameSearch(response?.cuenta_unica_de_predial) : null;
       // setNameSearch(response?.cuenta_unica_de_predial);
-    } else if (padron.descripcion === 'Vehicular') {
+    } else if (padron?.descripcion === 'Vehicular') {
       response = await getVehiculo(searchText, formData);
       numeroDePadron = 4;
       (response !== null) ? setNameSearch(response?.numero_de_placa) : null;
@@ -102,6 +97,7 @@ const PagoPadron = ({ route }) => {
     } else {
       console.log('datainfo', response);
       response = await getAdeudoPadron(response, numeroDePadron);
+      console.log(response);
       setResultCargos(response?.cargos);
       setNewData(true);
     }
@@ -309,12 +305,12 @@ const PagoPadron = ({ route }) => {
       {console.log('este es el total', totalAmount)}
       <ScrollView>
         {
-          (newData === true && resultCargos[0])
+          (newData === true && resultCargos?.[0])
             ? resultCargos?.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch || ''} padron={padron?.descripcion} cargo={cargo} />))
             : null
         }
 
-        {newData === true && resultCargos[0] === undefined ? (
+        {newData === true && resultCargos?.[0] === undefined ? (
           <Adeudo
             nombre={
               nameSearch
