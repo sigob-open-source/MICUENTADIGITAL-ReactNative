@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet, View, Text, Image, TouchableWithoutFeedback, FlatList,
+  StyleSheet, View, Text, Image, TouchableWithoutFeedback, FlatList, ActivityIndicator,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome'
+import Icon from 'react-native-vector-icons/FontAwesome';
 import { getSolicitudes } from '../services/api';
 
 import Header from '../components/Header';
@@ -10,24 +10,47 @@ import Footer from '../components/Footer';
 import ContentSolicitud from '../components/ContentSolicitud';
 import fonts from '../utils/fonts';
 
-const VerSolicitudes = props => {
+const VerSolicitudes = (props) => {
   const [solicitudes, setSolicitudes] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [isLoading, setIsLoading] = useState(false);
 
   const getData = async () => {
-    const res = await getSolicitudes();
-    setSolicitudes(res);
+    setIsLoading(true);
+    await getSolicitudes(null, currentPage).then(
+      (res) => {
+        setSolicitudes([...solicitudes, ...res]);
+      },
+    );
+    setIsLoading(false);
   };
-  
+
+  const loadMoreItem = () => {
+    console.log('end');
+    setCurrentPage(currentPage + 1);
+  };
+
   const goBack = () => {
     props.navigation.goBack();
   };
 
   useEffect(() => {
     getData();
-  }, []);
+    setIsLoading(false);
+  }, [currentPage]);
 
   const renderItem = ({ item }) => (
     <ContentSolicitud fecha={item.fecha_de_la_solicitud} solicitud={item} />
+  );
+
+  const renderLoader = () => (
+    isLoading
+      ? (
+        <View>
+          <ActivityIndicator size="large" color="#aaa" />
+        </View>
+      ) : null
+
   );
 
   return (
@@ -39,12 +62,16 @@ const VerSolicitudes = props => {
           data={solicitudes}
           renderItem={renderItem}
           keyExtractor={(item) => item.id}
+          ListFooterComponent={renderLoader}
+          onEndReached={loadMoreItem}
+          onEndReachedThreshold={0.5}
         />
       </View>
-      <Footer 
+      <Footer
         back={goBack}
-        showBack={true} 
-        style={styles.footer} />
+        showBack
+        style={styles.footer}
+      />
     </View>
   );
 };
@@ -85,6 +112,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.semiBold,
     textAlign: 'center',
   },
+
 });
 
 export default VerSolicitudes;

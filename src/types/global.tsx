@@ -1,0 +1,1 @@
+global.id = 1;

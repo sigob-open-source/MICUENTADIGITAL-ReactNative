@@ -1,27 +1,36 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import {
-  StyleSheet, View, Text, Dimensions, TouchableOpacity, ScrollView, Alert,
+  StyleSheet,
+  View,
+  Text,
+  Dimensions,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  PermissionsAndroid,
+  Linking,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import axios from 'axios';
 import { registrarArchivo, registrarSolicitud } from '../services/api';
+import axios from 'axios';
 
 import ModalSolicitud from '../components/SolicitudComponents/ModalSolicitud';
 import ComentarioModal from '../components/SolicitudComponents/ComentariosModal';
 import { MapaModal } from '../components/SolicitudComponents/MapaModal';
-import AccordionView from '../components/SolicitudComponents/accordion';
 
 import CardSolicitud from '../components/SolicitudComponents/CardSolicitud';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ConfirmacionPopUp from '../components/SolicitudComponents/confirmacionPopUp';
 import ButtonRequest from '../components/SolicitudComponents/Button';
 
 const WIDTH = Dimensions.get('window').width;
 
-const Solicitud = (props) => {
+const Solicitud = props => {
   let popupRef = React.createRef();
   let popupRef2 = React.createRef();
   let popupRef3 = React.createRef();
+  let popupRef4 = React.createRef();
 
   const [comment, setComment] = useState('Sin comentario.');
   const [location, setLocation] = useState('Sin locación');
@@ -33,35 +42,51 @@ const Solicitud = (props) => {
   const [submotivoDesc, setSubMotivoDesc] = useState(null);
   const [showMotivo, setShowMotivo] = useState(false);
   const [entidadMunicipalId, setEntidadMunicipalId] = useState(null);
-  const [archivo, setArchivo] = useState(null);
+  const [archivo, setArchivo] = useState([]);
+  const [hasSwitchedView, setHasSwitchedView] = useState(false)
+  const [camposFaltantes, setCamposFaltantes] = useState([])
+
+  useEffect(() => {
+    onShowPopup()
+  }, []);
 
   const submit = async () => {
-    const response = await registrarSolicitud(
-      comment,
-      latitud,
-      longitud,
-      motivo_de_la_solicitud,
-      entidadMunicipalId,
-    );
-    if (response) {
-      const responseFile = await registrarArchivo(
-        response.seguimientos[0].id,
-        archivo,
-      );
-      if (responseFile) {
-        response.seguimientos[0].archivos.push(responseFile);
-      }
-      console.log(JSON.stringify(response, null, 2));
+    onCloseConfirmationPopUp()
+    //Validar que el usuario llenó toda la información necesaria para poedr mandar la solicitufd
 
-      Alert.alert('Registro existoso', 'Su solicitud ha sido procesada con éxito, pronto recibirá informes de su solicitud.');
-    } else {
-      Alert.alert('Error', 'Ha ocurrido un error, su solicitud no pudo ser registrada. Intente más tarde.');
-    }
+      const image = archivo
+      const response = await registrarSolicitud(
+        comment,
+        latitud,
+        longitud,
+        motivo_de_la_solicitud,
+        entidadMunicipalId,
+      );
+      if (response) {
+        const responseFile = await registrarArchivo(
+          response.seguimientos[0].id,
+          image,
+        );
+        if (responseFile) {
+          response.seguimientos[0].archivos.push(responseFile);
+        }
+        console.log(JSON.stringify(response, null, 2));
+  
+        Alert.alert(
+          'Registro existoso', 
+          'Su solicitud ha sido procesada con éxito, pronto recibirá informes de su solicitud.',
+          [
+            {text:'Aceptar', onPress: () => props.navigation.navigate('verSolicitudes')}
+          ],
+        );
+      } else {
+        Alert.alert('Error', 'Ha ocurrido un error, su solicitud no pudo ser registrada. Intente más tarde.');
+      }
+
   };
 
   const imageToParent = (imageData) => {
     setArchivo(imageData);
-    console.log('foto: ', imageData.uri, '', imageData.type, '', imageData.name, '', imageData.size);
   };
 
   const modalToParent = (modalData) => {
@@ -81,6 +106,44 @@ const Solicitud = (props) => {
     setLongitud(longitud);
   };
 
+  // Evita que se puedan abrir varios modales al spamear los botones
+  const openModal = (type) => {
+
+    if (!hasSwitchedView){
+      setHasSwitchedView(true)
+      if (type == 0){
+        onShowCommentPopup()
+      }
+      else if (type == 2){
+        onShowPopup();
+      }
+      else{
+        onShowMapPopup();
+      }
+      setTimeout(() => {
+        setHasSwitchedView(false)
+      }, 2000);
+    }
+
+  }
+  
+  const onShowConfirmationPopUp = () =>{
+    if ((location == 'Sin locacion') || (archivo == null) || (motivo_de_la_solicitud === null) || (comment === 'Sin comentario.' || comment === '')){
+      Alert.alert(
+        'Registro fallido', 
+        'Hacen falta uno o más campos, favor de revisar la solicitud.'
+        )
+    }else{
+      popupRef4.show()
+    }
+    
+  }
+
+  const onCloseConfirmationPopUp = () =>{
+    popupRef4.close()
+  }
+
+
   const onShowPopup = () => {
     popupRef.show();
   };
@@ -97,7 +160,7 @@ const Solicitud = (props) => {
     popupRef2.close();
   };
 
-  const onShowMapPopup = () => {
+  const onShowMapPopup = async () => {
     popupRef3.show();
   };
 
@@ -144,7 +207,7 @@ const Solicitud = (props) => {
       <ScrollView contentContainerStyle={{ padding: 10, paddingHorizontal: 0 }}>
         <View style={{ flex: 1, marginTop: 9, marginHorizontal: '2%' }}>
 
-          <TouchableOpacity onPress={onShowPopup}>
+          <TouchableOpacity onPress={()=>openModal(2)}>
             <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow />
           </TouchableOpacity>
           {
@@ -158,32 +221,48 @@ const Solicitud = (props) => {
             ) : null
           }
 
+          <ConfirmacionPopUp 
+            ref={(target) => popupRef4 = target}
+            onTouchOutside={onClosePopup}
+            nombreSolicitud={motivoDesc} 
+            comentario={comment} 
+            ubicacion={location} 
+            confirmacion={submit}
+          />
+
           <CardSolicitud onPassImage={imageToParent} openMap={onShowMapPopup} getText={comment} getLocation={location} />
 
-          <TouchableOpacity onPress={onShowCommentPopup}>
+          <TouchableOpacity onPress={() => openModal(0)}>
             <ButtonRequest texto="Cambiar Comentario" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={onShowMapPopup}>
+          <TouchableOpacity onPress={() => openModal(1)}>
             <ButtonRequest texto="Cambiar Dirección" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={submit}>
+          <View>
             <View style={styles.sendRequestGeneralContainer}>
-              <View style={styles.sendRequestStyle}>
-                <View style={styles.sendRequestContainer}>
-                  <Text style={{
-                    color: 'black',
-                    fontSize: 20,
-                    fontWeight: '500',
-                  }}
-                  >
-                    Enviar Solicitud
-                  </Text>
+              <TouchableOpacity onPress={onShowConfirmationPopUp}>
+                <View style={styles.sendRequestStyle}>
+                
+                  <View style={styles.sendRequestContainer}>
+                    <Text style={{
+                      color: 'black',
+                      fontSize: 20,
+                      fontWeight: '500',
+                    }}
+                    >
+                      Enviar Solicitud
+                    </Text>
+                  </View>
+                  
+
                 </View>
-              </View>
+
+             
+            </TouchableOpacity>
             </View>
-          </TouchableOpacity>
+         </View>
         </View>
 
       </ScrollView>
@@ -300,8 +379,9 @@ const styles = StyleSheet.create({
     elevation: 20,
   },
   collapsibleContent: {
-    marginLeft: '5%',
+    marginLeft: '3%',
     flexDirection: 'row',
+    justifyContent: 'center',
     alignItems: 'center',
   },
   collapsibleText: {

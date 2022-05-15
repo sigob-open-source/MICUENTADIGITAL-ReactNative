@@ -1,6 +1,6 @@
 import React, { Component, useEffect, useState } from 'react';
 import {
-  StyleSheet, View, TextInput, FlatList, TouchableWithoutFeedback, Text,
+  StyleSheet, View, TextInput, FlatList, TouchableWithoutFeedback, Text, ScrollView, Pressable,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -11,36 +11,11 @@ import Footer from '../components/Footer';
 import http from '../services/http';
 import getPadrones from '../services/padrones';
 
-const dataList = [
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Referendos Vehiculares',
-    iconname: 'car-alt',
-    enableEntypo: true,
-  },
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Nomina',
-    iconname: 'file-invoice-dollar',
-    enableEntypo: true,
-    navegacion: 'solicitud',
-  },
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Prediales',
-    iconname: 'file-signature',
-    enableEntypo: true,
-    navegacion: 'solicitud',
-  },
-];
-
 const numColumns = 3;
 
-const Pagos = props => {
+const Pagos = (props) => {
   const [padrones, setPadrones] = useState();
+  const [listPadrones, setListPadrones] = ([]);
   const [loading, setLoading] = useState();
 
   useEffect(() => {
@@ -48,15 +23,40 @@ const Pagos = props => {
   }, []);
 
   const getPadronesList = async () => {
+    let data = [];
     await http.get('catalogos/padrones/').then(
       (response) => {
         const result = response.data;
-        setPadrones(result);
+        result.map((padron, index) => {
+          if (typeof (padron) === 'object') {
+            (padron?.descripcion !== 'Todo') ? data = [...data, padron] : null;
+          }
+        });
+        setPadrones(data);
+        console.log(padrones);
       },
       (error) => {
         console.log(error);
       },
     );
+  };
+
+  const checkIcon = (elementName) => {
+    if (elementName === 'Ciudadano') return 'user';
+    if (elementName === 'Empresa') return 'briefcase';
+    if (elementName === 'Predio') return 'building';
+    if (elementName === 'Vehicular') return 'car-alt';
+    if (elementName === 'Todo') return 'align-justify';
+    if (elementName === 'Hospedaje') return 'bed';
+    if (elementName === 'Arrendamiento') return 'wpforms';
+    if (elementName === 'Nomina') return 'cc-visa';
+    if (elementName === 'Alcohol') return 'cube';
+    if (elementName === 'Cedular') return 'id-card';
+    if (elementName === 'JuegoDeAzar') return 'delicious';
+    if (elementName === 'Notario') return 'gavel';
+    if (elementName === 'CasaDeEmpenio') return 'university';
+    if (elementName === 'Agencia') return 'lock';
+    return 'van';
   };
 
   const formatData = (dataList, numColumns) => {
@@ -100,23 +100,36 @@ const Pagos = props => {
         <TextInput color="black" placeholderTextColor="#C4C4C4" style={styles.textInputStyle} placeholder="Buscar..." />
       </View>
 
-      <View style={{ flex: 1, marginHorizontal: '2%' }}>
-
-        <FlatList
-          data={formatData(dataList, numColumns)}
-          renderItem={_renderItem}
-          keyExtractor={(item, index) => index.toString()}
-          numColumns={numColumns}
-        />
-
-      </View>
-      {
+      <View style={{
+        flex: 1, justifyContent: 'center',
+      }}
+      >
+        {
         (padrones)
-          ? (padrones.map((element) => {
-            console.log(element.descripcion);
-          }))
+          ? (
+            <FlatList
+              data={padrones}
+              renderItem={({ padron, index }) => (
+                <Pressable onPress={() => props.navigation.push('pagoPadron', { padron: padrones[index].descripcion })}>
+                  <Square
+                    col="#404040"
+                    isBlank={false}
+                    style={styles.menuContainer}
+                    enableEntypo
+                    nombreItem={padrones[index]?.descripcion || 'default'}
+                    iconName={checkIcon(padrones[index].descripcion)}
+                  />
+                </Pressable>
+
+              )}
+              key={(index) => index}
+              numColumns={3}
+            />
+          )
           : null
       }
+      </View>
+
       <Footer
         back={goBack}
         showBack
@@ -131,10 +144,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#EDF2F5',
-
+    alignItems: 'center',
   },
 
   menuContainer: {
+    marginHorizontal: 6,
     marginVertical: '6%',
   },
   textInputContainer: {

@@ -5,6 +5,7 @@ import {
   View, 
   Text, 
   Alert, 
+  Linking,
   TouchableWithoutFeedback} from 'react-native';
 
 import MapBoxGL from '@react-native-mapbox-gl/maps';
@@ -80,12 +81,26 @@ export class MapaModal extends React.Component{
     this.setState({show: false})
   }
 
-  show = () => {
-    if (this.state.lat == 0 && this.state.long == 0){
-      this.GetLocation()
+  show = async () => {
+    const resultLocation = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+    if (resultLocation){
+      if (this.state.lat == 0 && this.state.long == 0){
+        this.GetLocation()
+      }
+      
+      this.setState({show: true})
+    }else{
+      Alert.alert(
+        'Alerta',
+        'Debe de proporcionar los permisos necesarios para poder seleccionar su ubicación',
+        [
+          {text: 'Cancelar', style: 'cancel'},
+          {text: 'Ir a configuración de la app', onPress: () => Linking.openSettings()},
+        ],
+        { cancelable: false }
+      );      
     }
-    
-    this.setState({show: true})
+
   }
 
   _handleSendLocation(){
@@ -145,7 +160,7 @@ export class MapaModal extends React.Component{
 
           <TouchableWithoutFeedback>
             <View style={styles.streetName}>
-              <Text>{this.state.street}</Text>
+              <Text style={{color:'black'}}>{this.state.street}</Text>
             </View>
           </TouchableWithoutFeedback>
  

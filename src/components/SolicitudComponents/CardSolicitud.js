@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect  } from 'react';
 import {
-  StyleSheet, Text, View, Image, TouchableOpacity,
+  StyleSheet, 
+  Text, 
+  View, 
+  Image, 
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Linking
 } from 'react-native';
-import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -11,9 +16,11 @@ import BottomPopUp from './BottomPopUp';
 
 const CardSolicitud = (props) => {
   let popupRef = React.createRef();
+
   const onShowPopup = () => {
-    popupRef.show();
+      popupRef.show();
   };
+  
   const onClosePopup = () => {
     popupRef.close();
   };
@@ -23,6 +30,7 @@ const CardSolicitud = (props) => {
   const [changeTextImage, setChangeTextImage] = useState(true);
   const [image, setImage] = useState('../../assets/imagenes/none.jpg');
   const [nombreArchivo, setNombreArchivo] = useState('');
+  const [archivo, setArchivo] = useState(null)
 
   const normalizeObject = (file) => ({
     uri: file.path,
@@ -31,8 +39,16 @@ const CardSolicitud = (props) => {
     size: file.size,
   });
 
-  const passImage = async (archivo) => {
-    const foto = await archivo;
+  useEffect(() => {
+    if (props.timeout == true){onClosePopup()}
+
+    if (archivo != null) {
+      passImage()
+    }
+  }, [archivo]);
+  
+  const passImage = () => {
+    console.log(archivo)
     props.onPassImage(archivo);
   };
 
@@ -45,12 +61,12 @@ const CardSolicitud = (props) => {
         multiple: false,
         useFrontCamera: false,
       });
+      setArchivo(normalizeObject(img));
       setShowImage(true);
       setImage(img.path);
       setChangeTextImage(false);
       setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined));
       setShouldShow(false);
-      passImage(archivo);
     } catch (error) {
       console.error(error);
     }
@@ -65,70 +81,17 @@ const CardSolicitud = (props) => {
         multiple: false,
         useFrontCamera: false,
       });
+      setArchivo(normalizeObject(img));
       setShowImage(true);
       setImage(img.path);
       setChangeTextImage(false);
       setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined));
       setShouldShow(false);
-
-      passImage(normalizeObject(img));
     } catch (error) {
-      console.error(error);
+      
     }
   };
 
-  /*
-    const selectImage = () => {
-    const options = {
-      storageOptions:{
-        skipBackup: false,
-        path: 'images'
-      }
-    }
-
-    launchImageLibrary(options,response =>{
-      if(response.errorCode){
-        console.log(response.errorMessage)
-      }else if (response.didCancel){
-        console.log('El usuario canceló la selección')
-      }else{
-        const path = response.assets[0].uri
-        const name = response.assets[0].fileName.replace('rn_image_picker_lib_temp_','')
-        setShowImage(true)
-        setChangeTextImage(false)
-        setNombreArchivo(name)
-        setShouldShow(false)
-        setImage(path)
-        passImage(response)
-        }
-      })
-    }
-    const takePicture = () => {
-      const options = {
-        storageOptions:{
-          skipBackup: false,
-          path: 'images'
-        }
-      }
-
-    launchCamera(options,response =>{
-      if(response.errorCode){
-        console.log(response.errorMessage)
-      }else if (response.didCancel){
-        console.log('El usuario canceló la fotografía')
-      }else{
-        const path = response.assets[0].uri
-        const name = response.assets[0].fileName.replace('rn_image_picker_lib_temp_','')
-        setShowImage(true)
-        setChangeTextImage(false)
-        setNombreArchivo(name)
-        setImage(path)
-        passImage(path)
-
-      }
-    })
-  }
-*/
   return (
     <View>
       <View style={{ ...styles.squareStyle, ...props.style }}>
@@ -199,7 +162,9 @@ const CardSolicitud = (props) => {
           <View style={{ flex: 1, flexDirection: 'column' }}>
 
             <Text style={styles.TitleBottom}>{props.getLocation}</Text>
-            <Text style={styles.verLocacionMapa}>Ver o añadir locación en el mapa.</Text>
+            <TouchableWithoutFeedback onPress={props.openMap}>
+              <Text style={styles.verLocacionMapa}>Ver o añadir locación en el mapa.</Text>
+            </TouchableWithoutFeedback>
 
           </View>
         </View>

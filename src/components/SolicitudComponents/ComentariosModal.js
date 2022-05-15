@@ -71,8 +71,6 @@ class ComentarioModal extends React.Component{
       </View>
     );
   }
-  
-
 
   render(){
     let {show} = this.state
@@ -102,7 +100,7 @@ class ComentarioModal extends React.Component{
             onChangeText={this.onChangeText.bind(this)} 
             maxLength={250} 
             style={{paddingHorizontal:'5%'}} 
-            multiline={true}>  </TextInput>
+            multiline={true}></TextInput>
 
             <View style={{
               width:'95%',

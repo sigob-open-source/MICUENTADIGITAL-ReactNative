@@ -13,23 +13,25 @@ const getTiposDeSolicitudes = async (entidadMunicipalId) => {
   return [];
 };
 
-const getSolicitudes = async (entidadMunicipalId) => {
+const getSolicitudes = async (entidadMunicipalId, page) => {
   try {
-    const response = await http.get('solicitudes/solicitudes/', {
+    const response = await http.get(`solicitudes/solicitudes/?page=${page}`, {
       entidad_municipal: entidadMunicipalId,
     });
     return response?.data?.results ?? [];
   } catch (error) {
     console.error(error);
+    return [];
   }
-  return [];
 };
 
-const registrarSolicitud = async (comentario,
+const registrarSolicitud = async (
+  comentario,
   latitud,
   longitud,
   motivoDeLaSolicitud,
-  entidadMunicipal) => {
+  entidadMunicipal,
+) => {
   try {
     const response = await http.post('solicitudes/solicitudes/', {
       comentario,
@@ -61,6 +63,7 @@ const registrarArchivo = async (seguimientoId, archivo) => {
     });
     return response.data;
   } catch (error) {
+    console.log('Error en el envio de archivos');
     console.log(error);
   }
   return null;
