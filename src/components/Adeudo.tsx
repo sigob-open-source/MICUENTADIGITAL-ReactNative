@@ -15,8 +15,6 @@ const Adeudo = ({
   const [cargos, setCargos] = useState();
 
   useEffect(() => {
-    console.log('cargo a manejar');
-    console.log(cargo);
     if (cargo !== null) {
       setCargos(reduceArrCargos());
     }
@@ -275,7 +273,6 @@ const Adeudo = ({
         </View>
       </Collapsible>
     </>
-
   );
 };
 

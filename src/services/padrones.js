@@ -31,7 +31,6 @@ const getCiudadano = async (search, advanceSearch) => {
     })
     .then(
       (response) => {
-        console.log(response.data);
         result = response.data[0];
       },
       (error) => {
@@ -137,21 +136,16 @@ const getEmpresa = async (search, advanceSearch) => {
 
 const getAdeudoPadron = async (padron, numeroPadron) => {
   let result;
-  console.log('info despue');
-  console.log(padron?.id);
-  console.log(numeroPadron);
   if (padron !== undefined && padron !== null) {
     await http
       .post('cuentaunicasir/consulta-caja-atencion-ciudadana/padron/', {
         padron_id: padron?.id,
         padron: numeroPadron,
         canal_de_pago: 3,
-        entidad_municipal: 2,
+        entidad_municipal: 1,
       })
       .then(
         (response) => {
-          console.log('respuesta cc');
-          console.log(response);
           result = response?.data;
         },
         (error) => {
@@ -161,8 +155,6 @@ const getAdeudoPadron = async (padron, numeroPadron) => {
   } else {
     result = null;
   }
-  console.log('terminado el despues');
-  console.log(result);
   return result;
 };
 

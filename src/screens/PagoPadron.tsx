@@ -45,7 +45,7 @@ const PagoPadron = ({ route }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalKey, setModalKey] = useState(100);
   const [isLoading, setIsLoading] = useState(false);
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0.0);
 
   const notify = useNotification();
 
@@ -60,6 +60,7 @@ const PagoPadron = ({ route }) => {
     });
   }, []);
 
+  // Alerta para cuando no se encontro nada acorde a la busqueda
   const showAlert = () => notify({
     type: 'error',
     title: 'Error de busqueda',
@@ -69,6 +70,7 @@ const PagoPadron = ({ route }) => {
   const handleSearch = async (formData) => {
     setIsLoading(true);
     setNewData(false);
+    setTotalAmount(0);
     let response;
     let numeroDePadron;
     if (padron?.descripcion === 'Ciudadano') {
@@ -95,18 +97,20 @@ const PagoPadron = ({ route }) => {
       setIsLoading(false);
       showAlert();
     } else {
-      console.log('datainfo', response);
       response = await getAdeudoPadron(response, numeroDePadron);
-      console.log(response);
       setResultCargos(response?.cargos);
       setNewData(true);
+
+      setTotalAmount(resultCargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
     }
     setModalKey(modalKey + 1);
     setIsLoading(false);
   };
 
   const dopayment = async () => {
-    const sumall = resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0);
+    if (resultCargos !== undefined) {
+      const sumall = resultCargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0);
+    }
     console.log('suma', sumall);
 
     const responseNetpay = await tokenizeAmount(sumall.toFixed(2));
@@ -325,16 +329,21 @@ const PagoPadron = ({ route }) => {
       }
       </ScrollView>
 
-      <View key={modalKey}>
-        <TouchableWithoutFeedback onPress={dopayment}>
-          <View style={styles.buttonPrint}>
-            <Text style={styles.text}>Realizar Pago</Text>
-          </View>
-        </TouchableWithoutFeedback>
+      <View style={styles.footer}>
+        <Text style={styles.totalText}>
+          Total:
+          {' $'}
+          {totalAmount}
+        </Text>
+        <View key={modalKey}>
+          <TouchableWithoutFeedback onPress={dopayment}>
+            <View style={styles.buttonPrint}>
+              <Text style={styles.textButton}>Realizar Pago</Text>
+            </View>
+          </TouchableWithoutFeedback>
 
+        </View>
       </View>
-
-      <Footer style={styles.footer} />
     </View>
 
   );
@@ -390,13 +399,9 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   footer: {
-    flexDirection: 'row',
-    height: 64,
     width: '100%',
-    backgroundColor: 'white',
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    backgroundColor: 'white',
     shadowColor: 'black',
     shadowOffset: { width: 1, height: 7 },
     shadowRadius: 32,
@@ -427,13 +432,28 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     textAlign: 'center',
   },
+  textButton: {
+    color: 'white',
+    fontFamily: fonts.bold,
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
   buttonPrint: {
     backgroundColor: 'green',
     width: Dimensions.get('window').width * 0.85,
+    height: 50,
     borderRadius: 10,
     borderColor: 'gray',
     borderWidth: 0.6,
     marginVertical: 5,
+  },
+  totalText: {
+    color: 'black',
+    fontSize: 20,
+    padding: 5,
+    fontFamily: fonts.bold,
+    textAlign: 'left',
   },
   loading: {
 
