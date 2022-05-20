@@ -24,6 +24,7 @@ import BusquedaAvanzadaEmpresa from '../components/BusquedaAvanzadaComponents/Bu
 import BusquedaAvanzadaPredio from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaPredio';
 import BusquedaAvanzadaVehiculo from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaVehiculo';
 import Adeudo from '../components/Adeudo';
+import CardItem from '../components/CardItem';
 
 import {
   getVehiculo,
@@ -35,6 +36,7 @@ import {
 
 import { getReferencia } from '../services/recaudacion';
 import { useNotification } from '../components/DropDowAlertProvider';
+import Card from '../components/CardPagos';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
@@ -70,7 +72,7 @@ const PagoPadron = ({ route }) => {
   const handleSearch = async (formData) => {
     setIsLoading(true);
     setNewData(false);
-    setTotalAmount(0);
+
     let response;
     let numeroDePadron;
     if (padron?.descripcion === 'Ciudadano') {
@@ -100,8 +102,8 @@ const PagoPadron = ({ route }) => {
       response = await getAdeudoPadron(response, numeroDePadron);
       setResultCargos(response?.cargos);
       setNewData(true);
-
-      setTotalAmount(resultCargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
+      setTotalAmount(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
+      console.log(totalAmount);
     }
     setModalKey(modalKey + 1);
     setIsLoading(false);
@@ -283,7 +285,7 @@ const PagoPadron = ({ route }) => {
           <TextInput color="black" placeholderTextColor="#C4C4C4" onChangeText={(text) => setSearchText(text)} style={styles.textInputStyle} placeholder="Buscar..." />
         </View>
 
-        <TouchableWithoutFeedback onPress={() => { handleSearch(); }}>
+        <TouchableWithoutFeedback onPress={() => { setTotalAmount(0); handleSearch(); }}>
           <View style={styles.iconContainer}>
             <Icon
               name="search"
@@ -307,13 +309,33 @@ const PagoPadron = ({ route }) => {
       </View>
       {console.log('estos son los cargos', resultCargos)}
       {console.log('este es el total', totalAmount)}
-      <ScrollView>
+      <ScrollView style={{ paddingHorizontal: 30 }}>
         {
           (newData === true && resultCargos?.[0])
-            ? resultCargos?.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch || ''} padron={padron?.descripcion} cargo={cargo} />))
+            ? (
+              <Adeudo
+                nombre={nameSearch}
+                padron={route.params?.padron?.descripcion}
+                cargo={totalAmount}
+                children={resultCargos?.map((cargo, index) => (
+                  <CardItem
+                    key={index}
+                    info={
+                      `${
+                        cargo.descripcion
+                      }`
+                    }
+                    cargo={cargo}
+                    reduceCargo={reduceArrCargos(cargo)}
+                    navegar="detallesPadron"
+                  />
+                ))}
+              />
+            )
+
             : null
         }
-
+        {/* <Adeudo key={index} nombre={nameSearch || ''} padron={padron?.descripcion} cargo={cargo} /> */}
         {newData === true && resultCargos?.[0] === undefined ? (
           <Adeudo
             nombre={
@@ -355,7 +377,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#EDF2F5',
-    alignItems: 'center',
   },
   headText: {
     textAlign: 'center',
@@ -457,6 +478,13 @@ const styles = StyleSheet.create({
   },
   loading: {
 
+  },
+  row: {
+    alignItems: 'center',
+    height: 50,
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
   },
 
 });
