@@ -1,4 +1,5 @@
-import React from 'react';
+import React, {
+} from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { RootStackParamList } from './src/types/navigation';
@@ -7,7 +8,6 @@ import { RootStackParamList } from './src/types/navigation';
 import SolicitudSelector from './src/screens/solicitudSelectorView';
 import VerSolicitudes from './src/screens/VerSolicitudes';
 import VerSolicitud from './src/screens/VerSolicitud';
-import HomeScreen from './src/screens/Home';
 import MenuInicio from './src/screens/MenuInicio';
 import Solicitud from './src/screens/Solicitud';
 import Peticiones from './src/screens/Peticiones';
@@ -17,6 +17,8 @@ import Pagos from './src/screens/Pagos';
 import PagoPadron from './src/screens/PagoPadron';
 import Tramites from './src/screens/tramites';
 import NetpayPago from './src/screens/netpayPago';
+import DropdownalertProvider from './src/components/DropDowAlertProvider';
+import DetallesPadron from './src/screens/DetallesPadron';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -39,11 +41,13 @@ const AppContainer = () => (
       <Stack.Screen name="verSolicitudes" component={VerSolicitudes} />
       <Stack.Screen name="tramites" component={Tramites} />
       <Stack.Screen name="netpaypago" options={{ animation: 'none' }} component={NetpayPago} />
-
+      <Stack.Screen name="detallesPadron" component={DetallesPadron} />
     </Stack.Navigator>
   </NavigationContainer>
 );
 
 export default () => (
-  <AppContainer />
+  <DropdownalertProvider>
+    <AppContainer />
+  </DropdownalertProvider>
 );

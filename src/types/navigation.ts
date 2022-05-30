@@ -15,6 +15,7 @@ type RootStackParamList = {
   problemThreeScreen: undefined;
   problemFourScreen: undefined;
   pagoPadron: undefined;
+  detallesPadron: undefined;
 };
 
 export type {

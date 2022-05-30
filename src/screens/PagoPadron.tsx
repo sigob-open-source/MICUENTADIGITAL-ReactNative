@@ -1,4 +1,4 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -13,7 +13,6 @@ import {
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
-import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import fonts from '../utils/fonts';
 
 import { tokenizeAmount } from '../services/netpay';
@@ -25,10 +24,19 @@ import BusquedaAvanzadaEmpresa from '../components/BusquedaAvanzadaComponents/Bu
 import BusquedaAvanzadaPredio from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaPredio';
 import BusquedaAvanzadaVehiculo from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaVehiculo';
 import Adeudo from '../components/Adeudo';
+import CardItem from '../components/CardItem';
 
 import {
-  getAdeudoVehiculo, getAdeudoPredio, getAdeudoEmpresa, getAdeudoCiudadano,
+  getVehiculo,
+  getPredio,
+  getEmpresa,
+  getCiudadano,
+  getAdeudoPadron,
 } from '../services/padrones';
+
+import { getReferencia } from '../services/recaudacion';
+import { useNotification } from '../components/DropDowAlertProvider';
+import Card from '../components/CardPagos';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
@@ -39,89 +47,245 @@ const PagoPadron = ({ route }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalKey, setModalKey] = useState(100);
   const [isLoading, setIsLoading] = useState(false);
-  const [totalAmount, setTotalAmount] = useState(0);
+  const [totalAmount, setTotalAmount] = useState(0.0);
+
+  const notify = useNotification();
 
   const navigation = useNavigation();
 
   useEffect(() => {
     setPadron(route.params.padron);
+    notify({
+      type: 'warn',
+      title: 'LLenar todos los datos requeridos',
+      message: 'para realizar el pago ocupo el dato xxxx',
+    });
   }, []);
 
-  const showAlert = () => Alert.alert(
-    'Problema en la busqueda',
-    'No se encontró nada que concuerde con la busqueda.',
-    [
-      {
-        text: 'Entendido',
-        style: 'cancel',
-      },
-    ],
-  );
+  // Alerta para cuando no se encontro nada acorde a la busqueda
+  const showAlert = () => notify({
+    type: 'error',
+    title: 'Error de busqueda',
+    message: 'No se encontró nada que concuerde con la busqueda',
+  });
 
   const handleSearch = async (formData) => {
     setIsLoading(true);
     setNewData(false);
+
     let response;
-    if (padron === 'Ciudadano') {
-      response = await getAdeudoCiudadano(searchText, formData);
-      (response !== null) ? setNameSearch(response.first_name) : null;
-    } else if (padron === 'Empresa') {
-      response = await getAdeudoEmpresa(searchText, formData);
-      (response !== null) ? setNameSearch(response.nombre_comercial) : null;
+    let numeroDePadron;
+    if (padron?.descripcion === 'Ciudadano') {
+      response = await getCiudadano(searchText, formData);
+      numeroDePadron = 1;
+      (response !== null) ? setNameSearch(response?.nombre_completo) : null;
+    } else if (padron?.descripcion === 'Empresa') {
+      response = await getEmpresa(searchText, formData);
+      numeroDePadron = 2;
+      (response !== null) ? setNameSearch(response?.razon_social) : null;
       // setNameSearch(response.nombre_comercial);
-    } else if (padron === 'Predio') {
-      response = await getAdeudoPredio(searchText, formData);
-      (response !== null) ? setNameSearch(response.cuenta_unica_de_predial) : null;
+    } else if (padron?.descripcion === 'Predio') {
+      response = await getPredio(searchText, formData);
+      numeroDePadron = 3;
+      (response !== null) ? setNameSearch(response?.cuenta_unica_de_predial) : null;
       // setNameSearch(response?.cuenta_unica_de_predial);
-    } else if (padron === 'Vehicular') {
-      response = await getAdeudoVehiculo(searchText, formData);
-      (response !== null) ? setNameSearch(response.numero_de_placa) : null;
+    } else if (padron?.descripcion === 'Vehicular') {
+      response = await getVehiculo(searchText, formData);
+      numeroDePadron = 4;
+      (response !== null) ? setNameSearch(response?.numero_de_placa) : null;
       // setNameSearch(response?.numero_de_placa);
     }
     if (response === null || response === undefined) {
       setIsLoading(false);
       showAlert();
     } else {
+      response = await getAdeudoPadron(response, numeroDePadron);
       setResultCargos(response?.cargos);
       setNewData(true);
+      setTotalAmount(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
+      console.log(totalAmount);
     }
     setModalKey(modalKey + 1);
     setIsLoading(false);
   };
 
-  // const handleAdeudo = () => {
-  //   console.log('poads');
-  //   return (
-  //     resultCargos.cargos.map((cargo) => {
-  //       <Adeudo nombre={nameSearch} padron={padron} cantidad={cargo.importe} />;
-  //     })
-
-  //   );
-  // };
-
   const dopayment = async () => {
-    const sumall = resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0);
+    if (resultCargos !== undefined) {
+      const sumall = resultCargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0);
+    }
     console.log('suma', sumall);
 
     const responseNetpay = await tokenizeAmount(sumall.toFixed(2));
-
+    // const reponseReferencia = await getReferencia(
+    //   sumall.toFixed(2),
+    //   resultCargos.map((c) => c.id),
+    //   padron.id,
+    // );
     if (responseNetpay) {
       navigation.push('netpaypago', { responseNetpay });
     }
+  };
+
+  // Calcula los totales y descuentas
+  const reduceArrCargos = (cargo) => {
+    const {
+      descuentos_especiales,
+      actualizaciones,
+      recargos,
+      descuentos_aplicables,
+      gastos,
+      importe,
+    } = cargo;
+    let adeudo_total;
+    let descuentos_de_actualizacion = 0;
+    let descuentos_de_recargos = 0;
+    let descuentos_gastos_totales = 0;
+    let multa_recargos = 0;
+    let multa_gastos = 0;
+    let descuentos_de_recargos_str = '';
+    let descuentos_de_actualizaciones_str = '';
+    let descuentos_de_gastos_str = '';
+    const recargo_total = recargos.reduce(
+      (accum, curr) => accum + curr.importe_total,
+      0,
+    );
+
+    recargos.forEach((item) => {
+      const { descuentos } = item;
+      let ttlDesc;
+      let ttlMultaRec;
+      if (descuentos.length) {
+        ttlDesc = descuentos.reduce(
+          (accum, curr) => accum + curr.importe_total,
+          0,
+        );
+        descuentos.forEach((i) => {
+          descuentos_de_recargos_str += `\n\r-${i.comentarios} `;
+        });
+      } else {
+        ttlDesc = 0;
+      }
+      if (item?.es_multa) {
+        const filteredRecargos = recargos.filter(
+          (recargo) => recargo.es_multa === true,
+        );
+        ttlMultaRec = filteredRecargos.reduce(
+          (accum, curr) => accum + curr.importe_total,
+          0,
+        );
+      } else {
+        ttlMultaRec = 0;
+      }
+      multa_recargos += ttlMultaRec;
+      descuentos_de_recargos += ttlDesc;
+    });
+    gastos.forEach((item) => {
+      const { descuentos } = item;
+      let ttlDesc;
+      let ttlMultaGto;
+      if (descuentos.length) {
+        ttlDesc = descuentos.reduce(
+          (accum, curr) => accum + curr.importe_total,
+          0,
+        );
+        descuentos.forEach((i) => {
+          descuentos_de_gastos_str += `\n\r-${i.comentarios} `;
+        });
+      } else {
+        ttlDesc = 0;
+      }
+      if (item.es_multa) {
+        const filteredMultas = gastos.filter((gasto) => gasto.es_multa === true);
+        ttlMultaGto = filteredMultas.reduce(
+          (accum, curr) => accum + curr.importe,
+          0,
+        );
+      } else {
+        ttlMultaGto = 0;
+      }
+      descuentos_gastos_totales += ttlDesc;
+      multa_gastos += ttlMultaGto;
+    });
+
+    actualizaciones.forEach((item) => {
+      const { descuentos } = item;
+      let ttlDesc;
+      if (descuentos.length) {
+        ttlDesc = descuentos.reduce(
+          (accum, curr) => accum + curr.importe_total,
+          0,
+        );
+        descuentos.forEach((i) => {
+          descuentos_de_actualizaciones_str += `\n\r-${i.comentarios} `;
+        });
+      } else {
+        ttlDesc = 0;
+      }
+      descuentos_de_actualizacion += ttlDesc;
+    });
+
+    const descuentos_especiales_totales = descuentos_especiales.reduce(
+      (accum, curr) => accum + curr.importe_total,
+      0,
+    );
+
+    const descuentos_aplicables_total = descuentos_aplicables.reduce(
+      (accum, curr) => accum + curr.importe_total,
+      0,
+    );
+
+    const actualizaciones_totales = actualizaciones.reduce(
+      (accum, curr) => accum + curr.importe_total,
+      0,
+    );
+
+    const gastos_totales = gastos.reduce(
+      (accum, curr) => accum + curr.importe,
+      0,
+    );
+
+    const descuentos_totales = descuentos_aplicables_total + descuentos_especiales_totales;
+    const multas_totales = multa_gastos + multa_recargos;
+    adeudo_total = importe
+      - descuentos_totales
+      + (recargo_total - descuentos_de_recargos)
+      + (actualizaciones_totales - descuentos_de_actualizacion)
+      + (gastos_totales - descuentos_gastos_totales)
+      + multas_totales;
+    adeudo_total = adeudo_total;
+
+    return {
+      descuentos_de_actualizaciones_str,
+      descuentos_de_recargos_str,
+      descuentos_de_gastos_str,
+      descuentos_gastos_totales,
+      descuentos_de_recargos,
+      descuentos_de_actualizacion,
+      descuentos_aplicables_total,
+      descuentos_especiales_totales,
+      descuentos_totales,
+      multas_totales,
+      multa_recargos,
+      multa_gastos,
+      actualizaciones_totales,
+      recargo_total: recargo_total - multa_recargos,
+      adeudo_total,
+      gastos_totales: gastos_totales - multa_gastos,
+    };
   };
 
   return (
     <View style={styles.container}>
       <Header item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
       <Text style={styles.headText}>
-        {route.params.padron}
+        {padron?.descripcion}
       </Text>
       <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 30 }}>
         <View style={styles.textInputContainer}>
           <TextInput color="black" placeholderTextColor="#C4C4C4" onChangeText={(text) => setSearchText(text)} style={styles.textInputStyle} placeholder="Buscar..." />
-
         </View>
-        <TouchableWithoutFeedback onPress={() => { handleSearch(); }}>
+
+        <TouchableWithoutFeedback onPress={() => { setTotalAmount(0); handleSearch(); }}>
           <View style={styles.iconContainer}>
             <Icon
               name="search"
@@ -131,33 +295,53 @@ const PagoPadron = ({ route }) => {
           </View>
         </TouchableWithoutFeedback>
         {
-          (padron === 'Ciudadano') ? <BusquedaAvanzadaCiudadano onSearch={handleSearch} /> : null
+          (padron?.descripcion === 'Ciudadano') ? <BusquedaAvanzadaCiudadano onSearch={handleSearch} /> : null
         }
         {
-          (padron === 'Empresa') ? <BusquedaAvanzadaEmpresa onSearch={handleSearch} /> : null
+          (padron?.descripcion === 'Empresa') ? <BusquedaAvanzadaEmpresa onSearch={handleSearch} /> : null
         }
         {
-          (padron === 'Predio') ? <BusquedaAvanzadaPredio onSearch={handleSearch} /> : null
+          (padron?.descripcion === 'Predio') ? <BusquedaAvanzadaPredio onSearch={handleSearch} /> : null
         }
         {
-          (padron === 'Vehicular') ? <BusquedaAvanzadaVehiculo onSearch={handleSearch} /> : null
+          (padron?.descripcion === 'Vehicular') ? <BusquedaAvanzadaVehiculo onSearch={handleSearch} /> : null
         }
       </View>
       {console.log('estos son los cargos', resultCargos)}
       {console.log('este es el total', totalAmount)}
-      <ScrollView>
+      <ScrollView style={{ paddingHorizontal: 30 }}>
         {
-          (newData === true && resultCargos[0] !== null)
-            ? resultCargos.map((cargo, index) => (<Adeudo key={index} nombre={nameSearch || ''} padron={padron} cargo={cargo} />))
+          (newData === true && resultCargos?.[0])
+            ? (
+              <Adeudo
+                nombre={nameSearch}
+                padron={route.params?.padron?.descripcion}
+                cargo={totalAmount}
+                children={resultCargos?.map((cargo, index) => (
+                  <CardItem
+                    key={index}
+                    info={
+                      `${
+                        cargo.descripcion
+                      }`
+                    }
+                    cargo={cargo}
+                    reduceCargo={reduceArrCargos(cargo)}
+                    navegar="detallesPadron"
+                  />
+                ))}
+              />
+            )
+
             : null
         }
-
-        {newData === true && resultCargos[0] === undefined ? (
+        {/* <Adeudo key={index} nombre={nameSearch || ''} padron={padron?.descripcion} cargo={cargo} /> */}
+        {newData === true && resultCargos?.[0] === undefined ? (
           <Adeudo
             nombre={
               nameSearch
             }
-            padron={padron}
+            padron={padron?.descripcion}
             cargo={null}
           />
         ) : null}
@@ -167,16 +351,21 @@ const PagoPadron = ({ route }) => {
       }
       </ScrollView>
 
-      <View key={modalKey}>
-        <TouchableWithoutFeedback onPress={dopayment}>
-          <View style={styles.buttonPrint}>
-            <Text style={styles.text}>Realizar Pago</Text>
-          </View>
-        </TouchableWithoutFeedback>
+      <View style={styles.footer}>
+        <Text style={styles.totalText}>
+          Total:
+          {' $'}
+          {totalAmount}
+        </Text>
+        <View key={modalKey}>
+          <TouchableWithoutFeedback onPress={dopayment}>
+            <View style={styles.buttonPrint}>
+              <Text style={styles.textButton}>Realizar Pago</Text>
+            </View>
+          </TouchableWithoutFeedback>
 
+        </View>
       </View>
-
-      <Footer style={styles.footer} />
     </View>
 
   );
@@ -188,7 +377,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#EDF2F5',
-    alignItems: 'center',
   },
   headText: {
     textAlign: 'center',
@@ -232,13 +420,9 @@ const styles = StyleSheet.create({
     marginBottom: 14,
   },
   footer: {
-    flexDirection: 'row',
-    height: 64,
     width: '100%',
-    backgroundColor: 'white',
-    justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    backgroundColor: 'white',
     shadowColor: 'black',
     shadowOffset: { width: 1, height: 7 },
     shadowRadius: 32,
@@ -269,16 +453,38 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     textAlign: 'center',
   },
+  textButton: {
+    color: 'white',
+    fontFamily: fonts.bold,
+    fontSize: 20,
+    textAlign: 'center',
+    margin: 10,
+  },
   buttonPrint: {
     backgroundColor: 'green',
     width: Dimensions.get('window').width * 0.85,
+    height: 50,
     borderRadius: 10,
     borderColor: 'gray',
     borderWidth: 0.6,
     marginVertical: 5,
   },
+  totalText: {
+    color: 'black',
+    fontSize: 20,
+    padding: 5,
+    fontFamily: fonts.bold,
+    textAlign: 'left',
+  },
   loading: {
 
+  },
+  row: {
+    alignItems: 'center',
+    height: 50,
+    flexDirection: 'row',
+    width: '100%',
+    justifyContent: 'space-between',
   },
 
 });

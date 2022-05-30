@@ -110,7 +110,7 @@ const Pagos = (props) => {
             <FlatList
               data={padrones}
               renderItem={({ padron, index }) => (
-                <Pressable onPress={() => props.navigation.push('pagoPadron', { padron: padrones[index].descripcion })}>
+                <Pressable onPress={() => props.navigation.push('pagoPadron', { padron: padrones[index] })}>
                   <Square
                     col="#404040"
                     isBlank={false}
