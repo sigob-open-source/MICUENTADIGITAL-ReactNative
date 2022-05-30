@@ -8,7 +8,6 @@ import useKeyboard from '../utils/keyboardListener';
 const Footer = (props) => {
   const closeFromFooter = () => {
     const { back } = props;
-    return (back);
   };
 
   const [showGoBack, setShowGoBack] = useState(props.showBack);
@@ -21,7 +20,7 @@ const Footer = (props) => {
       {
       !isKeyboardOpen ? (
         <>
-          <TouchableWithoutFeedback onPress={closeFromFooter()}>
+          <TouchableWithoutFeedback onPressIn={props.back}>
             {showGoBack ? (
               <View style={styles.textContainer}>
                 <Icon size={41} name="chevron-left" color="black" />

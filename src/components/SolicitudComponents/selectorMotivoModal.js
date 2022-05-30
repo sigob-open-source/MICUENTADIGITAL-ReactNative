@@ -2,6 +2,7 @@ import {
   Modal, Dimensions, TouchableWithoutFeedback, StyleSheet, View, Text, TouchableOpacity, ScrollView,
 } from 'react-native';
 import React, { useState, useEffect } from 'react';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getTiposDeSolicitudes } from '../../services/api';
 
@@ -9,18 +10,22 @@ const deviceHeight = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;
 
 const MotivoPopUp = props => {
-  const [lista, setLista] = useState(null);
+  const [lista, setLista] = useState([]);
   const [motivos, setMotivos] = useState(null);
   const [descripcion, setDescripcion] = useState(null);
   const [entidad, setEntidad] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    show();
+    let abortController = new AbortController();
+    getData();
+    return () => {
+      abortController.abort();
+    }
   }, []);
   // obtiene la lista de los motivos desde accordion.js para así poder mostrarlos dentro del modal
   const show = async () => {
-    const lista = await props.listaMotivos;
-    getData();
+
   };
 
   const getData = async () => {
@@ -28,7 +33,14 @@ const MotivoPopUp = props => {
     const tipos = await getTiposDeSolicitudes(id);
     setMotivos(tipos);
     setEntidad(id);
-    console.log("kidsjgsijfgdspij")
+    const list = props.listaMotivos;
+    setLista(list);
+    if (lista != null){
+      console.log(lista);
+      setLoading(false);
+      
+    }
+    
   };
 
   const sendData = (entidad, motivo, descripcion) => {
@@ -63,7 +75,6 @@ const MotivoPopUp = props => {
   };
 
   const renderMotivos = () => {
-    if (props.open) {
       // recorrer la lista para renderizar los motivos disponibles
       return lista.map((item, index) => (
         <View key={index}>
@@ -79,11 +90,12 @@ const MotivoPopUp = props => {
                 <Text style={styles.collapsibleText}>{item.descripcion}</Text>
               </View>
               <View style={{ width: '100%', height: 1, backgroundColor: '#b8b8b8' }} />
+              <View style={styles.whiteSpace}></View>
             </TouchableOpacity>
           </ScrollView>
         </View>
       ));
-    }
+
   };
 
     return (
@@ -91,7 +103,8 @@ const MotivoPopUp = props => {
       <Modal
         animationType="fade"
         transparent
-        visible={false}
+        visible={props.open}
+        onRequestClose={props.onTouchOutside}
       >
 
         <View style={{
@@ -115,7 +128,7 @@ const MotivoPopUp = props => {
             {renderTitle()}
 
             {
-              lista != null ? (
+              !loading ? (
                 renderMotivos()
               ) : null
             }
@@ -154,6 +167,10 @@ const styles = StyleSheet.create({
     fontSize: 0.05 * WIDTH,
     color: 'black',
   },
+  whiteSpace:{
+    height:50,
+    width:'100%'
+  }
 });
 
 export default MotivoPopUp;

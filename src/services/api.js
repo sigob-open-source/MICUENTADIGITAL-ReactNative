@@ -8,7 +8,7 @@ const getTiposDeSolicitudes = async (entidadMunicipalId) => {
     });
     return response?.data ?? [];
   } catch (error) {
-    console.error(error);
+    console.error("ERROR: ",error);
   }
   return [];
 };
@@ -30,6 +30,34 @@ const getSolicitudes = async (entidadMunicipalId, page) => {
 const getOficinas = async () =>{
   try {
     const response = await http.get(`configuracion/unidades-de-recaudacion-public/`);
+    return response?.data ?? [];    
+  } catch (error) {
+    
+  }
+}
+
+const getDependencias = async () =>{
+  try{
+    const response = await http.get(`/configuracion/dependencias-public/`);
+    return response?.data ?? [];    
+  } catch (error) {
+
+  }
+}
+
+const getTramites = async () => {
+  try{
+    const response = await http.get(`tramites/plantillas-tramites-atencion-ciudadana/?entidad_municipal=1`);
+    return response?.data ?? [];    
+  } catch (error) {
+
+  }
+}
+
+
+const getFuncionarios = async () =>{
+  try {
+    const response = await http.get(`usuarios/funcionario-public/`);
     return response?.data ?? [];    
   } catch (error) {
     
@@ -85,5 +113,8 @@ export {
   getSolicitudes,
   registrarSolicitud,
   registrarArchivo,
-  getOficinas
+  getOficinas,
+  getFuncionarios,
+  getDependencias,
+  getTramites
 };

@@ -9,40 +9,50 @@ import {
 } from 'react-native';
 
 import React, { useState, useEffect } from 'react';
-import Accordion from 'react-native-collapsible/Accordion';
 
 import Footer from '../Footer';
-import SolicitudCard from './solicitudComponent';
-import ButtonRequest from './Button';
 import { getTiposDeSolicitudes } from '../../services/api';
 import AccordionView from './accordion';
-import Loading from '../loadingAnimation';
 
 const WIDTH = Dimensions.get('window').width;
 
 const ModalSolicitud = props => {
   const [motivos, setMotivos] = useState(null);
-  const [renderCard, setRenderCard] = useState(null);
+  const [renderCard, setRenderCard] = useState(false);
   const [motivoParentId, setMotivoParentId] = useState(null);
   const [motivoDesc, setMotivoDesc] = useState(null);
   const [entidadId, setEntidadId] = useState(null);
   const [motivoID, setMotivoID] = useState(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
+    let abortController = new AbortController();
     getData();
+    return () => {
+      abortController.abort();
+    }
   }, []);
 
   const getData = async () => {
     const id = 1;
     const tipos = await getTiposDeSolicitudes(id);
+
     setMotivos(tipos)
-    console.log(tipos)
     if (motivos != null) {
       setEntidadId(id);
-      setRenderCard(true);
-      console.log("shouldBeWorking")
+      console.log(renderCard)
     }
   }
+
+  const showCards = () =>{
+    setRenderCard(true);
+  }
+
+  const close = (entidad, motivo, descripcion) =>{
+    props.onclose(entidad,motivo,descripcion)
+    props.close
+  }
+
   const renderTitle = () => {
     return (
 
@@ -61,22 +71,23 @@ const ModalSolicitud = props => {
 
     );
   };
+
   const createCard = () => {
-    if (motivos != null || motivos.length > 0) {
-      return motivos.map((item, index) => (
+        return motivos.map((item, index) => (
+          <View key={index}>
+            <AccordionView
+              close={selectMotivo}
+              renderCard={showCards}
+              parentId={item.id}
+              motivo={item.descripcion}
+              sampleSolicitud="nothing"
+              titleText={item.descripcion}
+              iconName="chart-box-outline"
+            />
+          </View>
+  
+        ));
 
-        <View key={index}>
-          <AccordionView
-            parentId={item.id}
-            motivo={item.descripcion}
-            sampleSolicitud="nothing"
-            titleText={item.descripcion}
-            iconName="chart-box-outline"
-          />
-        </View>
-
-      ));
-    }
   };
 
   // Manda los motivos del modal hacia la pantalla donde se debe de mostrar ya el motivo seleccionado junto con su subcategoría
@@ -123,7 +134,7 @@ const ModalSolicitud = props => {
           <ScrollView>
             {renderTitle()}
             {
-              renderCard ? (
+              motivos != null ? (
                 createCard()
               ) : <Text style={{ alignSelf: 'center' }}>Cargando Motivos...</Text>
             }
@@ -132,6 +143,7 @@ const ModalSolicitud = props => {
       </View>
 
       <Footer
+        back={props.close}
         showBack
         style={styles.footer}
       />

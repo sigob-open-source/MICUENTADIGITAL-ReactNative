@@ -8,14 +8,13 @@ import {
   Linking,
   TouchableWithoutFeedback,
 } from 'react-native';
+import React, { useState, useEffect } from 'react';
 
 import MapBoxGL from '@react-native-mapbox-gl/maps';
 import axios from 'axios';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Geolocation from 'react-native-geolocation-service';
-import { NetInfo } from '@react-native-community/netinfo';
 
-import React from 'react';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import Header from '../Header';
 
@@ -25,64 +24,81 @@ MapBoxGL.requestAndroidLocationPermissions();
 MapBoxGL.setAccessToken('pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ');
 MapBoxGL.geo;
 
-export class MapaModal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      show: false,
-      lat: 0,
-      long: 0,
-      coords: [0, 0],
-      street: null,
-    };
-  }
+const MapaModal = props => {
 
-  changeCoordinates = (feature) => {
-    this.setState({
-      coords: feature.geometry.coordinates,
-    }, this.apihandler);
+  const [lat, setLat] = useState(0);
+  const [long, setLong] = useState(0);
+  const [coords, setCoords] = useState([0,0]);
+  const [street, setStreet] = useState(null);
+  const [canChangeCoords, setCanChangeCoords] = useState(false);
+
+  const changeCoordinates = async (feature) => {
+    setCoords(feature.geometry.coordinates);
   };
 
-  apihandler = () => {
+  const apihandler = () => {
     try {
-      axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${this.state.coords}.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ`)
+      axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${coords}.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ`)
         .then((response) => {
-          const posts = response.data.features[0].place_name;
-          this.setState({
-            street: posts,
-          });
+          const posts = response.data.features[0].place_name;     
+          setStreet(posts);
         });
     } catch (error) {
       console.log(error);
     }
   };
 
-  GetLocation() {
+  useEffect(() => {
+    let abortController = new AbortController();
+    if (!props.otherOpen){
+      apihandler();
+    }
+    return () => {
+      abortController.abort();
+    }
+  },[coords]);
+
+  useEffect(() => {
+    let abortController = new AbortController();
+    if (!props.otherOpen){
+      apihandler();
+      setCanChangeCoords(true);
+    }
+    return () => {
+      abortController.abort();
+    }
+  },[props.otherOpen]);
+
+  useEffect(() => {
+    let abortController = new AbortController();
+    GetLocation();
+    return () => {
+      abortController.abort();
+    }
+  }, []);
+
+  const GetLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
-        this.setState({
-          coords: [position.coords.longitude, position.coords.latitude],
-          lat: position.coords.latitude,
-          long: position.coords.longitude,
-        }, this.apihandler);
+        setCoords([position.coords.longitude,position.coords.latitude])
+        setLong([position.coords.longitude])
+        setLat([position.coords.latitude])
       },
-      (error) => this.setState({ error: error.message }),
+      (error) => console.log(error),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   }
 
-  close = () => {
-    this.setState({ show: false });
+  const close = () => {
+    props.close
   };
 
-  show = async () => {
+  const show = async () => {
     const resultLocation = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
     if (resultLocation) {
-      if (this.state.lat == 0 && this.state.long == 0) {
-        this.GetLocation();
+      if (lat == 0 && long == 0) {
+        GetLocation();
       }
-
-      this.setState({ show: true });
     } else {
       Alert.alert(
         'Alerta',
@@ -96,15 +112,14 @@ export class MapaModal extends React.Component {
     }
   };
 
-  _handleSendLocation() {
-    console.log(this.state.street);
-    if (this.state.street != null) {
-      this.props.mapToParent(this.state.street, this.state.lat, this.state.long);
+  const _handleSendLocation = () => {
+    if (street != null) {
+      props.mapToParent(street, lat, long);
     }
-    this.close();
+    
   }
 
-  renderOutsideTouchable(onTouch) {
+  const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
 
@@ -117,8 +132,7 @@ export class MapaModal extends React.Component {
     );
   }
 
-  renderTitle = () => {
-    const { title } = this.props;
+  const renderTitle = () => {
     return (
       <View>
         <Text style={{
@@ -127,98 +141,108 @@ export class MapaModal extends React.Component {
           margin: 15,
         }}
         >
-          {title}
+          {props.title}
         </Text>
       </View>
     );
   };
 
-  render() {
-    const { show } = this.state;
-    return (
-      <Modal
-        animationType="fade"
-        transparent
-        visible={show}
-        onRequestClose={this.close}
-      >
+  return (
+    <Modal
+      animationType="fade"
+      transparent
+      visible={props.open}
+      onRequestClose={close}
+    >
 
-        <View style={{ flex: 1 }}>
-          <Header
-            style={styles.header}
-            item="Trámites"
-            imgnotif={require('../../../assets/imagenes/notificationGet_icon.png')}
-            img={require('../../../assets/imagenes/header_logo.png')}
-          />
+      <View style={{ flex: 1 }}>
+        <Header
+          style={styles.header}
+          item="Trámites"
+          imgnotif={require('../../../assets/imagenes/notificationGet_icon.png')}
+          img={require('../../../assets/imagenes/header_logo.png')}
+        />
 
-          <TouchableWithoutFeedback>
-            <View style={styles.streetName}>
-              <Text style={{ color: 'black' }}>{this.state.street}</Text>
-            </View>
-          </TouchableWithoutFeedback>
-
-          <TouchableWithoutFeedback onPress={() => this._handleSendLocation()}>
-            <View style={styles.sendRequestGeneralContainer}>
-              <View style={styles.sendRequestStyle}>
-                <View style={styles.sendRequestContainer}>
-                  <Text style={{
-                    color: 'black',
-                    fontSize: 20,
-                    fontWeight: '500',
-                  }}
-                  >
-                    Seleccionar Locación
-                  </Text>
-                </View>
-              </View>
-            </View>
-          </TouchableWithoutFeedback>
-          <View style={{
-            flex: 1,
-            height: '100%',
-            width: '100%',
-            borderRadius: 90,
-          }}
-          >
-
-            <MapboxGL.MapView
-              logoEnabled={false}
-              localizeLabels
-              onPress={(feature) => this.changeCoordinates(feature)}
-              styleURL={MapBoxGL.StyleURL.Street}
-              zoomLevel={17}
-              style={{ flex: 1 }}
-            >
-
-              <MapBoxGL.Camera
-                centerCoordinate={this.state.coords}
-                zoomLevel={17}
-                animationMode="flyTo"
-                animationDuration={0}
-              />
-
-              <MapBoxGL.MarkerView
-                anchor={{ x: 0.5, y: 0.9 }}
-                coordinate={this.state.coords}
-              >
-                <Fontisto style={{ alignSelf: 'flex-end' }} size={50} name="map-marker-alt" color="#79142A" />
-              </MapBoxGL.MarkerView>
-
-            </MapboxGL.MapView>
+        <TouchableWithoutFeedback>
+        <View style={styles.streetName}>
+          {
+            street != undefined ? (
+              <Text style={{ color: 'black' }}>{street}</Text>
+            ) : null
+          }
 
           </View>
+        </TouchableWithoutFeedback>
+
+        <TouchableWithoutFeedback 
+        onPressIn={() =>  _handleSendLocation()} 
+        onPress={ props.close}
+        
+        >
+          <View style={styles.sendRequestGeneralContainer}>
+            <View style={styles.sendRequestStyle}>
+              <View style={styles.sendRequestContainer}>
+                <Text style={{
+                  color: 'black',
+                  fontSize: 20,
+                  fontWeight: '500',
+                }}
+                >
+                  Seleccionar Locación
+                </Text>
+              </View>
+            </View>
+          </View>
+        </TouchableWithoutFeedback>
+        <View style={{
+          flex: 1,
+          height: '100%',
+          width: '100%',
+          borderRadius: 90,
+        }}
+        >
+        {
+          canChangeCoords ? (
+          <MapboxGL.MapView
+            logoEnabled={false}
+            localizeLabels
+            onPress={(feature) => changeCoordinates(feature)}
+            styleURL={MapBoxGL.StyleURL.Street}
+            zoomLevel={17}
+            style={{ flex: 1 }}
+          >
+
+            <MapBoxGL.Camera
+              centerCoordinate={coords}
+              zoomLevel={17}
+              animationMode="flyTo"
+              animationDuration={0}
+            />
+
+            <MapBoxGL.MarkerView
+              anchor={{ x: 0.5, y: 0.9 }}
+              coordinate={coords}
+            >
+              <Fontisto style={{ alignSelf: 'flex-end' }} size={50} name="map-marker-alt" color="#79142A" />
+            </MapBoxGL.MarkerView>
+
+          </MapboxGL.MapView>
+          ) : null
+        }
+
 
         </View>
 
-        <Footer
-          back={this.close}
-          showBack
-          style={styles.footer}
-        />
+      </View>
 
-      </Modal>
-    );
-  }
+      <Footer
+        back={props.close}
+        showBack
+         style={styles.footer}
+      />
+
+    </Modal>
+  );
 }
 
 const styles = StyleSheet.create({
@@ -239,6 +263,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     alignItems: 'center',
+    paddingHorizontal:10,
     marginTop: '25%',
     zIndex: 10,
     position: 'absolute',
@@ -313,3 +338,5 @@ const styles = StyleSheet.create({
     elevation: 20,
   },
 });
+
+export default MapaModal;

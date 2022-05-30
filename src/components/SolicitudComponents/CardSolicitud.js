@@ -5,8 +5,6 @@ import {
   View,
   Image,
   TouchableOpacity,
-  TouchableWithoutFeedback,
-  Linking,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -14,16 +12,8 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import BottomPopUp from './BottomPopUp';
 
-const CardSolicitud = (props) => {
-  let popupRef = React.createRef();
+const CardSolicitud = props => {
 
-  const onShowPopup = () => {
-    popupRef.show();
-  };
-
-  const onClosePopup = () => {
-    popupRef.close();
-  };
   const [comment, setComment] = useState('');
   const [shouldShow, setShouldShow] = useState(true);
   const [showImage, setShowImage] = useState(false);
@@ -31,6 +21,7 @@ const CardSolicitud = (props) => {
   const [image, setImage] = useState('../../assets/imagenes/none.jpg');
   const [nombreArchivo, setNombreArchivo] = useState('');
   const [archivo, setArchivo] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const normalizeObject = (file) => ({
     uri: file.path,
@@ -68,7 +59,6 @@ const CardSolicitud = (props) => {
       setNombreArchivo(img.path.substring(img.path.lastIndexOf('/') + 1, undefined));
       setShouldShow(false);
     } catch (error) {
-      console.error(error);
     }
   };
 
@@ -95,7 +85,7 @@ const CardSolicitud = (props) => {
   return (
     <View>
       <View style={{ ...styles.squareStyle, ...props.style }}>
-        <TouchableOpacity onPress={onShowPopup}>
+        <TouchableOpacity onPress={()=> setModalOpen(true)}>
           {
             showImage ? (
               <Image
@@ -138,7 +128,7 @@ const CardSolicitud = (props) => {
               changeTextImage ? (
                 <Text style={styles.changeImageText} />
               )
-                : <Text onPress={onShowPopup} style={styles.changeImageText}>Cambiar Imagen</Text>
+                : <Text onPress={()=> setModalOpen(true)} style={styles.changeImageText}>Cambiar Imagen</Text>
                 }
           </View>
         </View>
@@ -162,9 +152,9 @@ const CardSolicitud = (props) => {
           <View style={{ flex: 1, flexDirection: 'column' }}>
 
             <Text style={styles.TitleBottom}>{props.getLocation}</Text>
-            <TouchableWithoutFeedback onPress={props.openMap}>
+            <TouchableOpacity onPressIn={props.open}>
               <Text style={styles.verLocacionMapa}>Ver o añadir locación en el mapa.</Text>
-            </TouchableWithoutFeedback>
+            </TouchableOpacity>
 
           </View>
         </View>
@@ -176,9 +166,10 @@ const CardSolicitud = (props) => {
       <BottomPopUp
         pain={launchImageLibrary}
         pain2={launchCamera}
+        open={modalOpen}
+        close={()=>setModalOpen(false)}
         title="Elegir imagen"
-        ref={(target) => popupRef = target}
-        onTouchOutside={onClosePopup}
+        onTouchOutside={()=>setModalOpen(false)}
       />
     </View>
   );

@@ -1,21 +1,16 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
-  View, Text, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity,
+  View, Text, StyleSheet, Modal, TouchableWithoutFeedback, TouchableOpacity, ScrollView,
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-class ConfirmacionPopUp extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      show: false,
-      nombreSolicitud: null,
-      comentario: null,
-      ubicacion: null,
-    };
-  }
+const ConfirmacionPopUp = props => {
 
-  renderOutsideTouchable(onTouch) {
+  const [nombreSolicitud, setNombreSolicitud] = useState(null);
+  const [comentario, setComentario] = useState(null);
+  const [ubicacion, setUbicacion] = useState(null);
+
+  const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
     return (
@@ -25,28 +20,18 @@ class ConfirmacionPopUp extends React.Component {
     );
   }
 
-  show = () => {
-    this.setState({
-      show: true,
-      nombreSolicitud: this.props.nombreSolicitud,
-      comentario: this.props.comentario,
-      ubicacion: this.props.ubicacion,
-    });
-  };
+  useEffect(() => {
+    setNombreSolicitud(props.nombreSolicitud);
+    setComentario(props.comentario);
+    setUbicacion(props.ubicacion);
+  }, [props.open]);
 
-  close = () => {
-    this.setState({ show: false });
-  };
-
-  render() {
-    const { show } = this.state;
-    const { onTouchOutside } = this.props;
     return (
       <Modal
         transparent
         animationType="fade"
-        visible={show}
-        onRequestClose={this.close}
+        visible={props.open}
+        onRequestClose={props.close}
       >
         <View style={{
           flex: 1,
@@ -56,12 +41,12 @@ class ConfirmacionPopUp extends React.Component {
         }}
         >
 
-          {this.renderOutsideTouchable(onTouchOutside)}
-
+          {renderOutsideTouchable(props.onTouchOutside)}
+          
           <View style={styles.whiteSquareContainer}>
             <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
               <Text style={styles.titleText}>Detalles de la solicitud</Text>
-              <TouchableOpacity onPress={() => this.close()}>
+              <TouchableOpacity onPress={props.close}>
                 <MaterialCommunityIcons style={{ marginRight: 15 }} size={30} name="arrow-left" color="black" />
               </TouchableOpacity>
             </View>
@@ -79,22 +64,22 @@ class ConfirmacionPopUp extends React.Component {
             >
               ¿Es la información correcta?
             </Text>
-
+            <ScrollView>
             <Text style={styles.textStyle}>
               Motivo de la solicitud:
-              {this.state.nombreSolicitud}
+              {nombreSolicitud}
             </Text>
             <Text style={styles.textStyle}>
-              Comentario:
-              {this.state.comentario}
+              Comentario: 
+              {' '+comentario}
             </Text>
             <Text style={styles.textStyle}>
               Ubicación:
-              {this.state.ubicacion}
+              {ubicacion}
             </Text>
 
             <View style={styles.sendRequestGeneralContainer}>
-              <TouchableOpacity onPress={this.props.confirmacion}>
+              <TouchableOpacity onPress={props.confirmacion}>
                 <View style={styles.sendRequestStyle}>
 
                   <View style={styles.sendRequestContainer}>
@@ -110,15 +95,15 @@ class ConfirmacionPopUp extends React.Component {
 
                 </View>
               </TouchableOpacity>
+              
             </View>
-
+            </ScrollView>
           </View>
 
         </View>
 
       </Modal>
     );
-  }
 }
 
 const styles = StyleSheet.create({
@@ -145,8 +130,8 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     marginVertical: 5,
+    paddingHorizontal:15,
     fontWeight: '500',
-    marginLeft: 15,
     fontSize: 15,
     alignSelf: 'flex-start',
     color: 'black',
@@ -171,7 +156,7 @@ const styles = StyleSheet.create({
     height: 60,
     justifyContent: 'center',
     alignSelf: 'center',
-    marginTop: 7,
+    marginVertical: 14,
     borderRadius: 5,
     backgroundColor: '#4EDE7F',
     shadowColor: 'black',

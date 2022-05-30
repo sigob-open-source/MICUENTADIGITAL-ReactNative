@@ -1,52 +1,32 @@
 import {
-  Modal, TouchableWithoutFeedback, StyleSheet, View, Text, TextInput,
+  Modal, TouchableOpacity, StyleSheet, View, Text, TextInput, Alert,
 } from 'react-native';
-import React from 'react';
-import Header from '../Header';
+import React, { useState } from 'react';
 
+import Header from '../Header';
 import Footer from '../Footer';
 
-class ComentarioModal extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      show: false,
-      textLength: 0,
-      comment: '',
-    };
-    this.maxLength = 250;
+const ComentarioModal = props => {
+
+  const [textLength, setTextLength] = useState(0);
+  const [comment, setComment] = useState('');
+  const [maxLength, setMaxLength] = useState(250);
+
+  const onChangeText = (text) => {
+    setTextLength(text.length);
+    setComment(text);
   }
 
-  getParentProp = () => {
-    const { modalToParent } = this.props;
-    return modalToParent;
-  };
-
-  onChangeText(text) {
-    this.setState({
-      textLength: text.length,
-      comment: text,
-    });
-  }
-
-  show = () => {
-    this.setState({ show: true });
-  };
-
-  close = () => {
-    this.state.textLength = 0;
-    this.setState({ show: false });
-  };
-
-  _handleSendComment() {
-    console.log(this.state.comment);
-    if (this.state.textLength > 0) {
-      this.props.modalToParent(this.state.comment);
+  const _handleSendComment = () => {
+    if (textLength > 0) {
+      props.modalToParent(comment);
+      setTimeout(() => {
+        setTextLength(0);
+        }, 300);
     }
-    this.close();
   }
 
-  renderOutsideTouchable(onTouch) {
+  const renderOutsideTouchable = (onTouch) => { 
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
 
@@ -59,8 +39,7 @@ class ComentarioModal extends React.Component {
     );
   }
 
-  renderTitle = () => {
-    const { title } = this.props;
+  const renderTitle = () => {
     return (
       <View>
         <Text style={{
@@ -69,21 +48,18 @@ class ComentarioModal extends React.Component {
           margin: 15,
         }}
         >
-          {title}
+          {props.title}
         </Text>
       </View>
     );
   };
 
-  render() {
-    const { show } = this.state;
-    const { onTouchOutside, title } = this.props;
     return (
       <Modal
         animationType="fade"
         transparent
-        visible={show}
-        onRequestClose={this.close}
+        visible={props.open}
+        onRequestClose={props.close}
       >
 
         <View style={{ flex: 1 }}>
@@ -95,18 +71,18 @@ class ComentarioModal extends React.Component {
             img={require('../../../assets/imagenes/header_logo.png')}
           />
 
-          {this.renderOutsideTouchable(onTouchOutside)}
+          {renderOutsideTouchable(props.onTouchOutside)}
           <View style={{
             backgroundColor: '#EDF2F5',
             width: '100%',
             height: '100%',
           }}
           >
-            {this.renderTitle()}
+            {renderTitle()}
 
             <TextInput
               color="black"
-              onChangeText={this.onChangeText.bind(this)}
+              onChangeText={(text)=>onChangeText(text)}
               maxLength={250}
               style={{ paddingHorizontal: '5%' }}
               multiline
@@ -121,31 +97,33 @@ class ComentarioModal extends React.Component {
             />
 
             <Text style={{ textAlign: 'right', paddingHorizontal: '5%' }}>
-              {this.state.textLength}
+              {textLength}
               /250
             </Text>
+            
             <View style={styles.sendRequestGeneralContainer}>
+            <TouchableOpacity onPressIn={() =>_handleSendComment()} onPress={props.close}>
               <View style={styles.sendRequestStyle}>
-                <TouchableWithoutFeedback onPress={() => this._handleSendComment()}>
+                
                   <View style={styles.sendRequestContainer}>
                     <Text style={{ color: 'black', fontSize: 20, fontWeight: '500' }}>Subir Comentario</Text>
                   </View>
-                </TouchableWithoutFeedback>
-
+                
               </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
 
         <Footer
-          back={this.close}
+          back={props.close}
           showBack
           style={styles.footer}
         />
 
       </Modal>
     );
-  }
+
 }
 
 const styles = StyleSheet.create({

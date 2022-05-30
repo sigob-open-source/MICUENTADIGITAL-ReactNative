@@ -97,13 +97,16 @@ const OficinasAtencion = props =>{
   }
 
   const renderItem = (item) => {
-    return(
+    if (item.direccion != null){
+      return(
         <TouchableOpacity activeOpacity={.5} onPressIn={()=> goToOficina(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
           <View style={styles.content}>
             <Text style={styles.collapsibleText}>{item.descripcion}</Text>
           </View>
         </TouchableOpacity>
-    );
+      );
+    }
+
   }
 
   // Buscar un tramite en especifico filtrando dependiendo de lo que se devuelva en el campo de texto
@@ -120,11 +123,15 @@ const OficinasAtencion = props =>{
     if (oficinas != null) {
       var offices = oficinas.slice(0, 3);
       return offices.map((item, index) => (
-        <TouchableOpacity key={index} onPress={()=> goToOficina(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
-          <View style={styles.SearchButtons}>
-            <Text style={styles.textStyle}>Oficina {item.id}</Text>
-          </View>
-        </TouchableOpacity>
+        
+        item.direccion === null ? (
+          null
+        ) :
+          <TouchableOpacity key={index} onPress={()=> goToOficina(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
+            <View style={styles.SearchButtons}>
+              <Text style={styles.textStyle}>Oficina {item.id}</Text>
+            </View>
+          </TouchableOpacity>
       ));
     }    
   }
@@ -132,6 +139,11 @@ const OficinasAtencion = props =>{
   const createOficina = () => {
     if (oficinas != null) {
       return oficinas.map((item, index) => (
+
+        item.direccion === null ? (
+          null
+        ) :
+
         <TouchableOpacity key={index} onPress={()=>onShowPopup(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
           <MapBoxGL.MarkerView
             anchor={{ x: 0.5, y: 0.9 }}

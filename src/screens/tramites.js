@@ -8,129 +8,165 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
+  ActivityIndicator
 } from 'react-native';
+
 import Collapsible from 'react-native-collapsible';
-import Accordion from 'react-native-collapsible/Accordion';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import http from '../services/http';
+import { getDependencias } from '../services/api';
+import { getTramites } from '../services/api';
 
 import PopUpTramites from '../components/popUpTramites';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
-import Loading from '../components/loadingAnimation';
 
 const WIDTH = Dimensions.get('window').width;
 
 const Tramites = props =>{
 
-  const [collapsed, setCollapsed] = useState(true)
-  const [selectedDependency, setSelectedDependency] = useState(null)
-  const [data, setData] = useState(null)
-  const [filteredData, setFilteredData] = useState([])
-  const [tramitesMunicipales, setTramitesMunicipales] = useState(null)
-  const [selectedTramite, setSelectedTramite] = useState(null)
-  const [tramiteDesc, setTramiteDesc] = useState(null)
-  const [tramiteRequisitos, setTramiteRequisitos] = useState(null)
-  const [department, setDepartment] = useState(null)
+  const [collapsed, setCollapsed] = useState(true);
+  const [collapsed2, setCollapsed2] = useState(true);
+  const [selectedDependency, setSelectedDependency] = useState(null);
+  const [data, setData] = useState(null);
+  const [dependencias, setDependencias] = useState(null);
+  const [filteredData, setFilteredData] = useState([]);
+  const [tramitesMunicipales, setTramitesMunicipales] = useState(null);
+  const [selectedTramite, setSelectedTramite] = useState(null);
+  const [tramiteDesc, setTramiteDesc] = useState(null);
+  const [tramiteRequisitos, setTramiteRequisitos] = useState(null);
+  const [department, setDepartment] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [dependencies, setDependencies] = useState([]);
+  const [uniqueDependencyArray, setUniqueDependencyArray] = useState(null);
+  const [tiposDeFiltros, setTiposDeFiltros] = useState(['Dependencia/Oficina','Busqueda','Más buscados','Clasificación','Sujeto de interés']);
+  const [filtroSeleccionado, setFiltroSeleccionado] = useState("Dependencia/Oficina")
+  const [Sujeto, setSujeto] = useState(['Empresa','Ciudadano'])
+  const [sujetoSeleccionado, setSujetoSeleccionado] = useState('Empresa')
+  const [fichaProps, setFichaProps] = useState([]);
 
-  let popupRef = React.createRef();
 
-  controller = new AbortController();
 
-  const onShowPopup = (tramite, descTramite, departamento, requisitos) => {
+  const onShowPopup = (
+    fichaProp, 
+    ) => {
     if (tramitesMunicipales != null){
-      setSelectedTramite(tramite);
-      setTramiteDesc(descTramite);
-      setDepartment(departamento);
-      setTramiteRequisitos(requisitos);
-      popupRef.show;
+      setFichaProps(fichaProp)
+      setModalOpen(true);
     }
   }
-  const onClosePopup = () => {
-    popupRef.close();
-  };
 
-  ////REPLACE THE STUFF BELOW WITHT HE HOOK EQUIVALENT
-
-  useEffect(() => {
-    getDependencyList();
-  }, []);
-  useEffect(() => {
-    // componentWillUnmount
-    return () => {
-       controller.abort();
-    }
-  }, []);
-
-  //const componentDidMount = () => {
-  //  getDependencyList();
-  //}
-
-  //const componentWillUnmount = () => {
-   //this.controller.abort();
-  //}
-
-  const getDependencyList = async () => {
-    await http.get('tramites/plantillas-tramites-atencion-ciudadana/?entidad_municipal=1').then(
-      (response) => {
-        const result = response.data;
-        if (result.length > 0) {
-          setData(result)
-          setFilteredData(result)
-          setSelectedDependency(result[0].departamentos[0].unidad_operativa.descripcion)
-          setTramitesMunicipales(result[0].nombre)
-        } else {
-          setSelectedDependency('No hay datos.')
-          setTramitesMunicipales('Sin Datos.')
-        }
-      },
-      (error) => {
-        setSelectedDependency('No hay datos.')
-        setTramitesMunicipales('Sin Datos.')
-        console.log(error);
-      },
+  const returnTramiteInfo = (item) => {
+    return(
+      <TouchableOpacity onPress={() => onShowPopup(
+        [ 
+          item.nombre,
+          item.descripcion,
+          item.departamentos,
+          item.casos.requisitos,
+          item.homoclave,
+          item.dependencia,
+          item.tipo_de_tramite
+        ]
+      )}
+      >
+        <View style={styles.tramiteView}>
+          <Text style={styles.collapsibleText}>{item.nombre}</Text>
+        </View>
+      </TouchableOpacity>
     );
-  };
+  }
+
+  useEffect(() => {
+    if (data == null){
+      obetnerDependencias();
+      obtenerTramites();
+    }
+    
+  }, []);
+
+  useEffect(() => {
+      setUniqueDependencyArray([...new Set(dependencies)])
+  }, [dependencies]);
+  
+  const obtenerTramites = async () =>{
+    const tramites = await getTramites();
+    
+    if (tramites.length > 0){
+      setData(tramites)
+      setFilteredData(tramites)
+      setTramitesMunicipales(tramites[0].nombre)      
+    } else{
+      setTramitesMunicipales('Sin Datos.')
+    }
+  }
+
+  const obetnerDependencias = async () =>{
+    const dependencias = await getDependencias();
+    if (dependencias.length > 0){
+      setDependencias(dependencias[0].descripcion);
+      setSelectedDependency(dependencias[0].descripcion);
+    } else{
+      setSelectedDependency('No hay datos.')
+    }
+  }
 
   const setDependency = (item) => {
     setSelectedDependency(item)
     setCollapsed(true)
   };
 
-  const renderItem = (item) => (
-    <View>
-      <TouchableOpacity onPress={() => setDependency(item.descripcion)}>
-        <View style={styles.content}>
-          <Text style={styles.collapsibleText}>{item.descripcion}</Text>
-        </View>
-      </TouchableOpacity>
-    </View>
-  );
-
-  const renderTramite = (item, index) => {
-    if (selectedDependency == item.departamentos[index].unidad_operativa.descripcion) {
-      return (
-        <TouchableOpacity onPress={() => onShowPopup(
-          item.nombre,
-          item.descripcion,
-          item.departamentos[index].descripcion,
-          item.requisitos,
-        )}
-        >
-
-          <View style={styles.tramiteView}>
-            <Text style={styles.collapsibleText}>{item.nombre}</Text>
+  const renderItem = (item) => 
+  {
+    return(
+      <View>
+        <TouchableOpacity onPress={() => setDependency(item)}>
+          <View style={styles.content}>
+            <Text numberOfLines={1} style={styles.collapsibleText}>{item}</Text>
           </View>
         </TouchableOpacity>
-      );
+      </View>
+    )
+  }
+
+  const renderFiltro = (item) => 
+  {
+    return(
+      <View>
+        <TouchableOpacity onPress={() => setFiltroSeleccionado(item)}>
+          <View style={styles.content}>
+            <Text numberOfLines={1} style={styles.collapsibleText}>{item}</Text>
+          </View>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
+  const renderTramite = (item, index) => {
+    if (filtroSeleccionado === "Dependencia/Oficina")
+    {
+      if (item.departamentos[0].unidad_operativa.descripcion === selectedDependency){
+        return(
+          returnTramiteInfo(item)
+        )
+      }
+    }else{
+      return(
+        returnTramiteInfo(item)
+      )
     }
+    
+
+
   };
 
   const toggleExpanded = () => {
     if (data != null) {
       setCollapsed(collapsed => !collapsed)
     }
+  };
+
+  const toggleTramiteFiltros = () => {
+    setCollapsed2(collapsed2 => !collapsed2)
   };
 
   const goBack = () => {
@@ -148,12 +184,10 @@ const Tramites = props =>{
     <View style={{ flex: 1, height: '100%' }}>
       <View style={{ flex: 1, alignItems: 'center' }}>
         <PopUpTramites
-          ref={(target) => popupRef = target}
-          onTouchOutside={onClosePopup}
-          nombreTramite={selectedTramite}
-          descTramite={tramiteDesc}
-          nombreDepartamento={department}
-          requisitos={tramiteRequisitos}
+          openM={modalOpen}
+          close={()=>setModalOpen(false)}
+          onTouchOutside={()=>setModalOpen(false)}
+          tramiteProp={fichaProps}
         />
         <Header
           style={styles.header}
@@ -162,75 +196,130 @@ const Tramites = props =>{
           img={require('../../assets/imagenes/header_logo.png')}
         />
 
-        <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}> Filtrar por dependencia </Text>
+        <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}> Filtrar por </Text>
 
-        <TouchableWithoutFeedback onPress={toggleExpanded}>
-          <View style={styles.collapsibleHeader}>
-            {
-              selectedDependency == null ? (
-                <Loading loading />
-              ) : <Text style={styles.headerText}>{selectedDependency}</Text>
-            }
-
-            {
-              collapsed ? (
-                <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-down" color="black" />
-              ) : <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-up" color="black" />
-            }
-
-          </View>
+        <TouchableWithoutFeedback onPress={toggleTramiteFiltros}>
+            <View style={styles.collapsibleHeader}>
+              <Text numberOfLines={1} style={styles.headerText}>{filtroSeleccionado}</Text>
+              {
+                collapsed2 ? (
+                  <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-down" color="black" />
+                ) : <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-up" color="black" />
+              }
+            </View>
         </TouchableWithoutFeedback>
+
         <View style={styles.collapsibleContainer}>
-          <Collapsible collapsed={collapsed}>
+          <Collapsible collapsed={collapsed2}>
             <FlatList
-              data={data}
-              renderItem={({ item, index }) => renderItem(item.departamentos[index].unidad_operativa)}
+              data={tiposDeFiltros}
+              renderItem={({ item, index }) => renderFiltro(item, index)}
               keyExtractor={(item, index) => index.toString()}
             />
-          </Collapsible>
-        </View>
+            </Collapsible>
+          </View>
+        {
+          filtroSeleccionado === "Dependencia/Oficina" ? (
+            <>
+              <TouchableWithoutFeedback onPress={toggleExpanded}>
+                <View style={styles.collapsibleHeader}>
+                  {selectedDependency == null ? (
+                    <ActivityIndicator style={{ marginLeft: 20 }} size="large" color="black" />
+                  ) : <Text numberOfLines={1} style={styles.headerText}>{selectedDependency}</Text>}
 
-        <Text style={{
-          color: 'black',
-          fontSize: 20,
-          fontWeight: '700',
-          marginTop: 5,
-        }}
-        >
-          {' '}
-          Busqueda
-        </Text>
+                  {collapsed ? (
+                    <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-down" color="black" />
+                  ) : <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-up" color="black" />}
 
-        <View style={styles.textInputContainer}>
-          <TextInput
-            style={styles.textInputStyle}
-            placeholder="Buscar..."
-            placeholderTextColor="gray"
-            onChangeText={(text) => {searchTramite(text); }}
-          />
-          <TouchableOpacity>
-            <View style={{
-              borderRadius: 10, width: 46, height: 46, justifyContent: 'center',
-            }}
-            />
-          </TouchableOpacity>
-        </View>
+                </View>
+              </TouchableWithoutFeedback>
+
+              <View style={styles.collapsibleContainer}>
+                <Collapsible collapsed={collapsed}>
+                  <FlatList
+                    data={dependencies}
+                    renderItem={({ item, index }) => renderItem(item, index)}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                </Collapsible>
+              </View>
+              </>
+          ) : null
+        }
+
+        {
+          filtroSeleccionado === "Busqueda" ?(
+
+            <>
+              <Text style={{
+                color: 'black',
+                fontSize: 20,
+                fontWeight: '700',
+                marginTop: 5,
+              }}
+              >
+                {' '}
+                Busqueda
+              </Text><View style={styles.textInputContainer}>
+                  <TextInput
+                    style={styles.textInputStyle}
+                    placeholder="Buscar..."
+                    placeholderTextColor="gray"
+                    onChangeText={(text) => { searchTramite(text); } } />
+                  <TouchableOpacity>
+                    <View style={{
+                      borderRadius: 10, width: 46, height: 46, justifyContent: 'center',
+                    }} />
+                  </TouchableOpacity>
+                </View>
+              </>
+          ) : null
+        }
+
+        {
+          filtroSeleccionado === "Sujeto de interés" ? (
+            <>
+              <TouchableWithoutFeedback onPress={toggleExpanded}>
+                <View style={styles.collapsibleHeader}>
+                  {selectedDependency == null ? (
+                    <ActivityIndicator style={{ marginLeft: 20 }} size="large" color="black" />
+                  ) : <Text numberOfLines={1} style={styles.headerText}>{sujetoSeleccionado}</Text>}
+
+                  {collapsed ? (
+                    <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-down" color="black" />
+                  ) : <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-up" color="black" />}
+
+                </View>
+              </TouchableWithoutFeedback>
+
+              <View style={styles.collapsibleContainer}>
+                <Collapsible collapsed={collapsed}>
+                  <FlatList
+                    data={Sujeto}
+                    renderItem={({ item, index }) => renderItem(item, index)}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                </Collapsible>
+              </View>
+              </>
+          ) : null
+        }
 
         <Text style={{
           color: 'black',
           fontSize: 20,
           fontWeight: '700',
           marginTop: 30,
+          marginBottom:30,
         }}
         >
           {' '}
-          Trámites Municipales
+          Trámites
         </Text>
-
         {
         tramitesMunicipales == null ? (
-          <View style={styles.tramiteView}>
-            <Loading loading />
+          <View style={{justifyContent:'center', marginTop:20}}>
+            <ActivityIndicator style={{alignSelf:'center'}}size="large" color="black"/>
           </View>
         )
           : (
@@ -348,7 +437,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: 336,
     height: 45,
-    marginTop: 5,
+    marginTop: 15,
     borderRadius: 10,
     backgroundColor: 'white',
     shadowColor: 'black',
@@ -359,8 +448,9 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontWeight: '500',
+    width:270,
     marginLeft: '3%',
-    fontSize: 20,
+    fontSize: 18,
     color: 'black',
   },
   content: {
@@ -386,10 +476,13 @@ const styles = StyleSheet.create({
   tramiteView: {
     width: WIDTH,
     height: 50,
-    marginTop: 20,
+    marginBottom:10,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
+    borderTopWidth:2,
+    borderBottomWidth:2,
+    borderColor:'#79142A',
   },
 });
 

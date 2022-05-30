@@ -15,23 +15,9 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 const deviceHeight = Dimensions.get('window').height;
 
-class BottomPopUp extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      show: false,
-    };
-  }
+const BottomPopUp = props => {
 
-  show = () => {
-    this.setState({ show: true });
-  };
-
-  close = () => {
-    this.setState({ show: false });
-  };
-
-  renderOutsideTouchable(onTouch) {
+  const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
 
@@ -42,17 +28,7 @@ class BottomPopUp extends React.Component {
     );
   }
 
-  selectImage = () => {
-    const { pain } = this.props;
-    return (pain);
-  };
-
-  takePicture = () => {
-    const { pain2 } = this.props;
-    return (pain2);
-  };
-
-  redirectToSettings = async (selectedOption) => {
+  const redirectToSettings = async (selectedOption) => {
     if (selectedOption == 0) {
       const resultGallery = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE);
       if (resultGallery == false) {
@@ -66,7 +42,7 @@ class BottomPopUp extends React.Component {
           { cancelable: false },
         );
       } else {
-        this.props.pain();
+        props.pain();
       }
     }/// /////////////////////
 
@@ -84,13 +60,13 @@ class BottomPopUp extends React.Component {
           { cancelable: false },
         );
       } else {
-        this.props.pain2();
+        props.pain2();
       }
     }/// /////////////////////
   };
 
-  renderTitle = () => {
-    const { title } = this.props;
+  const renderTitle = () => {
+
     return (
       <View>
         <Text style={{
@@ -101,70 +77,62 @@ class BottomPopUp extends React.Component {
           textAlign: 'center',
         }}
         >
-          {title}
+          {props.title}
         </Text>
       </View>
     );
   };
 
-  render() {
-    const { show } = this.state;
-    const {
-      onTouchOutside, title, pain, pain2,
-    } = this.props;
-    return (
+  return (
+    <Modal
+      animationType="fade"
+      transparent
+      visible={props.open}
+      onRequestClose={props.close}
+    >
 
-      <Modal
-        animationType="fade"
-        transparent
-        visible={show}
-        onRequestClose={this.close}
+      <View style={{
+        flex: 1,
+        backgroundColor: '#000000AA',
+        justifyContent: 'flex-end',
+      }}
       >
 
+        {renderOutsideTouchable(props.onTouchOutside)}
+
         <View style={{
-          flex: 1,
-          backgroundColor: '#000000AA',
-          justifyContent: 'flex-end',
+          backgroundColor: 'white',
+          width: '100%',
+          borderTopRightRadius: 10,
+          borderTopLeftRadius: 10,
+          maxHeight: deviceHeight * 0.4,
         }}
         >
 
-          {this.renderOutsideTouchable(onTouchOutside)}
+          {renderTitle()}
 
-          <View style={{
-            backgroundColor: 'white',
-            width: '100%',
-            borderTopRightRadius: 10,
-            borderTopLeftRadius: 10,
-            maxHeight: deviceHeight * 0.4,
-          }}
-          >
-
-            {this.renderTitle()}
-
-            <TouchableOpacity onPress={() => this.redirectToSettings(0)} onPressOut={this.close}>
-              <View style={styles.optionCard}>
-                <View style={styles.collapsibleContent}>
-                  <MaterialCommunityIcons size={40} name="image-frame" color="black" />
-                  <Text style={styles.collapsibleText}>Galería</Text>
-                </View>
+          <TouchableOpacity onPress={() => redirectToSettings(0)} onPressOut={props.close}>
+            <View style={styles.optionCard}>
+              <View style={styles.collapsibleContent}>
+                <MaterialCommunityIcons size={40} name="image-frame" color="black" />
+                <Text style={styles.collapsibleText}>Galería</Text>
               </View>
-            </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => this.redirectToSettings(1)} onPressOut={this.close}>
-              <View style={styles.optionCard}>
-                <View style={styles.collapsibleContent}>
-                  <MaterialCommunityIcons size={40} name="camera-outline" color="black" />
-                  <Text style={styles.collapsibleText}>Cámara</Text>
-                </View>
+          <TouchableOpacity onPress={() => redirectToSettings(1)} onPressOut={props.close}>
+            <View style={styles.optionCard}>
+              <View style={styles.collapsibleContent}>
+                <MaterialCommunityIcons size={40} name="camera-outline" color="black" />
+                <Text style={styles.collapsibleText}>Cámara</Text>
               </View>
-            </TouchableOpacity>
+            </View>
+          </TouchableOpacity>
 
-          </View>
         </View>
-      </Modal>
-
-    );
-  }
+      </View>
+    </Modal>
+  );
 }
 
 const styles = StyleSheet.create({

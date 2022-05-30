@@ -1,22 +1,23 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-const styles = StyleSheet.create({
-  container: {
-    marginLeft: '3%',
-    alignContent: 'flex-start',
-    backgroundColor: 'white',
-  },
-});
-
-const Loading = ({ loading, children }) => {
+const Loading = (props,loading,children) => {
   if (loading) {
     return (
       <View style={styles.container}>
-        <ActivityIndicator size="small" color="black" />
+        <ActivityIndicator size={props.size} color="black" />
       </View>
     );
   }
 };
+
+const styles = StyleSheet.create({
+  container: {
+    width:700,
+    height:700,
+    alignContent: 'flex-start',
+    backgroundColor: 'transparent',
+  },
+});
 
 export default Loading;

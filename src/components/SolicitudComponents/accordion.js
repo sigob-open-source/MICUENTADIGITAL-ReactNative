@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component,useState,useEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -17,62 +17,82 @@ import MotivoPopUp from './selectorMotivoModal';
 
 const WIDTH = Dimensions.get('window').width;
 
-export default class AccordionView extends React.Component {
-  constructor(props) {
-    super(props);
-    this.popupRef = React.createRef();
-    this.state = {
-      collapsed: true,
-      motivos: null, // Datos obtenidos del api
-      children: null, // Motivos de la subcategoría
-      motivo: null,
-    };
-  }
+const AccordionView = props => {
+
+  const [collapsed, setCollapsed] = useState(true);
+  const [motivos, setMotivos] = useState(null);
+  const [children, setChildren] = useState(null);
+  const [motivo, setMotivo] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [gotData, setGotData] = useState(false);
+
+  useEffect(() => {
+    let abortController = new AbortController();
+    dataGet();
+    return () => {
+      abortController.abort();
+    }
+  }, []);
 
   // Modal para mostrar los motivos a seleccionar en las subcategorías (si es que tienen, si no mandar alerta)
-  onShowPopup = (children, motivo) => {
+  const onShowPopup = async (children, motivo) => {
+    let abortController = new AbortController();
+    const child = await children
     if (children.length > 0) {
-      this.setState({
-        children,
-        motivo,
-      }, this.popupRef.show);
+      setChildren(child);
+      setMotivo(motivo);
+      if (motivos && children != null){
+        setOpen(true);
+      }
+      
     } else {
       Alert.alert('Alerta', 'Esta categoría no tiene motivos disponibles.');
+    }
+    return () => {
+      abortController.abort();
     }
   };
 
   // Cierra el modal que muestra los motivos
-  onClosePopup = () => {
-    this.popupRef.close();
+  const onClosePopup = () => {
+    setOpen(false);
   };
 
   // Obtiene datos del api para así obtener los diferentes tipos de categorías, motivos etc
-  getData = async () => {
+  const getData = async () => {
     const id = 1;
     const tipos = await getTiposDeSolicitudes(id);
-    this.state.motivos = tipos;
+    setMotivos(tipos)
   };
 
   // Muestra las subcategorías disponibles
-  toggleExpanded = () => {
-    this.setState({ collapsed: !this.state.collapsed });
+  const toggleExpanded = () => {
+    setCollapsed(collapsed => !collapsed);
   };
 
   // Manda los datos a ModalSolicitud.js para despues mandarlos de vuelta a Solicitud.js
-  close = (entidad, motivo, descripcion) => {
-    this.props.close(
+  const close = (entidad, motivo, descripcion) => {
+    props.close(
       entidad,
       motivo,
       descripcion,
     );
   };
 
-  renderItem = () => {
-    this.getData();
+  const dataGet = () =>{
+    if (!gotData){
+      getData();
+      setGotData(true);
+      props.renderCard;
+      setLoading(false);
+    }
+  }
 
-    if (this.state.motivos != null) {
+  const renderItem = () => {
+    if (motivos != null) {
       // Si no pongo el -1 por alguna razón me da el id del tipo de solicitud siguiente
-      return this.state.motivos[this.props.parentId - 1].children.map((item, index) => (
+      return motivos[props.parentId - 1].children.map((item, index) => (
         <View key={index}>
           {/* <TouchableOpacity onPress={()=>this.close(
               1,
@@ -83,13 +103,13 @@ export default class AccordionView extends React.Component {
             }> */}
 
           {/* Al presionar una subcategoría entonces esta ejecuta la función de mostrar el modal para elegir el motivo para dicha subcategoría, en caso de que haya motivos. */}
-          <TouchableOpacity onPress={() => this.onShowPopup(
+          <TouchableOpacity onPress={() => onShowPopup(
             item.children,
-            this.props.motivo,
+            props.motivo,
           )}
           >
             <View style={styles.content}>
-              <MaterialCommunityIcons size={40} name={this.props.iconName} color="black" />
+              <MaterialCommunityIcons size={40} name={props.iconName} color="black" />
               <Text style={styles.collapsibleText}>{item.descripcion}</Text>
             </View>
             <View style={{ width: '100%', height: 1, backgroundColor: '#b8b8b8' }} />
@@ -99,33 +119,44 @@ export default class AccordionView extends React.Component {
     }
   };
 
-  render() {
     return (
       <View style={styles.container}>
-        <MotivoPopUp
-          ref={(target) => this.popupRef = target}
-          onTouchOutside={this.onClosePopup}
-          title="Motivo"
-          listaMotivos={this.state.children}
-          motivo={this.props.motivo}
-          close={this.close}
-        />
+        {
+          children != null ?(
+            <MotivoPopUp
+            //ref={(target) => this.popupRef = target}
+            open={open}
+            onTouchOutside={onClosePopup}
+            title="Motivo"
+            listaMotivos={children}
+            motivo={props.motivo}
+            close={close}
+          />
+          ) : null
+        }
+
+
+
         <ScrollView contentContainerStyle={{ marginBottom: 10 }}>
-          <TouchableOpacity onPress={this.toggleExpanded}>
+          <TouchableOpacity onPress={toggleExpanded}>
             <View style={styles.header}>
-              <MaterialCommunityIcons size={40} name={this.props.iconName} color="black" />
-              <Text style={styles.headerText}>{this.props.titleText}</Text>
+              <MaterialCommunityIcons size={40} name={props.iconName} color="black" />
+              <Text style={styles.headerText}>{props.titleText}</Text>
             </View>
           </TouchableOpacity>
-          <Collapsible collapsed={this.state.collapsed}>
+          <Collapsible collapsed={collapsed}>
             {/* Renderica todos los tipos de solicitudes con sus subcategorías */}
-            {this.renderItem()}
+            {
+              loading ?(
+                <Text style={styles.headerText}>Cargando...</Text>
+              ) : renderItem()
+            }
+            
 
           </Collapsible>
         </ScrollView>
       </View>
     );
-  }
 }
 
 const styles = StyleSheet.create({
@@ -169,3 +200,5 @@ const styles = StyleSheet.create({
     color: 'black',
   },
 });
+
+export default AccordionView;

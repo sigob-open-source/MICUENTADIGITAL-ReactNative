@@ -1,4 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { 
+  useRef, 
+  useState, 
+  useEffect } from 'react';
 import {
   StyleSheet,
   View,
@@ -7,16 +10,15 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  PermissionsAndroid,
-  Linking,
+  AppState
 } from 'react-native';
+
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import axios from 'axios';
 import { registrarArchivo, registrarSolicitud } from '../services/api';
 
 import ModalSolicitud from '../components/SolicitudComponents/ModalSolicitud';
 import ComentarioModal from '../components/SolicitudComponents/ComentariosModal';
-import { MapaModal } from '../components/SolicitudComponents/MapaModal';
+import MapaModal from '../components/SolicitudComponents/MapaModal';
 
 import CardSolicitud from '../components/SolicitudComponents/CardSolicitud';
 import Header from '../components/Header';
@@ -27,10 +29,29 @@ import ButtonRequest from '../components/SolicitudComponents/Button';
 const WIDTH = Dimensions.get('window').width;
 
 const Solicitud = (props) => {
-  let popupRef = React.createRef();
-  let popupRef2 = React.createRef();
-  let popupRef3 = React.createRef();
-  let popupRef4 = React.createRef();
+  const appState = useRef(AppState.currentState);
+  const [appStateVisible, setAppStateVisible] = useState(appState.current)
+
+  useEffect(() => {
+
+    const subscription = AppState.addEventListener("change", nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+      }else{
+        setMapaOpen(false);
+        setComentarioOpen(false);
+      }
+
+      appState.current = nextAppState;
+      setAppStateVisible(appState.current);
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, []);
 
   const [comment, setComment] = useState('Sin comentario.');
   const [location, setLocation] = useState('Sin locación');
@@ -48,9 +69,12 @@ const Solicitud = (props) => {
   const [motivoOpen, setMotivoOpen] = useState(true);
   const [comentarioOpen, setComentarioOpen] = useState(false);
   const [mapaOpen, setMapaOpen] = useState(false);
+  const [confirmacionOpen, setConfirmacionOpen] = useState(false);
+  const [selectImageOpen, setSelectImageOpen] = useState(false);
   
   const submit = async () => {
-    onCloseConfirmationPopUp();
+    onShowConfirmationPopUp();
+    console.log(latitud,' ',longitud)
     // Validar que el usuario llenó toda la información necesaria para poedr mandar la solicitufd
 
     const image = archivo;
@@ -95,6 +119,7 @@ const Solicitud = (props) => {
     setShowMotivo(true);
     setMotivo_de_la_solicitud(motivo);
     setEntidadMunicipalId(entidad);
+    closeModal(0);
     setMotivoDesc(descripcion);
   };
 
@@ -110,7 +135,7 @@ const Solicitud = (props) => {
       setHasSwitchedView(true);
       switch(type){
         case 0: setMotivoOpen(true); setMapaOpen(false); setComentarioOpen(false);break;
-        case 1: setMapaOpen(true); setMotivoOpen(false); setMapaOpen(false);  break;
+        case 1: setMapaOpen(true); setMotivoOpen(false); setComentarioOpen(false);  break;
         case 2: setComentarioOpen(true); setMotivoOpen(false); setMapaOpen(false);break;
       }
       setTimeout(() => {
@@ -119,14 +144,28 @@ const Solicitud = (props) => {
     }
   };
 
+  const closeModal = (type) => {
+    if (!hasSwitchedView) {
+      setHasSwitchedView(true);
+      switch(type){
+        case 0: setMotivoOpen(false); break;
+        case 1: setMapaOpen(false); break;
+        case 2: setComentarioOpen(false); break;
+      }
+      setTimeout(() => {
+        setHasSwitchedView(false);
+      }, 1);
+    }
+  };
+  
   const onShowConfirmationPopUp = () => {
-    if ((location == 'Sin locacion') || (archivo == null) || (motivo_de_la_solicitud === null) || (comment === 'Sin comentario.' || comment === '')) {
+    if ((location == 'Sin locación') || (archivo == null) || (motivo_de_la_solicitud === null) || (comment === 'Sin comentario.' || comment === '')) {
       Alert.alert(
         'Registro fallido',
         'Hacen falta uno o más campos, favor de revisar la solicitud.',
       );
     } else {
-      
+      setConfirmacionOpen(true);
     }
   };
 
@@ -142,8 +181,8 @@ const Solicitud = (props) => {
       <ModalSolicitud
         title="Elegir Motivo"
         open={motivoOpen}
-
         onclose={motivoToParent}
+        close={()=>closeModal(0)}
       />
 
       <Header
@@ -156,19 +195,22 @@ const Solicitud = (props) => {
 
       <ComentarioModal
         title="Escribe tu comentario"
-
+        open={comentarioOpen}
         modalToParent={modalToParent}
+        close={()=>closeModal(2)}
       />
 
       <MapaModal
-
+        close={()=>closeModal(1)}
+        open={mapaOpen}
+        otherOpen={motivoOpen}
         mapToParent={mapToParent}
       />
 
       <ScrollView contentContainerStyle={{ padding: 10, paddingHorizontal: 0 }}>
         <View style={{ flex: 1, marginTop: 9, marginHorizontal: '2%' }}>
 
-          <TouchableOpacity onPress={() => openModal(2)}>
+          <TouchableOpacity onPress={() => openModal(0)}>
             <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow />
           </TouchableOpacity>
           {
@@ -188,15 +230,17 @@ const Solicitud = (props) => {
             comentario={comment}
             ubicacion={location}
             confirmacion={submit}
+            open={confirmacionOpen}
+            close={()=>setConfirmacionOpen(false)}
           />
 
           <CardSolicitud 
           onPassImage={imageToParent} 
-          open={mapaOpen}
+          open={()=> openModal(1)}
           getText={comment} 
           getLocation={location} />
 
-          <TouchableOpacity onPress={() => openModal(0)}>
+          <TouchableOpacity onPress={() => openModal(2)}>
             <ButtonRequest texto="Cambiar Comentario" />
           </TouchableOpacity>
 
