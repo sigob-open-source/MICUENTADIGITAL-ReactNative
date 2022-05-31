@@ -48,6 +48,7 @@ const OficinasAtencion = props =>{
   const [open, setOpen] = useState(false)
   const [error, setError] = useState(null)
 
+
   const toggleExpanded = () => {
     if (oficinas != null){
       setNumberOfElements(filteredOficinas.length)
@@ -79,8 +80,8 @@ const OficinasAtencion = props =>{
   }
 
   const goToOficina = (id, lat, long, desc) =>{
-    onShowPopup(id, lat, long, desc)
-    setCoords([lat,long])
+      onShowPopup(id, lat, long, desc);
+      //setCoords([lat,long]);
   }
 
   const GetLocation = () => {
@@ -124,7 +125,7 @@ const OficinasAtencion = props =>{
       var offices = oficinas.slice(0, 3);
       return offices.map((item, index) => (
         
-        item.direccion === null ? (
+        item.direccion == null ? (
           null
         ) :
           <TouchableOpacity key={index} onPress={()=> goToOficina(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
@@ -138,20 +139,20 @@ const OficinasAtencion = props =>{
 
   const createOficina = () => {
     if (oficinas != null) {
-      return oficinas.map((item, index) => (
-
-        item.direccion === null ? (
+      oficinas.map(( item, index) => {
+        
+        item.direccion == null ? (
           null
         ) :
 
         <TouchableOpacity key={index} onPress={()=>onShowPopup(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
           <MapBoxGL.MarkerView
             anchor={{ x: 0.5, y: 0.9 }}
-            coordinate={[item.direccion.longitud, item.direccion.latitud]}>
+            coordinate={[0, 0]}>
             <Fontisto style={{alignSelf:'flex-end',}}size={50} name='map-marker-alt' color={'#79142A'} />
           </MapBoxGL.MarkerView>
         </TouchableOpacity>
-      ));
+    });
     }
   };
   useEffect(() => {

@@ -6,9 +6,10 @@ import {
   Modal, 
   TouchableWithoutFeedback, 
   TouchableOpacity,
-  ScrollView,
+  PermissionsAndroid,
   FlatList,
-  Alert
+  Alert,
+  Dimensions
 } from 'react-native';
 
 import RNFetchBlob from 'rn-fetch-blob'
@@ -75,112 +76,149 @@ const PopUpTramites = props => {
     );
   }
 
-  const createPDF = async () => {
-    const data = props.tramiteProp[0];
-    const today = new Date();
-    const hours = (today.getHours() < 10 ? '0' : '') + today.getHours();
-    const minutes = (today.getMinutes() < 10 ? '0' : '') + today.getMinutes();
-    const seconds = (today.getSeconds() < 10 ? '0' : '') + today.getSeconds();
-    let options = {
-      html: `
-
-      <style>
-
-      footer {
-        display: flex;
-        position:fixed;
-        font-size: 15px;
-        bottom: 0;
-        left: 0;
-        width: 100%;
-        height: 100px;
-        justify-content: center;
-        align-items: center;
-        text-align: center;
-        padding: 3px;
-        background-color: #701c30;;
-        color: white;
-      }
-
-      @page { 
-        background-color: red; 
-        margin-left: 0pt; 
-        margin-right: 0pt; 
-        margin-top: 0pt; 
-        margin-bottom: 0pt; 
-        padding-left: 0pt; 
-        padding-right: 0pt; 
-        padding-top: 0pt; 
-        padding-bottom: 0pt; 
-      }
-      #hello {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 200px;
-        text-align: center;
-        padding-top:100px;
-      }
-      #logo {
-        color: white;
-        font-size:25px;
-        background-color: #4b4548;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        width: 100%;
-        height: 150px;
-        box-sizing: border-box;
-        border-bottom: 10px solid#701c30;
-        -webkit-box-shadow: 0px 0px 30px 11px rgba(0,0,0,0.63); 
-        box-shadow: 0px 0px 30px 11px rgba(0,0,0,0.63);
-      }
-
-      </style>
-      <body style="margin: 0;">
-
-      <div id="logo">
-          <h1>Ficha del trámite</h3>
-      </div>
+  const createPDF = async() => {
+    try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+          {
+            title: 'Permisos requeridos',
+            message:
+              'Se requieren permisos para guardar archivos en el dispositivo. ',
+            buttonNeutral: 'Preguntame más tarde',
+            buttonNegative: 'Cancelar',
+            buttonPositive: 'OK',
+          },
+        );
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          const data = props.tramiteProp[0];
+          const today = new Date();
+          const hours = (today.getHours() < 10 ? '0' : '') + today.getHours();
+          const minutes = (today.getMinutes() < 10 ? '0' : '') + today.getMinutes();
+          const seconds = (today.getSeconds() < 10 ? '0' : '') + today.getSeconds();
+          let options = {
+            html: `
       
-      <div class="row even" id="hello">
-        <div col-md-12">
-          <h1>Nombre del trámite:${props.tramiteProp[1]}</h1>
-          <h1>Departamentos: ${ props.tramiteProp[2].map(entry => {
-            return `<h1>${entry.clave} - ${entry.descripcion}</h1>`
-        }).join(' ')}</h1>
-          <h1>Requisitos: ${requisitos}</h1>
-        </div>
-      </div>
+            <style>
       
-      <footer>
-        <div>
-          <h1>© ${year} Gobierno del Estado de Nayarit</h1>
-        </div>
-      </footer>
+            footer {
+              display: flex;
+              position:fixed;
+              font-size: 15px;
+              bottom: 0;
+              left: 0;
+              width: 100%;
+              height: 100px;
+              justify-content: center;
+              align-items: center;
+              text-align: center;
+              padding: 3px;
+              background-color: #701c30;;
+              color: white;
+            }
       
-      </body>
-      `,
-      fileName: `ficha_tramite_${hours + minutes + seconds}`,
-      directory: 'Download',
-      base64: true,
-    };
-
-    let file = await RNHTMLtoPDF.convert(options)
-
-    // RNFetchBlob.fs.dirs.DownloadDir it's getting the download folder from internal storage
-    let filePath = RNFetchBlob.fs.dirs.DownloadDir + `/ficha_tramite_${hours + minutes + seconds}.pdf`;
+            @page { 
+              background-color: red; 
+              margin-left: 0pt; 
+              margin-right: 0pt; 
+              margin-top: 0pt; 
+              margin-bottom: 0pt; 
+              padding-left: 0pt; 
+              padding-right: 0pt; 
+              padding-top: 0pt; 
+              padding-bottom: 0pt; 
+            }
+            #hello {
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              height: 200px;
+              text-align: center;
+              padding-top:100px;
+            }
+            #logo {
+              color: white;
+              font-size:25px;
+              background-color: #4b4548;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              width: 100%;
+              height: 150px;
+              box-sizing: border-box;
+              border-bottom: 10px solid#701c30;
+              -webkit-box-shadow: 0px 0px 30px 11px rgba(0,0,0,0.63); 
+              box-shadow: 0px 0px 30px 11px rgba(0,0,0,0.63);
+            }
+      
+            </style>
+            <body style="margin: 0;">
+      
+            <div id="logo">
+                <h1>Ficha del trámite</h3>
+            </div>
+            
+            <div class="row even" id="hello">
+              <div col-md-12">
+                <h1>Nombre del trámite:${props.tramiteProp[1]}</h1>
+                <h1>Departamentos: ${ props.tramiteProp[2].map(entry => {
+                  return `<h1>${entry.clave} - ${entry.descripcion}</h1>`
+              }).join(' ')}</h1>
+                <h1>Requisitos: ${requisitos}</h1>
+              </div>
+            </div>
+            
+            <footer>
+              <div>
+                <h1>© ${year} Gobierno del Estado de Nayarit</h1>
+              </div>
+            </footer>
+            
+            </body>
+            `,
+            fileName: `ficha_tramite_${hours + minutes + seconds}`,
+            directory: 'Download',
+            base64: true,
+            };
+            let file = await RNHTMLtoPDF.convert(options)
     
-    RNFetchBlob.fs.writeFile(filePath, file.base64, 'base64')
-        .then(response => {
-            console.log('Success Log: ', response);
-        })
-        .catch(errors => {
-            console.log(" Error Log: ", errors);
-        })
-    // console.log(file.filePath);
-    Alert.alert("PDF descargado",`Su PDF se descargó en la siguiente locación: ${filePath}`)
-  }
+            // RNFetchBlob.fs.dirs.DownloadDir it's getting the download folder from internal storage
+            let filePath = RNFetchBlob.fs.dirs.DownloadDir + `/ficha_tramite_${hours + minutes + seconds}.pdf`;
+            
+            RNFetchBlob.fs.writeFile(filePath, file.base64, 'base64')
+                .then(response => {
+                    return(
+                      <View style={styles.containerPDF}>
+                        <Pdf
+                            source={{uri:`${filePath}`}}
+                            onLoadComplete={(numberOfPages,filePath) => {
+                                console.log(`Number of pages: ${numberOfPages}`);
+                            }}
+                            onPageChanged={(page,numberOfPages) => {
+                                console.log(`Current page: ${page}`);
+                            }}
+                            onError={(error) => {
+                                console.log(error);
+                            }}
+                            onPressLink={(uri) => {
+                                console.log(`Link pressed: ${uri}`);
+                            }}
+                            style={styles.pdf}
+                        />                        
+                      </View>
+                    )
+                })
+                .catch(errors => {
+                    console.log(" Error Log: ", errors);
+                })
+                Alert.alert("PDF descargado",`Su PDF se descargó exitosamente.`)
+        } else {
+          Alert.alert("Permiso denegado", "Debe de conceder los permisos necesarios para generar el PDF.")
+        }
+      } catch (err) {
+        console.warn(err);
+      }
+           
+    }
 
   return (
     <Modal
@@ -304,6 +342,17 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     color: 'black',
   },
+  containerPDF: {
+      flex: 1,
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+      marginTop: 25,
+  },
+  pdf: {
+      flex:1,
+      width:Dimensions.get('window').width,
+      height:Dimensions.get('window').height,
+    }
 });
 
 export default PopUpTramites;

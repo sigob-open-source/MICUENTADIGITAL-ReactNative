@@ -16,17 +16,21 @@ import axios from 'axios';
 const ModalOficinasAtencion = props => {
 
   const [nombrOficina, setNombreOficina] = useState(null);
-  const [ubicacion, setUbicacion] = useState(null);
+  const [ubicacion, setUbicacion] = useState("Desconocida");
   const [coords, setCoords] = useState(null);
   const {selectedCoords, setSelectedCoords} = useContext(ubicacionOficinaContext)
+  const [shouldRender, setShouldRender] = useState(false);
 
   const apihandler=()=>{
     try{
       axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+props.coords+'.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ')
       .then(response => {
-        const posts = response.data.features[0].place_name;
-        console.log(posts)
-        setUbicacion(posts)
+        if (response.data.features[0] != undefined){
+          const posts = response.data.features[0].place_name;
+          setUbicacion(posts);
+        }
+
+        
       });
     }catch(error){
       console.log(error)
@@ -47,7 +51,13 @@ const ModalOficinasAtencion = props => {
   const show = async () => {
     const coordinates = await props.coords
     console.log("test oppen")
-    apihandler(coordinates);
+    if (coordinates != [null,null]){
+      apihandler(coordinates);
+      setShouldRender(true);
+    }else{
+      setShouldRender(false);
+    }
+    
   };
 
   return (
