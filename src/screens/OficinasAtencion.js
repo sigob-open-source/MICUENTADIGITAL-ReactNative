@@ -15,7 +15,10 @@ import useKeyboard from '../utils/keyboardListener';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Geolocation from 'react-native-geolocation-service';
 import { getOficinas } from '../services/api';
+import { getTramites } from '../services/api';
 import { ubicacionOficinaContext } from '../helpers/Context';
+import ConnectionCheck from '../components/internetChecker';
+import axios from 'axios';
 
 import Header from '../components/Header';
 import MapboxGL from '@react-native-mapbox-gl/maps';
@@ -47,7 +50,30 @@ const OficinasAtencion = props =>{
   const [numberOfElements, setNumberOfElements] = useState(0);
   const [open, setOpen] = useState(false)
   const [error, setError] = useState(null)
+  const [oficinasTramites, setOficinasTramites] = useState(null);
+  const [userInitialCoords, setUserInitialCoords] = useState(null);
+  const [route, setRoute] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(12);
 
+  const apihandler=()=>{
+    try{
+      axios.get(`https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${userInitialCoords[0]},${userInitialCoords[1]};${selectedCoords[0]},${selectedCoords[1]}?geometries=geojson&overview=full&alternatives=true&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ`)
+      .then(response => {
+          const posts = response.data
+          setCoords(userInitialCoords);
+          setRoute(posts);
+          setZoomLevel(4);
+          setOpen(false);
+          console.log(response.data);
+      });
+    }catch(error){
+      console.log(error)
+    }
+  }
+
+  const marcarRecorrido = () => {
+
+  }
 
   const toggleExpanded = () => {
     if (oficinas != null){
@@ -62,6 +88,7 @@ const OficinasAtencion = props =>{
     setSelectedCoords([lat,long])
     setDesc(desc)
     setOpen(true);
+    setCoords([lat,long])
   };
 
   const onClosePopup = () => {
@@ -73,10 +100,17 @@ const OficinasAtencion = props =>{
   }
 
   const getData = async () =>{
-    const response = await getOficinas()
-    setOficinas(response)
-    setFilteredOficinas(response)
-    setRenderPoints(true)
+    const response = await getOficinas();
+    setOficinas(response);
+    setFilteredOficinas(response);
+    setRenderPoints(true);
+    console.log(response)
+  }
+
+  const getDataTramites = async () => {
+    const response = await getTramites();
+    setOficinas(oficinas => [...oficinas, response]);
+    console.log(oficinas)
   }
 
   const goToOficina = (id, lat, long, desc) =>{
@@ -85,10 +119,11 @@ const OficinasAtencion = props =>{
   }
 
   const GetLocation = () => {
-    getData()
+    getData();
     Geolocation.getCurrentPosition(
       (position) => {
         setCoords([position.coords.longitude,position.coords.latitude])
+        setUserInitialCoords([position.coords.longitude,position.coords.latitude])
         setLongitude([position.coords.longitude])
         setLatitude([position.coords.latitude])
       },
@@ -139,22 +174,24 @@ const OficinasAtencion = props =>{
 
   const createOficina = () => {
     if (oficinas != null) {
-      oficinas.map(( item, index) => {
+      var offices = oficinas;
+      return offices.map((item, index) => (
         
         item.direccion == null ? (
           null
         ) :
-
         <TouchableOpacity key={index} onPress={()=>onShowPopup(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
           <MapBoxGL.MarkerView
             anchor={{ x: 0.5, y: 0.9 }}
-            coordinate={[0, 0]}>
+            coordinate={[item.direccion.longitud,item.direccion.latitud]}
+            >
             <Fontisto style={{alignSelf:'flex-end',}}size={50} name='map-marker-alt' color={'#79142A'} />
           </MapBoxGL.MarkerView>
         </TouchableOpacity>
-    });
-    }
+      ));
+    }    
   };
+
   useEffect(() => {
     if (renderPoints){
       setOpen(true);
@@ -184,6 +221,7 @@ const OficinasAtencion = props =>{
 
   return(
     <View style={{flex:1,}}> 
+    <ConnectionCheck/>
       <Header style={styles.header}item="Oficinas de atención" imgnotif={require("../../assets/imagenes/notificationGet_icon.png")} img={require("../../assets/imagenes/header_logo.png")}/>
      
       <ubicacionOficinaContext.Provider value={{selectedCoords,setSelectedCoords}}>
@@ -193,6 +231,7 @@ const OficinasAtencion = props =>{
           id={id}
           coords={selectedCoords}
           desc={desc}
+          createRoute={apihandler}
         />
       </ubicacionOficinaContext.Provider>
 
@@ -205,12 +244,21 @@ const OficinasAtencion = props =>{
             zoomLevel={17}
             followUserLocation={true}
             style={{flex:1}}>
+            <MapboxGL.UserLocation visible={true} />
+
+            {
+              route != null ?(
+                <MapboxGL.ShapeSource id="routeSource" shape={route.routes[0].geometry}>
+                  <MapboxGL.LineLayer id="routeFill" style={{lineColor: "#ff8109", lineWidth: 3.2, lineCap: MapboxGL.LineJoin.Round, lineOpacity: 1.84}} />
+                </MapboxGL.ShapeSource>
+              ) : null
+            }
 
             <MapBoxGL.Camera
               centerCoordinate={coords}
-              zoomLevel={12}
+              zoomLevel={zoomLevel}
               animationMode={'flyTo'}
-              animationDuration={0}>              
+              animationDuration={500}>              
             </MapBoxGL.Camera>
 
             {

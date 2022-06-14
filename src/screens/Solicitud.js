@@ -15,6 +15,7 @@ import {
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { registrarArchivo, registrarSolicitud } from '../services/api';
+import ConnectionCheck from '../components/internetChecker';
 
 import ModalSolicitud from '../components/SolicitudComponents/ModalSolicitud';
 import ComentarioModal from '../components/SolicitudComponents/ComentariosModal';
@@ -177,7 +178,7 @@ const Solicitud = (props) => {
   return (
 
     <View style={styles.container}>
-
+      <ConnectionCheck/>
       <ModalSolicitud
         title="Elegir Motivo"
         open={motivoOpen}

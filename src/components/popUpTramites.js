@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View, 
   Text, 
@@ -9,21 +9,38 @@ import {
   PermissionsAndroid,
   FlatList,
   Alert,
-  Dimensions
+  Dimensions,
+  ActivityIndicator
 } from 'react-native';
 
+import Mailer from 'react-native-mail';
 import RNFetchBlob from 'rn-fetch-blob'
-import Pdf from 'react-native-pdf';
+import FileViewer from "react-native-file-viewer";
 import RNHTMLtoPDF from 'react-native-html-to-pdf'
 import colors from '../utils/colors';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { Image } from 'react-native-animatable';
+import DropdownAlert from 'react-native-dropdownalert';
 
 const PopUpTramites = props => {
   const [descTramite, setDescTramite] = useState(null);
   const [nayaritImage, setNayaritImage] = useState('assets/imagenes/logo_horizontal.png')
   const [year, setYear] = useState(new Date().getFullYear());
   const [requisitos, setRequisitos] = useState(null);
+  const [homoclave, setHomoclave] = useState(null);
+  const [tipoTramite, setTipoTramite] = useState(null);
+  const [dependencia, setDependencia] = useState(null);
+  const [loading, setLoading] = useState(false);
+
+  let dropDownAlertRef = useRef();
+
+  useEffect(() => {
+    if (loading){
+      if (!props.openM){
+        dropDownAlertRef.closeAction;
+        setLoading(false);
+      }
+    }
+  }, [props.openM]);
 
   useEffect(() => {
     if (props.tramiteProp[3] == undefined){
@@ -31,13 +48,44 @@ const PopUpTramites = props => {
     }else{
       setRequisitos(props.tramiteProp[3]);
     }
-  }, [props.tramiteProp[3]]);
+
+    if (props.tramiteProp[4] == null){
+      setHomoclave("Desconocida")
+    }else{
+      setHomoclave(props.tramiteProp[4]);
+    }
+
+    if (props.tramiteProp[5] == null){
+      setDependencia("Desconocida.")
+    }else{
+      setDependencia(props.tramiteProp[5]);
+    }
+
+    if (props.tramiteProp[6] == null){
+      setTipoTramite("Desconocido")
+    }else{
+      setTipoTramite(props.tramiteProp[6]);
+    }
+  }, [props.tramiteProp]);
+
+  const cerrarModal = () =>{
+      props.onTouchOutside;
+  }
+  const renderRequisitos = () =>{
+    return(
+      <FlatList
+        data={props.tramiteProp[3]}
+        renderItem={({item,index}) => <Text style={styles.textStyle}>Requisitos: {item.requisitos.descripcion}</Text>}
+        keyExtractor={(item, index) => index.toString()}
+      />
+    )
+  }
 
   const renderOutsideTouchable = (onTouch) =>  {
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
     return (
-      <TouchableWithoutFeedback onPress={onTouch} style={{ flex: 1, width: '100%' }}>
+      <TouchableWithoutFeedback onPress={!loading ? (props.onTouchOutside):null} style={{ flex: 1, width: '100%' }}>
         {view}
       </TouchableWithoutFeedback>
     );
@@ -45,13 +93,13 @@ const PopUpTramites = props => {
 
   const listFooter = () => {
     return(
-      <View>
+      <View style={{flex:1,height:180}}>
 
         <FlatList
           ListHeaderComponent={
             <>
               <Text style={styles.textStyle}>Descripción: {props.tramiteProp[1]}</Text>
-              <Text style={styles.textStyle}>Departamentos:</Text>
+              <Text style={styles.textStyle}>Departamentos:</Text>  
             </>
           }
           data={props.tramiteProp[2]}
@@ -60,23 +108,63 @@ const PopUpTramites = props => {
           ListFooterComponent={
             <>
             
-              {props.tramiteProp[4] == "" ? (<Text style={styles.textStyle}>Homoclave: {props.tramiteProp[4]}</Text>):<Text style={styles.textStyle}>Homoclave: Desconocida</Text>}
-              {props.tramiteProp[5] == "" ? (<Text style={styles.textStyle}>Dependencia: {props.tramiteProp[5]}</Text>):<Text style={styles.textStyle}>Dependencia: Desconocida</Text>}
-              {props.tramiteProp[6] == "" ? (<Text style={styles.textStyle}>Tipo de Trámite: {props.tramiteProp[6]}</Text>):<Text style={styles.textStyle}>Tipo de Trámite: Desconocido</Text>}
-            </>}
-            {
-              ...props.tramiteProp[3] == undefined ? (
+              {props.tramiteProp[4] != null ? (<Text style={styles.textStyle}>Homoclave: {props.tramiteProp[4]}</Text>):<Text style={styles.textStyle}>Homoclave: Desconocida</Text>}
+              {props.tramiteProp[5] != null ? (<Text style={styles.textStyle}>Dependencia: {props.tramiteProp[5]}</Text>):<Text style={styles.textStyle}>Dependencia: Desconocida</Text>}
+              {props.tramiteProp[6] != null ? (<Text style={styles.textStyle}>Tipo de Trámite: {props.tramiteProp[6]}</Text>):<Text style={styles.textStyle}>Tipo de Trámite: Desconocido</Text>}
+            
+              {props.tramiteProp[3] == undefined ? (
                 <Text style={styles.textStyle}>Requisitos: No se han encontrado requisitos.</Text>
-              ) : <Text style={styles.textStyle}>Requisitos: {props.tramiteProp[3]}</Text>
-            }
-          />
-        
+              ) : 
+              <View>
+                <Text style={styles.textStyle}>Requisitos: </Text>
+                <FlatList
+                  data={props.tramiteProp[3].requisitos}
+                  renderItem={({item,index}) => <Text style={styles.textStyle}>    - {item.descripcion}</Text>}
+                  keyExtractor={(item, index) => index.toString()}
+                />
+              </View>
 
+              }
+            
+            </>}
+            
+          />
+       
       </View>
     );
   }
 
-  const createPDF = async() => {
+
+    const sendEmail = (ruta) => {
+    
+          Mailer.mail({
+            subject: 'Ficha Trámite',
+            recipients: [''],
+            body: '',
+            isHTML: true, // iOS only, exclude if false
+            attachments: [{
+              path:ruta,  // The absolute path of the file from which to read data.
+              type: 'pdf',   // Mime Type: jpg, png, doc, ppt, html, pdf
+            }]
+          }, (error, event) => {
+              if(error) {
+                AlertIOS.alert('Error', 'Could not send mail. Please send a mail to support@example.com');
+              }
+          })
+      }
+  
+
+  const abrirPDF = (ruta) => {
+    const path = FileViewer.open(ruta) // absolute-path-to-my-local-file.
+    .then(() => {
+      // success
+    })
+    .catch((error) => {
+      // error
+    });
+  }
+
+  const createPDF = async(type) => {
     try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -90,134 +178,172 @@ const PopUpTramites = props => {
           },
         );
         if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          const data = props.tramiteProp[0];
-          const today = new Date();
-          const hours = (today.getHours() < 10 ? '0' : '') + today.getHours();
-          const minutes = (today.getMinutes() < 10 ? '0' : '') + today.getMinutes();
-          const seconds = (today.getSeconds() < 10 ? '0' : '') + today.getSeconds();
-          let options = {
-            html: `
-      
-            <style>
-      
-            footer {
-              display: flex;
-              position:fixed;
-              font-size: 15px;
-              bottom: 0;
-              left: 0;
-              width: 100%;
-              height: 100px;
-              justify-content: center;
-              align-items: center;
-              text-align: center;
-              padding: 3px;
-              background-color: #701c30;;
-              color: white;
+          try {
+
+            setLoading(true);
+            try {
+              
+            } catch (error) {
+              
             }
-      
-            @page { 
-              background-color: red; 
-              margin-left: 0pt; 
-              margin-right: 0pt; 
-              margin-top: 0pt; 
-              margin-bottom: 0pt; 
-              padding-left: 0pt; 
-              padding-right: 0pt; 
-              padding-top: 0pt; 
-              padding-bottom: 0pt; 
+            if (type == 0){
+              dropDownAlertRef.alertWithType('info', 'En proceso...', "Generando PDF...");
             }
-            #hello {
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              height: 200px;
-              text-align: center;
-              padding-top:100px;
-            }
-            #logo {
-              color: white;
-              font-size:25px;
-              background-color: #4b4548;
-              display: flex;
-              justify-content: center;
-              align-items: center;
-              width: 100%;
-              height: 150px;
-              box-sizing: border-box;
-              border-bottom: 10px solid#701c30;
-              -webkit-box-shadow: 0px 0px 30px 11px rgba(0,0,0,0.63); 
-              box-shadow: 0px 0px 30px 11px rgba(0,0,0,0.63);
-            }
-      
-            </style>
-            <body style="margin: 0;">
-      
-            <div id="logo">
-                <h1>Ficha del trámite</h3>
-            </div>
-            
-            <div class="row even" id="hello">
-              <div col-md-12">
-                <h1>Nombre del trámite:${props.tramiteProp[1]}</h1>
-                <h1>Departamentos: ${ props.tramiteProp[2].map(entry => {
-                  return `<h1>${entry.clave} - ${entry.descripcion}</h1>`
-              }).join(' ')}</h1>
-                <h1>Requisitos: ${requisitos}</h1>
+            const data = props.tramiteProp[0];
+            const today = new Date();
+            const hours = (today.getHours() < 10 ? '0' : '') + today.getHours();
+            const minutes = (today.getMinutes() < 10 ? '0' : '') + today.getMinutes();
+            const seconds = (today.getSeconds() < 10 ? '0' : '') + today.getSeconds();
+            let options = {
+              html: `
+        
+              <style>
+        
+              footer {
+                display: flex;
+                position:fixed;
+                font-size: 15px;
+                bottom: 0;
+                left: 0;
+                width: 100%;
+                height: 100px;
+                justify-content: center;
+                align-items: center;
+                text-align: center;
+                padding: 3px;
+                background-color: #701c30;;
+                color: white;
+              }
+        
+              @page { 
+                background-color: red; 
+                margin-left: 0pt; 
+                margin-right: 0pt; 
+                margin-top: 0pt; 
+                margin-bottom: 0pt; 
+                padding-left: 0pt; 
+                padding-right: 0pt; 
+                padding-top: 0pt; 
+                padding-bottom: 0pt; 
+              }
+              #hello {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 200px;
+                font-size: 15px;
+                text-align: center;
+                margin-top:605px;
+                padding-top: 50px;
+                padding-left: 80px;
+                padding-right: 80px;
+                padding-bottom:350px;
+              }
+              #logo {
+                color: white;
+                font-size:25px;
+                background-color: #4b4548;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                width: 100%;
+                height: 150px;
+                box-sizing: border-box;
+                border-bottom: 10px solid#701c30;
+                -webkit-box-shadow: 0px 0px 30px 11px rgba(0,0,0,0.63); 
+                box-shadow: 0px 0px 30px 11px rgba(0,0,0,0.63);
+              }
+        
+              </style>
+              <body style="margin: 0;">
+        
+              <div id="logo">
+                  <h1>Ficha del trámite</h3>
               </div>
-            </div>
-            
-            <footer>
-              <div>
-                <h1>© ${year} Gobierno del Estado de Nayarit</h1>
+              
+              <div class="row even" id="hello">
+                <div col-md-12">
+                  <h1>Nombre del trámite:${props.tramiteProp[1]}</h1>
+                  <h1>Departamentos: ${ props.tramiteProp[2].map(entry => {
+                    return `<h1>${entry.clave} - ${entry.descripcion}</h1>`
+                }).join(' ')}</h1>
+                  <h1>Requisitos:  ${ props.tramiteProp[3].requisitos.map(entry => {
+                    return `<h1>   - ${entry.descripcion}</h1>`
+                }).join(' ')}</h1>
+                  <h1>Homoclave: ${homoclave}</h1>
+                  <h1>Dependencia: ${dependencia}</h1>
+                  <h1>Tipo de Tramite: ${tipoTramite}</h1>
+                </div>
               </div>
-            </footer>
-            
-            </body>
-            `,
-            fileName: `ficha_tramite_${hours + minutes + seconds}`,
-            directory: 'Download',
-            base64: true,
-            };
-            let file = await RNHTMLtoPDF.convert(options)
-    
-            // RNFetchBlob.fs.dirs.DownloadDir it's getting the download folder from internal storage
-            let filePath = RNFetchBlob.fs.dirs.DownloadDir + `/ficha_tramite_${hours + minutes + seconds}.pdf`;
-            
-            RNFetchBlob.fs.writeFile(filePath, file.base64, 'base64')
-                .then(response => {
-                    return(
-                      <View style={styles.containerPDF}>
-                        <Pdf
-                            source={{uri:`${filePath}`}}
-                            onLoadComplete={(numberOfPages,filePath) => {
-                                console.log(`Number of pages: ${numberOfPages}`);
-                            }}
-                            onPageChanged={(page,numberOfPages) => {
-                                console.log(`Current page: ${page}`);
-                            }}
-                            onError={(error) => {
-                                console.log(error);
-                            }}
-                            onPressLink={(uri) => {
-                                console.log(`Link pressed: ${uri}`);
-                            }}
-                            style={styles.pdf}
-                        />                        
-                      </View>
-                    )
-                })
-                .catch(errors => {
-                    console.log(" Error Log: ", errors);
-                })
-                Alert.alert("PDF descargado",`Su PDF se descargó exitosamente.`)
+              
+              <footer>
+                <div>
+                  <h1>© ${year} Gobierno del Estado de Nayarit</h1>
+                </div>
+              </footer>
+              
+              </body>
+              `,
+              fileName: `ficha_tramite_${hours + minutes + seconds}`,
+              directory: 'Download',
+              base64: true,
+              width:737,
+              height:1283
+              };
+              let file = await RNHTMLtoPDF.convert(options)
+      
+              // RNFetchBlob.fs.dirs.DownloadDir it's getting the download folder from internal storage
+              let filePath = RNFetchBlob.fs.dirs.DownloadDir + `/ficha_tramite_${hours + minutes + seconds}.pdf`;
+              RNFetchBlob.fs.writeFile(filePath, file.base64, 'base64')
+                  .then(response => {
+  
+                  })
+                  .catch(errors => {
+                      console.log(" Error Log: ", errors);
+                  })
+                  setLoading(false);
+                  dropDownAlertRef.closeAction();
+                  if (type == 0){
+                    
+                    Alert.alert(
+                      "PDF descargado",
+                      `Su PDF se descargó exitosamente.`,
+                      [
+                        {
+                          text: "Reenviar PDF por correo",
+                          onPress: ()=> sendEmail(filePath)
+                        },
+                        {
+                          text: "Abrir PDF",
+                          onPress: ()=> abrirPDF(filePath)
+                        },
+                        {
+                          text: "OK",
+                          style:'cancel'
+                        }
+                      ]
+                      )
+                  }else{
+                    sendEmail(filePath);
+                  }  
+          
+          } catch (error) {
+              Alert.alert("Error","Ha habido un error al descargar el PDF.")
+              console.log("interrumpido")
+          }
+
         } else {
+          setLoading(false);
           Alert.alert("Permiso denegado", "Debe de conceder los permisos necesarios para generar el PDF.")
         }
       } catch (err) {
         console.warn(err);
       }
            
+    }
+
+    const close = () => {
+      props.close
     }
 
   return (
@@ -227,6 +353,17 @@ const PopUpTramites = props => {
       visible={props.openM}
       onRequestClose={props.close}
     >
+      <View>
+        <DropdownAlert
+          ref={(ref) => {
+              if (ref) {
+                dropDownAlertRef = ref;
+              }
+            }
+          }
+        />
+      </View>
+  
       <View style={{
         flex: 1,
         backgroundColor: '#000000AA',
@@ -239,10 +376,11 @@ const PopUpTramites = props => {
 
         <View style={styles.whiteSquareContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text style={styles.titleText}>Requisitos del trámite</Text>
-            <TouchableOpacity onPress={props.close}>
+            <Text style={styles.titleText}>información del trámite</Text>
+            <TouchableOpacity onPress={!loading ? (props.onTouchOutside):null}>
               <MaterialCommunityIcons style={{ marginRight: 15 }} size={30} name="arrow-left" color="black" />
             </TouchableOpacity>
+            
           </View>
 
           <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
@@ -262,21 +400,20 @@ const PopUpTramites = props => {
           {listFooter()}
 
           <View style={styles.buttonsContainer}>
-
-            <TouchableOpacity onPress={()=> createPDF()}>
+            <TouchableOpacity onPress={()=> !loading ? (createPDF(0)):null}>
               <View style={styles.buttonStyle}>
                 <Text style={styles.buttonTextStyle}>Descargar Ficha PDF</Text>
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={()=> createPDF()}>
+            <TouchableOpacity onPress={()=> !loading ? (createPDF(1)):null}>
               <View style={styles.buttonStyle}>
                 <Text style={styles.buttonTextStyle}>Reenviar por Correo</Text>
               </View>
             </TouchableOpacity>
-
           </View>
         </View>
+
       </View>
 
     </Modal>
@@ -314,7 +451,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     zIndex: 10,
     width: 300,
-    height: 400,
+    height: 465,
     backgroundColor: 'white',
     borderRadius: 10,
   },

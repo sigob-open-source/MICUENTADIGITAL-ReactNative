@@ -14,6 +14,7 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import fonts from '../utils/fonts';
+import colors from '../utils/colors';
 
 import { tokenizeAmount } from '../services/netpay';
 
@@ -55,11 +56,6 @@ const PagoPadron = ({ route }) => {
 
   useEffect(() => {
     setPadron(route.params.padron);
-    notify({
-      type: 'warn',
-      title: 'LLenar todos los datos requeridos',
-      message: 'para realizar el pago ocupo el dato xxxx',
-    });
   }, []);
 
   // Alerta para cuando no se encontro nada acorde a la busqueda
@@ -112,10 +108,7 @@ const PagoPadron = ({ route }) => {
   const dopayment = async () => {
     if (resultCargos !== undefined) {
       const sumall = resultCargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0);
-    }
-    console.log('suma', sumall);
-
-    const responseNetpay = await tokenizeAmount(sumall.toFixed(2));
+      const responseNetpay = await tokenizeAmount(sumall.toFixed(2));
     // const reponseReferencia = await getReferencia(
     //   sumall.toFixed(2),
     //   resultCargos.map((c) => c.id),
@@ -123,6 +116,7 @@ const PagoPadron = ({ route }) => {
     // );
     if (responseNetpay) {
       navigation.push('netpaypago', { responseNetpay });
+    }
     }
   };
 
@@ -309,7 +303,7 @@ const PagoPadron = ({ route }) => {
       </View>
       {console.log('estos son los cargos', resultCargos)}
       {console.log('este es el total', totalAmount)}
-      <ScrollView style={{ paddingHorizontal: 30 }}>
+      <ScrollView style={{ alignSelf:'center'}}>
         {
           (newData === true && resultCargos?.[0])
             ? (
@@ -352,17 +346,36 @@ const PagoPadron = ({ route }) => {
       </ScrollView>
 
       <View style={styles.footer}>
-        <Text style={styles.totalText}>
-          Total:
-          {' $'}
-          {totalAmount}
-        </Text>
+      {
+        totalAmount == 0 ?(
+          null
+        ) :
+          <Text style={styles.totalText}>
+            Total:
+            {' $'}
+            {totalAmount}
+          </Text>
+      }
+      
         <View key={modalKey}>
-          <TouchableWithoutFeedback onPress={dopayment}>
-            <View style={styles.buttonPrint}>
-              <Text style={styles.textButton}>Realizar Pago</Text>
-            </View>
-          </TouchableWithoutFeedback>
+          {
+            totalAmount > 0 ?(
+              <TouchableWithoutFeedback onPress={dopayment}>
+                <View style={styles.buttonPrint}>
+                  <Text style={styles.textButton}>Realizar Pago</Text>
+                </View>
+              </TouchableWithoutFeedback>
+            ) :
+                
+              <TouchableWithoutFeedback>
+                <View style={styles.buttonPrintDisabled}>
+                  <Text style={styles.textButton}>Realizar Pago</Text>
+                </View>
+              </TouchableWithoutFeedback>
+
+          }
+
+
 
         </View>
       </View>
@@ -462,6 +475,15 @@ const styles = StyleSheet.create({
   },
   buttonPrint: {
     backgroundColor: 'green',
+    width: Dimensions.get('window').width * 0.85,
+    height: 50,
+    borderRadius: 10,
+    borderColor: 'gray',
+    borderWidth: 0.6,
+    marginVertical: 5,
+  },
+  buttonPrintDisabled: {
+    backgroundColor: colors.alternativo,
     width: Dimensions.get('window').width * 0.85,
     height: 50,
     borderRadius: 10,

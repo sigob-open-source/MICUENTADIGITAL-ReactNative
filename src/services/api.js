@@ -30,7 +30,7 @@ const getSolicitudes = async (entidadMunicipalId, page) => {
 const getOficinas = async () =>{
   try {
     const response = await http.get(`configuracion/unidades-de-recaudacion-public/`);
-    return response?.data ?? [];    
+    return response?.data?.results ?? [];    
   } catch (error) {
     
   }

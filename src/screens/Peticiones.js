@@ -3,6 +3,7 @@ import { StyleSheet, View } from 'react-native';
 
 import ButtonRequest from '../components/SolicitudComponents/Button';
 import Header from '../components/Header';
+import ConnectionCheck from '../components/internetChecker';
 import Footer from '../components/Footer';
 
 const Peticiones = (props) => {
@@ -11,7 +12,7 @@ const Peticiones = (props) => {
   };
   return (
     <View style={{ flex: 1 }}>
-
+      <ConnectionCheck/>
       <View style={{ flex: 1 }}>
 
         <Header

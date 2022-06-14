@@ -7,6 +7,7 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Square from '../components/CardPagos';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ConnectionCheck from '../components/internetChecker';
 
 import http from '../services/http';
 import getPadrones from '../services/padrones';
@@ -92,8 +93,12 @@ const Pagos = (props) => {
   );
 
   return (
-    <View style={styles.container}>
+    <View style={{flex:1}}>
 
+      <ConnectionCheck/>
+ 
+    <View style={styles.container}>
+      
       <Header style={styles.header} item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
 
       <View style={styles.textInputContainer}>
@@ -136,6 +141,7 @@ const Pagos = (props) => {
         style={styles.footer}
       />
 
+    </View>
     </View>
   );
 };

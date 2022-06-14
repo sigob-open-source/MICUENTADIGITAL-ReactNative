@@ -12,6 +12,7 @@ import { ubicacionOficinaContext } from '../helpers/Context';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import axios from 'axios';
+import colors from '../utils/colors';
 
 const ModalOficinasAtencion = props => {
 
@@ -23,11 +24,13 @@ const ModalOficinasAtencion = props => {
 
   const apihandler=()=>{
     try{
+      console.log(props.coords)
       axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+props.coords+'.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ')
       .then(response => {
         if (response.data.features[0] != undefined){
           const posts = response.data.features[0].place_name;
           setUbicacion(posts);
+          console.log(posts);
         }
 
         
@@ -113,7 +116,13 @@ const ModalOficinasAtencion = props => {
                 Ubicación: {ubicacion}
               </Text> 
           }
-
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity onPress={props.createRoute}>
+              <View style={styles.buttonStyle}>
+                <Text style={styles.buttonTextStyle}> Generar ruta </Text>
+              </View>
+            </TouchableOpacity>
+          </View>
         </View>
 
       </View>
@@ -180,6 +189,27 @@ const styles = StyleSheet.create({
     shadowRadius: 7,
     shadowOpacity: 0.09,
     elevation: 5,
+  },
+  buttonsContainer: {
+    flexDirection:'column',
+    alignItems:'center',
+    justifyContent:'center',
+    alignContent:'center', 
+  }, 
+  buttonStyle: {
+    flexDirection:'row',
+    marginHorizontal:10,
+    marginVertical:10,
+    justifyContent:'center',
+    alignItems:'center',
+    width:145,
+    height:40,
+    backgroundColor: colors.secundario,
+    borderRadius:5,
+  },  
+  buttonTextStyle: {
+    color:'white',
+    fontWeight: '500',
   },
 });
 

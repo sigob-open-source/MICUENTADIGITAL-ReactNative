@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, Alert,
 } from 'react-native';
 
+import NetInfo, { useNetInfo } from '@react-native-community/netinfo'
+
 import Square from '../components/CardPagos';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ConnectionCheck from '../components/internetChecker';
 
 const dataList = [
   {
@@ -132,8 +135,11 @@ const numColumns = 3;
 const WIDTH = Dimensions.get('window').width;
 
 const MenuInicio = props =>{
-
+  const netInfo = useNetInfo();
+  
   const [hasSwitchedView, setHasSwitchedView] = useState(false)
+
+
 
   const formatData = (dataList, numColumns) => {
     const totalRows = Math.floor(dataList.length / numColumns);
@@ -149,6 +155,7 @@ const MenuInicio = props =>{
   };
 
   const navigateToScreen = (item) => {
+    
     if (item.navegacion != null) {
       if (!hasSwitchedView) {
         setHasSwitchedView(true)
@@ -181,6 +188,7 @@ const MenuInicio = props =>{
 
   return (
     <View style={styles.container}>
+      <ConnectionCheck/>
       <Header
         style={styles.header}
         item="Inicio"
@@ -206,6 +214,7 @@ const MenuInicio = props =>{
         />
       </View>
     <Footer style={styles.footer} />
+  
     </View>
   );
 }

@@ -6,6 +6,7 @@ import {
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ButtonRequest from '../components/SolicitudComponents/Button';
+import ConnectionCheck from '../components/internetChecker';
 
 const SolicitudSelector = (props) => {
   const goBack = () => {
@@ -14,6 +15,7 @@ const SolicitudSelector = (props) => {
 
   return (
     <View style={{ flex: 1, height: '100%' }}>
+      <ConnectionCheck/>
       <View style={{ flex: 1, alignItems: 'center' }}>
         <Header
           style={styles.header}

@@ -16,6 +16,7 @@ import Footer from '../components/Footer';
 import { getFuncionarios } from '../services/api';
 import ModalFuncionario from '../components/modalFuncionarios';
 import Loading from '../components/loadingAnimation';
+import ConnectionCheck from '../components/internetChecker';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -143,6 +144,9 @@ const DirectorioFunc = (props) => {
   const clearText = (text) => {
     setSelected(1);
     setBuscarOficinaText(text);
+    if (text == "." || text == "," || text == " " || text == "-"){
+      setBuscarOficinaText("");
+    }
     setTexto('');
   }
 
@@ -150,6 +154,9 @@ const DirectorioFunc = (props) => {
     setSelected(2);
     setBuscarOficinaText('');
     setTexto(text);
+    if (text == " "){
+      setTexto("");
+    }{}
   }
 
   //buscar funcionario por texto / nombre apellido etc
@@ -229,7 +236,7 @@ const DirectorioFunc = (props) => {
 
   return (
     <View style={{ flex: 1, height: '100%' }}>
-      
+      <ConnectionCheck/>
       <View style={{ flex: 1, alignItems: 'center' }}>
         <Header
           style={styles.header}
@@ -306,12 +313,21 @@ const DirectorioFunc = (props) => {
 
       </View>
               
+      {
+        !(texto == null || texto == '') || !(buscarOficinaTexto == null || buscarOficinaTexto == '') ?(
+          <TouchableOpacity onPress={()=>buscarPorTexto()} onPressIn={Keyboard.dismiss}>
+            <View style={styles.searchButton}>
+              <Text style={styles.buttonText}>Buscar Funcionario</Text>
+            </View>
+          </TouchableOpacity>
+        ) :
 
-      <TouchableOpacity onPress={()=>buscarPorTexto()} onPressIn={Keyboard.dismiss}>
-        <View style={styles.searchButton}>
-          <Text style={styles.buttonText}>Buscar Funcionario</Text>
-        </View>
-      </TouchableOpacity>
+            <View style={styles.searchButtonDisabled}>
+              <Text style={styles.buttonText}>Buscar Funcionario</Text>
+            </View>
+
+      }
+
     
       <Footer
         back={goBack}
@@ -330,6 +346,20 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     alignSelf:'center',
     backgroundColor: colors.secundario,
+    justifyContent: 'center',
+    marginVertical:15,
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 7,
+    shadowOpacity: 0.09,
+    elevation: 5,
+  },
+  searchButtonDisabled: {
+    width: 336,
+    height: 46,
+    borderRadius: 5,
+    alignSelf:'center',
+    backgroundColor: colors.alternativo,
     justifyContent: 'center',
     marginVertical:15,
     shadowColor: 'black',

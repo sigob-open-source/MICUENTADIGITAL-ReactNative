@@ -8,7 +8,8 @@ import {
   TouchableOpacity,
   TextInput,
   FlatList,
-  ActivityIndicator
+  ActivityIndicator,
+  Alert
 } from 'react-native';
 
 import Collapsible from 'react-native-collapsible';
@@ -16,9 +17,11 @@ import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getDependencias } from '../services/api';
 import { getTramites } from '../services/api';
 
+import NetInfo, { useNetInfo } from '@react-native-community/netinfo'
 import PopUpTramites from '../components/popUpTramites';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import ConnectionCheck from '../components/internetChecker';
 
 const WIDTH = Dimensions.get('window').width;
 
@@ -39,32 +42,59 @@ const Tramites = props =>{
   const [dependencies, setDependencies] = useState([]);
   const [uniqueDependencyArray, setUniqueDependencyArray] = useState(null);
   const [tiposDeFiltros, setTiposDeFiltros] = useState(['Dependencia/Oficina','Busqueda','Más buscados','Clasificación','Sujeto de interés']);
-  const [filtroSeleccionado, setFiltroSeleccionado] = useState("Dependencia/Oficina")
-  const [Sujeto, setSujeto] = useState(['Empresa','Ciudadano'])
-  const [sujetoSeleccionado, setSujetoSeleccionado] = useState('Empresa')
+  const [filtroSeleccionado, setFiltroSeleccionado] = useState("Dependencia/Oficina");
+  const [Sujeto, setSujeto] = useState(['Empresa','Ciudadano']);
+  const [sujetoSeleccionado, setSujetoSeleccionado] = useState('Empresa');
+  const [clasificacion, setClasificacion] = useState(['Trámite','Servicio']);
+  const [clasificacionSeleccionada, setClasificacionSeleccionada] = useState("Trámite")
   const [fichaProps, setFichaProps] = useState([]);
+  const [isConnected, setIsConnected] = useState(true);
 
+  const netInfo = useNetInfo();
 
+  useEffect(() => {
+
+    CheckConnected();
+    
+  }, [netInfo]);
+
+  const CheckConnected = async () =>{
+
+      const response = await NetInfo.fetch();
+      if (!response.isConnected){
+        setModalOpen(false);
+        setIsConnected(false);
+      }else{
+        setIsConnected(true);
+      }
+    }
 
   const onShowPopup = (
     fichaProp, 
     ) => {
-    if (tramitesMunicipales != null){
-      setFichaProps(fichaProp)
-      setModalOpen(true);
+    if (isConnected){
+      if (tramitesMunicipales != null){
+        setFichaProps(fichaProp)
+        setModalOpen(true);
+      }
+    }else{
+      Alert.alert("Error","Debe estar conectado a internet para realizar esta acción.")
     }
+
   }
+
 
   const returnTramiteInfo = (item) => {
     return(
+      
       <TouchableOpacity onPress={() => onShowPopup(
         [ 
           item.nombre,
           item.descripcion,
           item.departamentos,
-          item.casos.requisitos,
+          item.casos[0],
           item.homoclave,
-          item.dependencia,
+          item.departamentos[0].unidad_operativa.descripcion,
           item.tipo_de_tramite
         ]
       )}
@@ -83,36 +113,46 @@ const Tramites = props =>{
     }
     
   }, []);
-
-  useEffect(() => {
-      setUniqueDependencyArray([...new Set(dependencies)])
-  }, [dependencies]);
   
   const obtenerTramites = async () =>{
-    const tramites = await getTramites();
+    try {
+      const tramites = await getTramites();
     
-    if (tramites.length > 0){
-      setData(tramites)
-      setFilteredData(tramites)
-      setTramitesMunicipales(tramites[0].nombre)      
-    } else{
+      if (tramites.length > 0 && tramites != undefined){
+        setData(tramites)
+        setFilteredData(tramites)
+        setTramitesMunicipales(tramites[0].nombre)      
+      } else{
+        setTramitesMunicipales('Sin Datos.')
+      }
+    } catch (error) {
+      Alert.alert("Error","Ha habido un error al comunicarse con el servidor. Favor de intentarlo más tarde.")
       setTramitesMunicipales('Sin Datos.')
+      console.log("Oh no: ",error)
     }
+
   }
 
   const obetnerDependencias = async () =>{
-    const dependencias = await getDependencias();
-    if (dependencias.length > 0){
-      setDependencias(dependencias[0].descripcion);
-      setSelectedDependency(dependencias[0].descripcion);
-    } else{
+    try {
+      const dependency = await getDependencias();
+      if (dependency.length > 0 && dependency != undefined){
+        setDependencies(dependency);
+        setSelectedDependency(dependency[0].descripcion);
+      } else{
+        setSelectedDependency('No hay datos.')
+      }
+    } catch (error) {
+      Alert.alert("Error","Ha habido un error al comunicarse con el servidor. Favor de intentarlo más tarde.")
       setSelectedDependency('No hay datos.')
+      console.log("Oh no: ",error)
     }
+ 
   }
 
   const setDependency = (item) => {
-    setSelectedDependency(item)
-    setCollapsed(true)
+    setSelectedDependency(item);
+    setCollapsed(true);
   };
 
   const renderItem = (item) => 
@@ -128,11 +168,37 @@ const Tramites = props =>{
     )
   }
 
+  useEffect(() => {
+    if (dependencies != null){
+      switch(filtroSeleccionado){
+        case "Dependencia/Oficina": 
+          if (dependencias != null){
+            setSelectedDependency(dependencies[0].descripcion); 
+          }
+          
+        
+        break;
+        case "Busqueda": break;
+        case "Más buscados": break;
+        case "Clasificación" : setSelectedDependency("Trámite"); break;
+        case "Sujeto de interés": break;
+    }
+    }
+
+
+  }, [filtroSeleccionado]);
+
+  const changeFiltro = (item) => {
+    setFiltroSeleccionado(item);
+    setFilteredData(data);
+
+  }
+
   const renderFiltro = (item) => 
   {
     return(
       <View>
-        <TouchableOpacity onPress={() => setFiltroSeleccionado(item)}>
+        <TouchableOpacity onPress={() => changeFiltro(item)}>
           <View style={styles.content}>
             <Text numberOfLines={1} style={styles.collapsibleText}>{item}</Text>
           </View>
@@ -149,10 +215,20 @@ const Tramites = props =>{
           returnTramiteInfo(item)
         )
       }
+    }else if (filtroSeleccionado === "Clasificación"){
+      if (item.clasificacion === true && selectedDependency === "Trámite"){
+        return(
+          returnTramiteInfo(item)
+        ) 
+      }else if (item.clasificacion === false && selectedDependency === "Servicio"){
+        return(
+          returnTramiteInfo(item)
+        ) 
+      }
     }else{
       return(
         returnTramiteInfo(item)
-      )
+      )      
     }
     
 
@@ -182,13 +258,16 @@ const Tramites = props =>{
 
   return (
     <View style={{ flex: 1, height: '100%' }}>
+      <ConnectionCheck/>
       <View style={{ flex: 1, alignItems: 'center' }}>
+        
         <PopUpTramites
           openM={modalOpen}
           close={()=>setModalOpen(false)}
           onTouchOutside={()=>setModalOpen(false)}
           tramiteProp={fichaProps}
         />
+        
         <Header
           style={styles.header}
           item="Trámites"
@@ -238,7 +317,7 @@ const Tramites = props =>{
                 <Collapsible collapsed={collapsed}>
                   <FlatList
                     data={dependencies}
-                    renderItem={({ item, index }) => renderItem(item, index)}
+                    renderItem={({ item, index }) => renderItem(item.descripcion)}
                     keyExtractor={(item, index) => index.toString()}
                   />
                 </Collapsible>
@@ -265,7 +344,7 @@ const Tramites = props =>{
                     style={styles.textInputStyle}
                     placeholder="Buscar..."
                     placeholderTextColor="gray"
-                    onChangeText={(text) => { searchTramite(text); } } />
+                    onChangeText={(text) => searchTramite(text) } />
                   <TouchableOpacity>
                     <View style={{
                       borderRadius: 10, width: 46, height: 46, justifyContent: 'center',
@@ -283,7 +362,7 @@ const Tramites = props =>{
                 <View style={styles.collapsibleHeader}>
                   {selectedDependency == null ? (
                     <ActivityIndicator style={{ marginLeft: 20 }} size="large" color="black" />
-                  ) : <Text numberOfLines={1} style={styles.headerText}>{sujetoSeleccionado}</Text>}
+                  ) : <Text numberOfLines={1} style={styles.headerText}>{selectedDependency}</Text>}
 
                   {collapsed ? (
                     <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-down" color="black" />
@@ -296,6 +375,35 @@ const Tramites = props =>{
                 <Collapsible collapsed={collapsed}>
                   <FlatList
                     data={Sujeto}
+                    renderItem={({ item, index }) => renderItem(item, index)}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                </Collapsible>
+              </View>
+              </>
+          ) : null
+        }
+
+{
+          filtroSeleccionado === "Clasificación" ? (
+            <>
+              <TouchableWithoutFeedback onPress={toggleExpanded}>
+                <View style={styles.collapsibleHeader}>
+                  {selectedDependency == null ? (
+                    <ActivityIndicator style={{ marginLeft: 20 }} size="large" color="black" />
+                  ) : <Text numberOfLines={1} style={styles.headerText}>{selectedDependency}</Text>}
+
+                  {collapsed ? (
+                    <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-down" color="black" />
+                  ) : <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-up" color="black" />}
+
+                </View>
+              </TouchableWithoutFeedback>
+
+              <View style={styles.collapsibleContainer}>
+                <Collapsible collapsed={collapsed}>
+                  <FlatList
+                    data={clasificacion}
                     renderItem={({ item, index }) => renderItem(item, index)}
                     keyExtractor={(item, index) => index.toString()}
                   />

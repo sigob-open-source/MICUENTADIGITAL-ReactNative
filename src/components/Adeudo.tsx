@@ -37,10 +37,18 @@ const Adeudo = ({
                 ? `${nombre}`
                 : `${nombre?.substring(0, 32)}...`}
             </Text>
-            <Text style={styles.text}>
-              $
-              {cargo}
-            </Text>
+            {
+              cargo > 0 ? (
+                <Text style={styles.text}>
+                  $
+                  {cargo}
+                </Text>
+              ) : 
+                <Text style={styles.text}>
+                  Sin adeudos.
+                </Text>
+            }
+
           </View>
         </View>
       </TouchableWithoutFeedback>

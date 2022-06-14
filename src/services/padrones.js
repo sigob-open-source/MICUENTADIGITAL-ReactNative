@@ -141,7 +141,7 @@ const getAdeudoPadron = async (padron, numeroPadron) => {
       .post('cuentaunicasir/consulta-caja-atencion-ciudadana/padron/', {
         padron_id: padron?.id,
         padron: numeroPadron,
-        canal_de_pago: 3,
+        canal_de_pago: 1,
         entidad_municipal: 1,
       })
       .then(
