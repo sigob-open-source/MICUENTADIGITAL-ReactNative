@@ -1,4 +1,4 @@
-import React, { Component, useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   StyleSheet,
   Text,
@@ -16,8 +16,8 @@ import Collapsible from 'react-native-collapsible';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import { getDependencias } from '../services/api';
 import { getTramites } from '../services/api';
-
 import NetInfo, { useNetInfo } from '@react-native-community/netinfo'
+
 import PopUpTramites from '../components/popUpTramites';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
@@ -34,22 +34,16 @@ const Tramites = props =>{
   const [dependencias, setDependencias] = useState(null);
   const [filteredData, setFilteredData] = useState([]);
   const [tramitesMunicipales, setTramitesMunicipales] = useState(null);
-  const [selectedTramite, setSelectedTramite] = useState(null);
-  const [tramiteDesc, setTramiteDesc] = useState(null);
-  const [tramiteRequisitos, setTramiteRequisitos] = useState(null);
-  const [department, setDepartment] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [dependencies, setDependencies] = useState([]);
-  const [uniqueDependencyArray, setUniqueDependencyArray] = useState(null);
   const [tiposDeFiltros, setTiposDeFiltros] = useState(['Dependencia/Oficina','Busqueda','Más buscados','Clasificación','Sujeto de interés']);
   const [filtroSeleccionado, setFiltroSeleccionado] = useState("Dependencia/Oficina");
   const [Sujeto, setSujeto] = useState(['Empresa','Ciudadano']);
-  const [sujetoSeleccionado, setSujetoSeleccionado] = useState('Empresa');
   const [clasificacion, setClasificacion] = useState(['Trámite','Servicio']);
-  const [clasificacionSeleccionada, setClasificacionSeleccionada] = useState("Trámite")
   const [fichaProps, setFichaProps] = useState([]);
   const [isConnected, setIsConnected] = useState(true);
 
+  //Checar si el usuario está conectado a internet
   const netInfo = useNetInfo();
 
   useEffect(() => {
@@ -57,6 +51,14 @@ const Tramites = props =>{
     CheckConnected();
     
   }, [netInfo]);
+
+  useEffect(() => {
+    if (data == null){
+      obetnerDependencias();
+      obtenerTramites();
+    }
+    
+  }, []);
 
   const CheckConnected = async () =>{
 
@@ -69,6 +71,7 @@ const Tramites = props =>{
       }
     }
 
+    //Abre un modal que muestra la ficha del trámite seleccionado
   const onShowPopup = (
     fichaProp, 
     ) => {
@@ -106,17 +109,12 @@ const Tramites = props =>{
     );
   }
 
-  useEffect(() => {
-    if (data == null){
-      obetnerDependencias();
-      obtenerTramites();
-    }
-    
-  }, []);
+
   
   const obtenerTramites = async () =>{
+    
     try {
-      const tramites = await getTramites();
+      const tramites = await getTramites(3);
     
       if (tramites.length > 0 && tramites != undefined){
         setData(tramites)
@@ -174,14 +172,16 @@ const Tramites = props =>{
         case "Dependencia/Oficina": 
           if (dependencias != null){
             setSelectedDependency(dependencies[0].descripcion); 
+          }else{
+            setSelectedDependency("No hay datos."); 
           }
           
         
         break;
         case "Busqueda": break;
-        case "Más buscados": break;
+        case "Más buscados": Alert.alert("Alerta","Se está realizando mantenimiento a esta opción"); break;
         case "Clasificación" : setSelectedDependency("Trámite"); break;
-        case "Sujeto de interés": break;
+        case "Sujeto de interés":  Alert.alert("Alerta","Se está realizando mantenimiento a esta opción");  break;
     }
     }
 
@@ -189,9 +189,12 @@ const Tramites = props =>{
   }, [filtroSeleccionado]);
 
   const changeFiltro = (item) => {
-    setFiltroSeleccionado(item);
-    setFilteredData(data);
-
+    if (item == "Más buscados" || item == "Sujeto de interés"){
+      Alert.alert("Alerta","Opción en desarrollo.")
+    }else{
+      setFiltroSeleccionado(item);
+      setFilteredData(data);
+    }
   }
 
   const renderFiltro = (item) => 
@@ -274,8 +277,8 @@ const Tramites = props =>{
           imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
           img={require('../../assets/imagenes/header_logo.png')}
         />
-
-        <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}> Filtrar por </Text>
+        <View style={{marginTop:'24%', alignItems:'center'}}>
+        <Text style={{ color: 'black', fontSize: 20, fontWeight: '700', textAlign:'center' }}> Filtrar por </Text>
 
         <TouchableWithoutFeedback onPress={toggleTramiteFiltros}>
             <View style={styles.collapsibleHeader}>
@@ -335,6 +338,7 @@ const Tramites = props =>{
                 fontSize: 20,
                 fontWeight: '700',
                 marginTop: 5,
+                textAlign:'center'
               }}
               >
                 {' '}
@@ -419,6 +423,7 @@ const Tramites = props =>{
           fontWeight: '700',
           marginTop: 30,
           marginBottom:30,
+          textAlign:'center'
         }}
         >
           {' '}
@@ -450,7 +455,7 @@ const Tramites = props =>{
             </>
           )
       }
-
+      </View>
       </View>
 
       <Footer

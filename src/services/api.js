@@ -1,14 +1,18 @@
 import moment from 'moment';
 import http from './http';
 
+const controller = new AbortController();
+
 const getTiposDeSolicitudes = async (entidadMunicipalId) => {
   try {
     const response = await http.post('solicitudes/tipos-de-solicitudes/', {
       entidad_municipal: entidadMunicipalId,
+      signal: controller.signal
     });
     return response?.data ?? [];
   } catch (error) {
     console.error("ERROR: ",error);
+    controller.abort()
   }
   return [];
 };
@@ -24,43 +28,50 @@ const getSolicitudes = async (entidadMunicipalId, page) => {
     return [];
   }
 };
-//http://localhost:8000/configuracion/unidades-de-recaudacion-public/
-//http://localhost:8000/configuracion/caar-public/
+
 
 const getOficinas = async () =>{
   try {
-    const response = await http.get(`configuracion/unidades-de-recaudacion-public/`);
+    const response = await http.get(`configuracion/unidades-de-recaudacion-public/`,{
+      signal:controller.signal
+    });
     return response?.data?.results ?? [];    
   } catch (error) {
-    
+    controller.abort()
   }
 }
 
 const getDependencias = async () =>{
   try{
-    const response = await http.get(`/configuracion/dependencias-public/`);
+    const response = await http.get(`/configuracion/dependencias-public/`,{
+      signal:controller.signal
+    });
     return response?.data ?? [];    
   } catch (error) {
-
+    controller.abort()
   }
 }
 
 const getTramites = async () => {
   try{
-    const response = await http.get(`tramites/plantillas-tramites-atencion-ciudadana/?entidad_municipal=1`);
-    return response?.data ?? [];    
+    const response = await http.get(`tramites/plantillas-tramites-atencion-ciudadana/`,{
+      signal:controller.signal
+    });
+    return response?.data?.results ?? [];    
   } catch (error) {
-
+    controller.abort()
   }
 }
 
 
 const getFuncionarios = async () =>{
   try {
-    const response = await http.get(`usuarios/funcionario-public/`);
+    const response = await http.get(`usuarios/funcionario-public/`,{
+      signal:controller.signal
+    });
     return response?.data ?? [];    
   } catch (error) {
-    
+    controller.abort()
   }
 }
 

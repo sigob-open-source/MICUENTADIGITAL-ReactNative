@@ -22,11 +22,11 @@ const Peticiones = (props) => {
           imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
           img={require('../../assets/imagenes/header_logo.png')}
         />
-
-        <ButtonRequest texto="Pagos" showArrow iconName="keyboard-arrow-right" />
-        <ButtonRequest texto="Directorio de Funcionarios" showArrow iconName="keyboard-arrow-right" />
-        <ButtonRequest texto="Oficinas de Atención" showArrow iconName="keyboard-arrow-right" />
-
+        <View style={{marginTop:'24%'}}>
+          <ButtonRequest texto="Pagos" showArrow iconName="keyboard-arrow-right" />
+          <ButtonRequest texto="Directorio de Funcionarios" showArrow iconName="keyboard-arrow-right" />
+          <ButtonRequest texto="Oficinas de Atención" showArrow iconName="keyboard-arrow-right" />
+        </View>
       </View>
 
       <Footer

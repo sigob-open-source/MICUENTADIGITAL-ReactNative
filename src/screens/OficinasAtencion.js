@@ -11,50 +11,49 @@ import {
 import React, { useState, useEffect } from 'react';
 
 import MapBoxGL from '@react-native-mapbox-gl/maps';
-import useKeyboard from '../utils/keyboardListener';
 import Fontisto from 'react-native-vector-icons/Fontisto';
 import Geolocation from 'react-native-geolocation-service';
+import ConnectionCheck from '../components/internetChecker';
+import axios from 'axios';
 import { getOficinas } from '../services/api';
 import { getTramites } from '../services/api';
 import { ubicacionOficinaContext } from '../helpers/Context';
-import ConnectionCheck from '../components/internetChecker';
-import axios from 'axios';
 
 import Header from '../components/Header';
 import MapboxGL from '@react-native-mapbox-gl/maps';
 import Footer from '../components/Footer';
 import ModalOficinasAtencion from '../components/modalOficinasAtencion';
+import ModalVerOficinasAtencion from '../components/modalVerOficinasAtencion';
 
+//AcessToken para poder utilizar las funcionalidades de MapBox.
 MapBoxGL.setAccessToken("pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ")
 MapBoxGL.geo
 
+//Obtiene las dimensiones del dispositivo actual.
 const deviceHeight = Dimensions.get("window").height
 const WIDTH = Dimensions.get('window').width;
 
 const OficinasAtencion = props =>{
-  let popupRef = React.createRef();
 
-  const [street, setStreet] = useState(null);
-  const [latitude, setLatitude] = useState(0);
-  const [longitude, setLongitude] = useState(0);
-  const [coords, setCoords] = useState([0,0]);
-  const [isLoading, setIsLoading] = useState([false]);
-  const [oficinas, setOficinas] = useState(null)
-  const [filteredOficinas, setFilteredOficinas] = useState(null)
-  const [renderPoints, setRenderPoints] = useState(false)
-  const [id, setId] = useState(null)
-  const [desc, setDesc] = useState(null)
-  const [selectedCoords, setSelectedCoords] = useState(null)
-  const [collapsed, setCollapsed] = useState(true)
-  const [isKeyboardVisible, setKeyboardVisible] = useState(false);
+  const [collapsed,setCollapsed] = useState(true);
+  const [coords, setCoords] = useState([0,0]);//Indica a que coordenadas debe moverse la camara.
+  const [oficinas, setOficinas] = useState(null)//Todas las oficinas se guardan aquí.
+  const [filteredOficinas, setFilteredOficinas] = useState(null)//Se usa para filtrar oficinas desde el cuadro de busqueda.
+  const [renderPoints, setRenderPoints] = useState(false)//Determina si deben de renderizarse los puntos donde se encuentran las oficinas.
+  const [id, setId] = useState(null)//ID de la oficina de atención.
+  const [desc, setDesc] = useState(null)//Descripción de la oficina de atención.
+  const [selectedCoords, setSelectedCoords] = useState(null)//Son las coordenadas para determinar la dirección de la oficina desde el api de mapbox, dentro del primer modal.
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false);//Determina si el teclado está abierto o no.
   const [numberOfElements, setNumberOfElements] = useState(0);
-  const [open, setOpen] = useState(false)
-  const [error, setError] = useState(null)
-  const [oficinasTramites, setOficinasTramites] = useState(null);
-  const [userInitialCoords, setUserInitialCoords] = useState(null);
-  const [route, setRoute] = useState(null);
-  const [zoomLevel, setZoomLevel] = useState(12);
+  const [open, setOpen] = useState(false)//Determina si debe de abrirse el modal de la oficina seleccionada.
+  const [open2, setOpen2] = useState(false)//Determina si debe de abrirse el modal que muestra todas las oficinas.
+  const [userInitialCoords, setUserInitialCoords] = useState(null);//Las coordenadas iniciales del usuario.
+  const [route, setRoute] = useState(null);//Ruta generada apartir del api de Mapbox, desde tu posición actual hasta la de la oficina.
+  const [zoomLevel, setZoomLevel] = useState(12);//Nivel de Zoom del mapa.
+  const [encargado, setEncargado] = useState(null);//Persona encargada de la oficina de atención.
+  const [concepto, setConcepto] = useState(null); //Concepto de la ofincina de atención seleccionada.
 
+  //Esta llamada al api de mapbox es la que genera la ruta entre tu posición y la posición de la oficina de atención.
   const apihandler=()=>{
     try{
       axios.get(`https://api.mapbox.com/directions/v5/mapbox/driving-traffic/${userInitialCoords[0]},${userInitialCoords[1]};${selectedCoords[0]},${selectedCoords[1]}?geometries=geojson&overview=full&alternatives=true&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ`)
@@ -64,17 +63,13 @@ const OficinasAtencion = props =>{
           setRoute(posts);
           setZoomLevel(4);
           setOpen(false);
-          console.log(response.data);
       });
     }catch(error){
       console.log(error)
     }
   }
 
-  const marcarRecorrido = () => {
-
-  }
-
+  //Muestra las oficinas encontradas desde el cuadro de busqueda.
   const toggleExpanded = () => {
     if (oficinas != null){
       setNumberOfElements(filteredOficinas.length)
@@ -82,60 +77,77 @@ const OficinasAtencion = props =>{
     }
   };
 
-  const onShowPopup = async (id, lat, long, desc) => {
-    const location = await lat
-    setId(id)
-    setSelectedCoords([lat,long])
-    setDesc(desc)
-    setOpen(true);
-    setCoords([lat,long])
+  //Función para arbir el modal de todas las oficinas.
+  const onShowPopup2 = (data) => {
+    setOpen2(true);
   };
 
+  //Función para cerrar el modal con la info de la oficina
   const onClosePopup = () => {
     setOpen(false);
   };
 
+  //Navegar a la pantalla anterior (Función del footer)
   const goBack = () => {
     props.navigation.goBack();
   }
 
+  //Obtiene todas las oficinas
   const getData = async () =>{
     const response = await getOficinas();
     setOficinas(response);
     setFilteredOficinas(response);
     setRenderPoints(true);
-    console.log(response)
   }
 
+  //Obtiene oficinas desde el endpoint de trámites
   const getDataTramites = async () => {
-    const response = await getTramites();
-    setOficinas(oficinas => [...oficinas, response]);
-    console.log(oficinas)
+    const response = await getTramites(1);
+    for(let i=0;i<response.length;i++){
+      setOficinas(oficinas => [...oficinas, response[i].departamentos]);
+    }
+    
   }
 
-  const goToOficina = (id, lat, long, desc) =>{
-      onShowPopup(id, lat, long, desc);
-      //setCoords([lat,long]);
+  //Función para abrir el modal que muestra toda la información sobre la oficina seleccionada.
+  const goToOficina = async (id, lat, long, desc, encargado, concept) =>{
+    const location = await lat;
+    setId(id);
+    setSelectedCoords([lat,long]);
+    setDesc(desc);
+    setOpen(true);
+    setCoords([lat,long]);
+    setConcepto(concept);
+    setEncargado(encargado);
   }
 
+  //Obtiene la dirección del usuario 
   const GetLocation = () => {
     getData();
     Geolocation.getCurrentPosition(
       (position) => {
         setCoords([position.coords.longitude,position.coords.latitude])
         setUserInitialCoords([position.coords.longitude,position.coords.latitude])
-        setLongitude([position.coords.longitude])
-        setLatitude([position.coords.latitude])
+        //setLongitude([position.coords.longitude])
+        //setLatitude([position.coords.latitude])
       },
       (error) => console.log(error),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
   }
 
+  //Función para renderizar Oficinas en el cuadro de busqueda
   const renderItem = (item) => {
     if (item.direccion != null){
       return(
-        <TouchableOpacity activeOpacity={.5} onPressIn={()=> goToOficina(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
+        <TouchableOpacity activeOpacity={.5} onPressIn={()=> goToOficina(
+          item.id, 
+          item.direccion.longitud, 
+          item.direccion.latitud, 
+          item.descripcion,
+          item.jefe_de_cajeros.first_name+' '+item.jefe_de_cajeros.last_name+' '+item.jefe_de_cajeros.second_last_name,
+          item.conceptos_de_ingreso,
+        )}>
           <View style={styles.content}>
             <Text style={styles.collapsibleText}>{item.descripcion}</Text>
           </View>
@@ -155,32 +167,47 @@ const OficinasAtencion = props =>{
     }
   }
 
+  //Crea los recuadros de las 3 primeras oficinas en el database. Si hay menos de 3 se crearán solo las que haya disponibles, ya sean dos, una o ninguna
   const createOficinaMasUsada = () =>{
     if (oficinas != null) {
-      var offices = oficinas.slice(0, 3);
+      var offices = oficinas.slice(0, 3); //Corta la variable para mostrar solo 3 resultados.
       return offices.map((item, index) => (
         
         item.direccion == null ? (
           null
         ) :
-          <TouchableOpacity key={index} onPress={()=> goToOficina(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
+          <TouchableOpacity key={index} onPress={()=> goToOficina(
+            item.id, 
+            item.direccion.longitud, 
+            item.direccion.latitud, 
+            item.descripcion,
+            item.jefe_de_cajeros.first_name+' '+item.jefe_de_cajeros.last_name+' '+item.jefe_de_cajeros.second_last_name,
+            item.conceptos_de_ingreso,
+          )}>
             <View style={styles.SearchButtons}>
-              <Text style={styles.textStyle}>Oficina {item.id}</Text>
+              <Text style={styles.textStyle}>Oficina {item.id}</Text> 
             </View>
           </TouchableOpacity>
       ));
     }    
   }
 
+  //Crea la oficina en sí en el mapa, utilizando sus coordenadas para saber en que parte del mapa se deben de crear.
   const createOficina = () => {
     if (oficinas != null) {
       var offices = oficinas;
       return offices.map((item, index) => (
-        
         item.direccion == null ? (
           null
         ) :
-        <TouchableOpacity key={index} onPress={()=>onShowPopup(item.id, item.direccion.longitud, item.direccion.latitud, item.descripcion)}>
+        <TouchableOpacity key={index} onPress={()=>goToOficina(
+          item.id, 
+          item.direccion.longitud, 
+          item.direccion.latitud, 
+          item.descripcion,
+          item.jefe_de_cajeros.first_name+' '+item.jefe_de_cajeros.last_name+' '+item.jefe_de_cajeros.second_last_name,
+          item.conceptos_de_ingreso,
+        )}>
           <MapBoxGL.MarkerView
             anchor={{ x: 0.5, y: 0.9 }}
             coordinate={[item.direccion.longitud,item.direccion.latitud]}
@@ -192,6 +219,7 @@ const OficinasAtencion = props =>{
     }    
   };
 
+  //Se ejecuta al entrar a la pantalla
   useEffect(() => {
     if (renderPoints){
       setOpen(true);
@@ -203,13 +231,13 @@ const OficinasAtencion = props =>{
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       () => {
-        setKeyboardVisible(true); // or some other action
+        setKeyboardVisible(true);
       }
     );
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       () => {
-        setKeyboardVisible(false); // or some other action
+        setKeyboardVisible(false);
       }
     );
 
@@ -232,8 +260,24 @@ const OficinasAtencion = props =>{
           coords={selectedCoords}
           desc={desc}
           createRoute={apihandler}
+          encargado={encargado}
+          concepto={concepto}
         />
       </ubicacionOficinaContext.Provider>
+
+
+      <ModalVerOficinasAtencion
+          open={open2}
+          data={oficinas}
+          onTouchOutside={()=>setOpen2(false)}      
+          id={id}
+          coords={selectedCoords}
+          desc={desc}
+          createRoute={apihandler}
+          encargado={encargado}
+          concepto={concepto}
+          openModal={()=>goToOficina}
+        />
 
       <View style={{flex:1}}> 
         <View style={{position:'absolute',flex:1,height:deviceHeight,width:'100%',borderRadius:90}}>
@@ -271,13 +315,20 @@ const OficinasAtencion = props =>{
 
         </View>
       </View>
-            
+      <TouchableOpacity onPress={onShowPopup2}>
+          <View style={styles.iconAvanzadoContainer}>
+            <Text style={{color:'white', fontWeight:'600', textAlign:'center'}}>
+              Ver oficinas
+            </Text>
+          </View>
+        </TouchableOpacity>
       <Footer 
         back={goBack}
         showBack={true} 
         style={styles.footer} />
       
       <View style={styles.textInputStyle}>
+        <View style={{flexDirection:'row'}}>
 
         <TextInput 
           onChangeText={(text)=> searchOficina(text)} 
@@ -287,7 +338,7 @@ const OficinasAtencion = props =>{
           placeholder='Buscar Oficinas...'
         >
         </TextInput>
-
+        </View>
         {
           isKeyboardVisible ?(
             
@@ -310,14 +361,17 @@ const OficinasAtencion = props =>{
     
             </View>
         }
-      </View>            
+      </View>     
+             
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   content: {
-    width: 333,
+    width: 336,
+    borderRadius:5,
+    marginTop:8,
     height: 50,
     flexDirection: 'row',
     alignItems: 'center',
@@ -441,7 +495,18 @@ const styles = StyleSheet.create({
     shadowRadius: 7,
     shadowOpacity: 0.09,
     elevation: 5,
-  }
+  },
+  iconAvanzadoContainer: {
+    backgroundColor: '#79142A',
+    height: 46,
+    width: 336,
+    alignSelf:'center',
+    marginBottom:20,
+    justifyContent: 'center',
+    paddingHorizontal: 8,
+    borderRadius:5,
+    marginTop:10,
+  },
 })
 
 export default OficinasAtencion;

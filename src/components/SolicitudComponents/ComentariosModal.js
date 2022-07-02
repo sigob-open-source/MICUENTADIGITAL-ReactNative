@@ -78,6 +78,7 @@ const ComentarioModal = props => {
             height: '100%',
           }}
           >
+            <View style={{marginTop:'24%'}}>
             {renderTitle()}
 
             <TextInput
@@ -112,6 +113,7 @@ const ComentarioModal = props => {
               </View>
               </TouchableOpacity>
             </View>
+          </View>
           </View>
         </View>
 

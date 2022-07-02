@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
-  StyleSheet, View, FlatList, Dimensions, TouchableWithoutFeedback, Alert,
+  StyleSheet, View, FlatList, TouchableWithoutFeedback, Alert,
 } from 'react-native';
 
 import NetInfo, { useNetInfo } from '@react-native-community/netinfo'
@@ -10,6 +10,9 @@ import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ConnectionCheck from '../components/internetChecker';
 
+
+//Todo el datalist son los botones del menú de inicio, cada uno con sus propiedades como el icono del botón, 
+//color del botón en caso de que esté desactivado, nombre etc.
 const dataList = [
   {
     isBlank: false,
@@ -129,10 +132,8 @@ const dataListSecond = [
   },
 
 ];
-
+//Número de columnas que utiliza el flatlist para hacer calculos de como se deben organizar los botones.
 const numColumns = 3;
-
-const WIDTH = Dimensions.get('window').width;
 
 const MenuInicio = props =>{
   const netInfo = useNetInfo();
@@ -140,7 +141,10 @@ const MenuInicio = props =>{
   const [hasSwitchedView, setHasSwitchedView] = useState(false)
 
 
-
+//En el diseño de esta pantalla, en algunos casos pueden quedar iconos vacios, pero estos se siguen mostrando 
+//esta parte es para saber si debería haber más botones en las columnas restantes, en caso de que detecte que no debería haber,
+//cambia la propiedad de isblank a true, dentro del componente del botón, al ser esta propiedad true, el botón se hace invisible e imposible
+//de hacer clic en el.
   const formatData = (dataList, numColumns) => {
     const totalRows = Math.floor(dataList.length / numColumns);
     let totalLastRow = dataList.length - (totalRows * numColumns);
@@ -153,7 +157,8 @@ const MenuInicio = props =>{
     }
     return dataList;
   };
-
+//Está función sirve para navegar a otras pantallas dependiendo del botón que presionaste. También al presionar el botón hace que se active
+//un timer para evitar que se presionar el mismo botón varias veces, previniendo así que puedas entrar a la misma pantalla multiples veces.
   const navigateToScreen = (item) => {
     
     if (item.navegacion != null) {
@@ -164,13 +169,17 @@ const MenuInicio = props =>{
           setHasSwitchedView(false)
         }, 1000);
       }
-    } else if (item.necesitaLogin) {
+    } else if (item.necesitaLogin) {//Aqui es donde se hace el check donde se detecta si se ocupa login o si una opción no está disponible/está en mantenimiento
       Alert.alert('Aviso', 'Necesita iniciar sesión para tener acceso a esta opción.');
     } else {
-      Alert.alert('Aviso', 'Se está realizando mantenimiento a esta función, favor de intentarlo más tarde.');
+      if (item.name != 'nada'){
+        Alert.alert('Aviso', 'Se está realizando mantenimiento a esta función, favor de intentarlo más tarde.');
+      }
     }
   };
 
+
+  //Esta función renderiza los botones dependiendo de sus propiedades, color, nombre, icono etc.
   const _renderItem = ({ item, index }) => (
     <TouchableWithoutFeedback onPress={() => navigateToScreen(item)}>
       <View style={{ flex: 1, alignItems: 'center' }}>
@@ -189,32 +198,39 @@ const MenuInicio = props =>{
   return (
     <View style={styles.container}>
       <ConnectionCheck/>
-      <Header
-        style={styles.header}
-        item="Inicio"
-        imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
-      />
-
+      <View style={{marginBottom:'22%'}}>
+        <Header
+          style={styles.header}
+          item="Inicio"
+          imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
+        />
+        </View>
       <View style={{ flex: 1, marginHorizontal: '2%' }}>
         <FlatList
           data={formatData(dataList, numColumns)}
           renderItem={_renderItem}
           keyExtractor={(item, index) => index.toString()}
           numColumns={numColumns}
+          ListFooterComponent={
+            <>
+              <View style={styles.separator} />
+              <View>
+                <FlatList
+                  style={{ marginBottom: '6%' }}
+                  data={formatData(dataListSecond, numColumns)}
+                  renderItem={_renderItem}
+                  keyExtractor={(item, index) => index.toString()}
+                  numColumns={numColumns}
+                />
+              </View>
+            
+            </>
+          }
         />
+        
       </View>
-      <View style={styles.separator} />
-      <View style={{ marginHorizontal: '2%' }}>
-        <FlatList
-          style={{ marginBottom: '6%' }}
-          data={formatData(dataListSecond, numColumns)}
-          renderItem={_renderItem}
-          keyExtractor={(item, index) => index.toString()}
-          numColumns={numColumns}
-        />
-      </View>
-    <Footer style={styles.footer} />
-  
+
+      <Footer style={styles.footer} />
     </View>
   );
 }

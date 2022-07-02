@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { getTiposDeSolicitudes } from '../../services/api';
+import axios from 'axios';
 
 const deviceHeight = Dimensions.get('window').height;
 const WIDTH = Dimensions.get('window').width;

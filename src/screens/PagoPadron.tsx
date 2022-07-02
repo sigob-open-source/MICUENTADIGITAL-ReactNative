@@ -271,6 +271,7 @@ const PagoPadron = ({ route }) => {
   return (
     <View style={styles.container}>
       <Header item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
+      <View style={{marginTop:'22%'}}>
       <Text style={styles.headText}>
         {padron?.descripcion}
       </Text>
@@ -300,6 +301,7 @@ const PagoPadron = ({ route }) => {
         {
           (padron?.descripcion === 'Vehicular') ? <BusquedaAvanzadaVehiculo onSearch={handleSearch} /> : null
         }
+      </View>
       </View>
       {console.log('estos son los cargos', resultCargos)}
       {console.log('este es el total', totalAmount)}
@@ -378,6 +380,7 @@ const PagoPadron = ({ route }) => {
 
 
         </View>
+  
       </View>
     </View>
 

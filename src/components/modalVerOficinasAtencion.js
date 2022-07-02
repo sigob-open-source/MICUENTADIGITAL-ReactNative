@@ -6,7 +6,9 @@ import {
   Modal, 
   TouchableWithoutFeedback, 
   TouchableOpacity,
-  ScrollView
+  ScrollView,
+  FlatList,
+  Dimensions
 } from 'react-native';
 
 import { ubicacionOficinaContext } from '../helpers/Context';
@@ -15,8 +17,11 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import axios from 'axios';
 import colors from '../utils/colors';
 
-const ModalOficinasAtencion = props => {
+const WIDTH = Dimensions.get('window').width;
 
+const ModalVerOficinasAtencion = props => {
+
+  const [oficinasAte, setOficinasAte] = useState(props.data)
   const [nombrOficina, setNombreOficina] = useState(null);
   const [ubicacion, setUbicacion] = useState("Desconocida");
   const [coords, setCoords] = useState(null);
@@ -41,6 +46,18 @@ const ModalOficinasAtencion = props => {
     }
   }
 
+  const renderItem = (item) => {
+    return(
+      <View>
+        <TouchableOpacity>
+          <View style={styles.content}>
+            <Text style={styles.collapsibleText}>{item.descripcion}</Text>
+          </View>
+        </TouchableOpacity>
+
+      </View>
+    )
+  }
 
   const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
@@ -84,7 +101,8 @@ const ModalOficinasAtencion = props => {
 
         <View style={styles.whiteSquareContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-            <Text style={styles.titleText}>Detalles de oficina</Text>
+          <Text style={styles.titleText}></Text>
+            <Text style={styles.titleText}>Ver Oficinas</Text>
             <TouchableOpacity onPress={props.onTouchOutside}>
               <MaterialCommunityIcons style={{ marginRight: 15 }} size={30} name="arrow-left" color="black" />
             </TouchableOpacity>
@@ -96,57 +114,20 @@ const ModalOficinasAtencion = props => {
             fontWeight: '500',
             marginLeft: 15,
             fontSize: 22,
-            alignSelf: 'flex-start',
+            alignSelf: 'center',
             marginVertical: 10,
             color: 'black',
           }}
           >
-            Oficina de atención {props.id}
+            Oficinas Disponibles
           </Text>
-          <ScrollView>
-            <Text style={styles.textStyle}>
-              Oficina: {props.desc}
-            </Text>
 
-            <Text style={styles.textStyle}>
-              Responsable: {props.encargado}
-            </Text>
+          <FlatList
+            data={props.data}
+            renderItem={({ item, index }) => renderItem(item)}
+            keyExtractor={(item, index) => index.toString()}
+          />
 
-            <Text style={styles.textStyle}>
-              Horarios de atención: No disponibles.
-            </Text>
-
-            <Text style={styles.textStyle}>
-              Concepto de Ingreso: 
-            </Text>
-            {
-              props.concepto != null ? (
-                props.concepto.map((item,index)=>(
-                  <Text key={index} style={[styles.textStyle,{paddingLeft:15}]}>
-                    -{item.descripcion}
-                  </Text>
-                ))
-              ) : null
-            }
-
-            {
-              selectedCoords == null ?(
-                <Text style={styles.textStyle}>
-                  Ubicación: Cargando...
-                </Text>
-              ) :
-                <Text style={styles.textStyle}>
-                  Ubicación: {ubicacion}
-                </Text> 
-            }
-          </ScrollView>
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity onPress={props.createRoute}>
-              <View style={styles.buttonStyle}>
-                <Text style={styles.buttonTextStyle}> Generar ruta </Text>
-              </View>
-            </TouchableOpacity>
-          </View>
         </View>
 
       </View>
@@ -164,18 +145,17 @@ const styles = StyleSheet.create({
   whiteSquareContainer: {
     position: 'absolute',
     zIndex: 10,
-    width: 300,
-    height: 400,
+    width: '100%',
+    height: '100%',
     backgroundColor: 'white',
-    borderRadius: 10,
+
   },
   titleText: {
     fontWeight: '500',
     fontSize: 18,
     marginLeft: 15,
-    alignSelf: 'flex-start',
     marginVertical: 15,
-    color: 'black',
+    color: 'black'
   },
   textStyle: {
     marginVertical: 5,
@@ -235,6 +215,26 @@ const styles = StyleSheet.create({
     color:'white',
     fontWeight: '500',
   },
+  content: {
+    width: WIDTH,
+    height: 50,
+    marginBottom:10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    borderTopWidth:2,
+    borderBottomWidth:2,
+    borderColor:'#79142A',
+  },
+  collapsibleText: {
+    flexShrink: 1,
+    flex: 1,
+    flexWrap: 'wrap',
+    fontWeight: '500',
+    fontSize: 0.05 * WIDTH,
+    color: 'black',
+    textAlign:'center'
+  },
 });
 
-export default ModalOficinasAtencion;
+export default ModalVerOficinasAtencion;

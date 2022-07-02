@@ -30,6 +30,7 @@ const PopUpTramites = props => {
   const [tipoTramite, setTipoTramite] = useState(null);
   const [dependencia, setDependencia] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [render, setRender] = useState(`<h1>Sin requisitos.</h1>`);
 
   let dropDownAlertRef = useRef();
 
@@ -40,11 +41,19 @@ const PopUpTramites = props => {
         setLoading(false);
       }
     }
+    const requisites = props.tramiteProp[3];
+    if (requisites != undefined){
+      setRender( `<h1> Requisitos: ${props.tramiteProp[3].requisitos.map(entry => {
+        return `<h1>  - ${entry.descripcion}</h1>`
+      })}`)
+    }else {
+      setRender(`<h1>Sin requisitos.</h1>`);
+    }
   }, [props.openM]);
 
   useEffect(() => {
     if (props.tramiteProp[3] == undefined){
-      setRequisitos("No se encontraron requisitos.")
+      setRequisitos(["No se encontraron requisitos."])
     }else{
       setRequisitos(props.tramiteProp[3]);
     }
@@ -194,11 +203,13 @@ const PopUpTramites = props => {
             const hours = (today.getHours() < 10 ? '0' : '') + today.getHours();
             const minutes = (today.getMinutes() < 10 ? '0' : '') + today.getMinutes();
             const seconds = (today.getSeconds() < 10 ? '0' : '') + today.getSeconds();
+
             let options = {
               html: `
-        
               <style>
-        
+              * {
+                box-sizing: border-box;
+              }        
               footer {
                 display: flex;
                 position:fixed;
@@ -214,7 +225,7 @@ const PopUpTramites = props => {
                 background-color: #701c30;;
                 color: white;
               }
-        
+            
               @page { 
                 background-color: red; 
                 margin-left: 0pt; 
@@ -228,20 +239,25 @@ const PopUpTramites = props => {
               }
               #hello {
                 display: flex;
-                justify-content: center;
+                font-size: 10px;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                padding-top: 20px;
                 align-items: center;
-                height: 200px;
-                font-size: 15px;
-                text-align: center;
-                margin-top:605px;
-                padding-top: 50px;
                 padding-left: 80px;
                 padding-right: 80px;
                 padding-bottom:350px;
               }
+              #title {
+                font-size: 20px;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+                text-align: center;
+                justify-content: center;
+                align-content: center;
+              }
               #logo {
                 color: white;
-                font-size:25px;
+                font-size:18px;
+                font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
                 background-color: #4b4548;
                 display: flex;
                 justify-content: center;
@@ -253,34 +269,65 @@ const PopUpTramites = props => {
                 -webkit-box-shadow: 0px 0px 30px 11px rgba(0,0,0,0.63); 
                 box-shadow: 0px 0px 30px 11px rgba(0,0,0,0.63);
               }
-        
+            
+              .column {
+              float: left;
+              width: 50%;
+              height: 200px; /* Should be removed. Only for demonstration */
+              }
+              #desc {
+                padding:50px;
+                text-align: center;
+                font-size:20px;
+              }
+            
+              /* Clear floats after the columns */
+              .row:after {
+                content: "";
+                display: table;
+                clear: both;
+              }
               </style>
               <body style="margin: 0;">
-        
+                
               <div id="logo">
                   <h1>Ficha del trámite</h3>
               </div>
-              
-              <div class="row even" id="hello">
-                <div col-md-12">
-                  <h1>Nombre del trámite:${props.tramiteProp[1]}</h1>
-                  <h1>Departamentos: ${ props.tramiteProp[2].map(entry => {
-                    return `<h1>${entry.clave} - ${entry.descripcion}</h1>`
-                }).join(' ')}</h1>
-                  <h1>Requisitos:  ${ props.tramiteProp[3].requisitos.map(entry => {
-                    return `<h1>   - ${entry.descripcion}</h1>`
-                }).join(' ')}</h1>
-                  <h1>Homoclave: ${homoclave}</h1>
-                  <h1>Dependencia: ${dependencia}</h1>
-                  <h1>Tipo de Tramite: ${tipoTramite}</h1>
+            
+              <div class="container" id="title">
+                <h1> ${props.tramiteProp[0]} </h1>
+              </div>
+                <h3 id="desc"> ${props.tramiteProp[1]} </h3>
+              <div class="row">
+                <div class="column">
+                  <div class="row even" id="hello">
+                    <div col-md-12">
+                      <h1>Departamentos: ${ props.tramiteProp[2].map(entry => {
+                        return `<h1>${entry.clave} - ${entry.descripcion}</h1>`
+                        }).join(' ')}</h1>
+                      <h1>Homoclave: ${homoclave}</h1>
+                    </div>
+                  </div>
+            
+                </div>
+                <div class="column  ">
+            
+                  <div class="row even" id="hello">
+                    <div col-md-12">
+                      <h1>Dependencia: ${dependencia}</h1>
+                      <h1>Tipo de Tramite: ${tipoTramite}</h1>
+                    </div>
+                  </div>
+            
                 </div>
               </div>
-              
-              <footer>
-                <div>
-                  <h1>© ${year} Gobierno del Estado de Nayarit</h1>
+            
+                <div class="row even" id="hello">
+                  <div col-md-12">
+                    ${render}
+                  </div>
                 </div>
-              </footer>
+            
               
               </body>
               `,
@@ -329,7 +376,9 @@ const PopUpTramites = props => {
           
           } catch (error) {
               Alert.alert("Error","Ha habido un error al descargar el PDF.")
+              setLoading(false);
               console.log("interrumpido")
+              console.log(error)
           }
 
         } else {
@@ -351,7 +400,11 @@ const PopUpTramites = props => {
       transparent
       animationType="fade"
       visible={props.openM}
-      onRequestClose={props.close}
+      onRequestClose={
+        loading?(
+          props.close
+        ): null
+      }
     >
       <View>
         <DropdownAlert

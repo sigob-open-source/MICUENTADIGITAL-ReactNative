@@ -15,7 +15,9 @@ const Header = (props) => (
     </View>
 
     <View style={styles.textContainer}>
-      <Text style={styles.tituloHeader}>{props.item}</Text>
+      <Text
+        numberOfLines={3}
+        style={styles.tituloHeader}>{props.item}</Text>
     </View>
 
     <TouchableWithoutFeedback onPress={() => console.log('Sample Touch')}>
@@ -34,7 +36,9 @@ const styles = StyleSheet.create({
   },
   tituloHeader: {
     color: 'white',
-    fontSize: 18,
+    width:100,
+    textAlign:'center',
+    fontSize: 20,
     fontWeight: 'bold',
   },
   logoContainer: {
@@ -49,16 +53,18 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
   },
   container: {
+    zIndex:100,
+    position:'absolute',
     flexDirection: 'row',
     height: 66,
     width: '100%',
     backgroundColor: colors.principal,
+    overflow:'hidden',
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomEndRadius: 15,
     borderBottomLeftRadius: 15,
     paddingHorizontal: 20,
-    marginBottom: 14,
     borderBottomWidth: 4,
     borderLeftWidth: 2,
     borderRightWidth: 2,

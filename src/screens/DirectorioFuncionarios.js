@@ -244,7 +244,7 @@ const DirectorioFunc = (props) => {
           imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
           img={require('../../assets/imagenes/header_logo.png')}
         />
-
+        <View style={{marginTop:'22%'}}>
         <ModalFuncionario
           nombre={nombre}
           apellidoPaterno={apellidoPaterno}
@@ -265,7 +265,7 @@ const DirectorioFunc = (props) => {
           onTouchOutside={()=> setModalOpen(false)}
         />
 
-        <Text style={{ color: 'black', fontSize: 20, fontWeight: '700' }}> Buscar Funcionario </Text>
+        <Text style={{textAlign:'center', color: 'black', fontSize: 20, fontWeight: '700' }}> Buscar Funcionario </Text>
 
         <View style={styles.textInputContainer}>
             <TextInput 
@@ -312,7 +312,7 @@ const DirectorioFunc = (props) => {
         }
 
       </View>
-              
+      </View>
       {
         !(texto == null || texto == '') || !(buscarOficinaTexto == null || buscarOficinaTexto == '') ?(
           <TouchableOpacity onPress={()=>buscarPorTexto()} onPressIn={Keyboard.dismiss}>
@@ -450,6 +450,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   flatView: {
+    alignSelf:'center',
     marginTop: 30,
   }
 });

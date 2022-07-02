@@ -81,8 +81,8 @@ const Solicitud = (props) => {
     const image = archivo;
     const response = await registrarSolicitud(
       comment,
-      latitud,
-      longitud,
+      0,
+      0,
       motivo_de_la_solicitud,
       entidadMunicipalId,
     );
@@ -210,7 +210,7 @@ const Solicitud = (props) => {
 
       <ScrollView contentContainerStyle={{ padding: 10, paddingHorizontal: 0 }}>
         <View style={{ flex: 1, marginTop: 9, marginHorizontal: '2%' }}>
-
+          <View style={{marginTop:'24%'}}>
           <TouchableOpacity onPress={() => openModal(0)}>
             <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow />
           </TouchableOpacity>
@@ -269,6 +269,7 @@ const Solicitud = (props) => {
 
               </TouchableOpacity>
             </View>
+          </View>
           </View>
         </View>
 

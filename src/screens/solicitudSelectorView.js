@@ -23,14 +23,16 @@ const SolicitudSelector = (props) => {
           imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
           img={require('../../assets/imagenes/header_logo.png')}
         />
+        <View style={{marginTop:'24%'}}>
+          <TouchableOpacity onPress={() => props.navigation.push('verSolicitudes')}>
+            <ButtonRequest texto="Ver Solicitudes" iconName="keyboard-arrow-right" />
+          </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => props.navigation.push('verSolicitudes')}>
-          <ButtonRequest texto="Ver Solicitudes" iconName="keyboard-arrow-right" />
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => props.navigation.push('solicitud')}>
+            <ButtonRequest texto="Registrar una Solicitud" iconName="keyboard-arrow-right" />
+          </TouchableOpacity>
+        </View>
 
-        <TouchableOpacity onPress={() => props.navigation.push('solicitud')}>
-          <ButtonRequest texto="Registrar una Solicitud" iconName="keyboard-arrow-right" />
-        </TouchableOpacity>
 
       </View>
 

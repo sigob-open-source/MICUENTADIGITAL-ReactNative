@@ -82,6 +82,7 @@ const ModalFuncionario = props => {
       animationType="fade"
       onShow={setGender}
       visible={props.open}
+      onRequestClose={props.onTouchOutside}
     >
       <View style={{
         flex: 1,

@@ -32,7 +32,7 @@ const styles = StyleSheet.create({
   collapsibleText: {
     fontWeight: '500',
     marginLeft: '5%',
-    fontSize: 20,
+    fontSize: 18,
     color: 'black',
   },
   optionCard: {
