@@ -93,23 +93,23 @@ const Pagos = (props) => {
   );
 
   return (
-    <View style={{flex:1}}>
+    <View style={{ flex: 1 }}>
 
-      <ConnectionCheck/>
- 
-    <View style={styles.container}>
-      
-      <Header style={styles.header} item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
-      <View style={{marginTop:'22%'}}>
-      <View style={styles.textInputContainer}>
-        <TextInput color="black" placeholderTextColor="#C4C4C4" style={styles.textInputStyle} placeholder="Buscar..." />
-      </View>
+      <ConnectionCheck />
 
-      <View style={{
-        flex: 1, justifyContent: 'center',
-      }}
-      >
-        {
+      <View style={styles.container}>
+
+        <Header style={styles.header} item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
+        <View style={{ marginTop: '22%' }}>
+          <View style={styles.textInputContainer}>
+            <TextInput color="black" placeholderTextColor="#C4C4C4" style={styles.textInputStyle} placeholder="Buscar..." />
+          </View>
+
+          <View style={{
+            flex: 1, justifyContent: 'center',
+          }}
+          >
+            {
         (padrones)
           ? (
             <FlatList
@@ -133,16 +133,16 @@ const Pagos = (props) => {
           )
           : null
       }
+          </View>
         </View>
+
+        <Footer
+          back={goBack}
+          showBack
+          style={styles.footer}
+        />
+
       </View>
-
-      <Footer
-        back={goBack}
-        showBack
-        style={styles.footer}
-      />
-
-    </View>
     </View>
   );
 };

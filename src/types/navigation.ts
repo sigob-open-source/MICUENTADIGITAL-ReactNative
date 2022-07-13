@@ -16,6 +16,8 @@ type RootStackParamList = {
   problemFourScreen: undefined;
   pagoPadron: undefined;
   detallesPadron: undefined;
+  netpayCustom: undefined;
+  pagoRealizado: undefined;
 };
 
 export type {

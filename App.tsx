@@ -16,9 +16,11 @@ import OficinasAtencion from './src/screens/OficinasAtencion';
 import Pagos from './src/screens/Pagos';
 import PagoPadron from './src/screens/PagoPadron';
 import Tramites from './src/screens/tramites';
-import NetpayPago from './src/screens/netpayPago';
+import NetpayPago from './src/screens/NetpayPago';
 import DropdownalertProvider from './src/components/DropDowAlertProvider';
 import DetallesPadron from './src/screens/DetallesPadron';
+import NetpayCustom from './src/screens/NetpayCustom';
+import PagoRealizado from './src/screens/PagoRealizado';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -42,6 +44,8 @@ const AppContainer = () => (
       <Stack.Screen name="tramites" component={Tramites} />
       <Stack.Screen name="netpaypago" options={{ animation: 'none' }} component={NetpayPago} />
       <Stack.Screen name="detallesPadron" component={DetallesPadron} />
+      <Stack.Screen name="netpayCustom" component={NetpayCustom} />
+      <Stack.Screen name="pagoRealizado" component={PagoRealizado} />
     </Stack.Navigator>
   </NavigationContainer>
 );

@@ -16,37 +16,36 @@ const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
 
   const navigation = useNavigation();
 
-  const showAlert = (type) =>{
-    if (type == "success"){
+  const showAlert = (type) => {
+    if (type == 'success') {
       Alert.alert(
-    
+
         'Pago exitiso',
         'Su pago se encuentra en proceso!',
         [
           {
             text: 'Entendido',
             style: 'cancel',
-            onPress: () => navigation.navigate('pagos')
+            onPress: () => navigation.navigate('pagos'),
           },
         ],
       );
     }
-    if (type == "failed"){
+    if (type == 'failed') {
       Alert.alert(
-    
+
         'Error al realizar pago',
         'Favor de intentarlo de nuevo!',
         [
           {
             text: 'Entendido',
             style: 'cancel',
-            onPress: () => navigation.navigate('pagos')
+            onPress: () => navigation.navigate('pagos'),
           },
         ],
       );
     }
-  
-  }
+  };
   function onMessage(data) {
     // Intentar parsear el JSON
     let json;
@@ -62,9 +61,8 @@ const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
         title: 'Éxito',
         message: 'Consulta exitosa',
       });
-      showAlert("success");
+      showAlert('success');
     }
-
 
     if (json?.status === 'failed') {
       notify({
@@ -72,9 +70,8 @@ const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
         title: 'ERROR',
         message: 'Su transacción fue Rechazada. Intentar con otro método de pago.',
       });
-      showAlert("failed");
+      showAlert('failed');
     }
-
 
     console.log(JSON.stringify(json, null, 2));
   }

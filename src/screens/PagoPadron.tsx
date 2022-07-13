@@ -41,6 +41,7 @@ import Card from '../components/CardPagos';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
+  const [padronSearched, setPadronSearched] = useState();
   const [searchText, setSearchText] = useState('de');
   const [resultCargos, setResultCargos] = useState();
   const [nameSearch, setNameSearch] = useState();
@@ -95,6 +96,7 @@ const PagoPadron = ({ route }) => {
       setIsLoading(false);
       showAlert();
     } else {
+      setPadronSearched(response);
       response = await getAdeudoPadron(response, numeroDePadron);
       setResultCargos(response?.cargos);
       setNewData(true);
@@ -105,19 +107,19 @@ const PagoPadron = ({ route }) => {
     setIsLoading(false);
   };
 
+  // Funcion llamada al dar al boton realizar pago
   const dopayment = async () => {
-    if (resultCargos !== undefined) {
-      const sumall = resultCargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0);
-      const responseNetpay = await tokenizeAmount(sumall.toFixed(2));
-    // const reponseReferencia = await getReferencia(
-    //   sumall.toFixed(2),
-    //   resultCargos.map((c) => c.id),
-    //   padron.id,
-    // );
-    if (responseNetpay) {
-      navigation.push('netpaypago', { responseNetpay });
-    }
-    }
+    const sumall:number = resultCargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0);
+
+    // console.log(padron);
+    // console.log(totalAmount);
+    // console.log(resultCargos);
+    // console.log(padronSearched);
+    const allCargos = resultCargos.map((cargo) => cargo.id);
+    // console.log(allCargos);
+    navigation.push('netpayCustom', {
+      amount: sumall, tipo_de_padron: padron.id, cargos: allCargos, padron_id: padronSearched.id,
+    });
   };
 
   // Calcula los totales y descuentas
@@ -271,41 +273,41 @@ const PagoPadron = ({ route }) => {
   return (
     <View style={styles.container}>
       <Header item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
-      <View style={{marginTop:'22%'}}>
-      <Text style={styles.headText}>
-        {padron?.descripcion}
-      </Text>
-      <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 30 }}>
-        <View style={styles.textInputContainer}>
-          <TextInput color="black" placeholderTextColor="#C4C4C4" onChangeText={(text) => setSearchText(text)} style={styles.textInputStyle} placeholder="Buscar..." />
-        </View>
-
-        <TouchableWithoutFeedback onPress={() => { setTotalAmount(0); handleSearch(); }}>
-          <View style={styles.iconContainer}>
-            <Icon
-              name="search"
-              size={30}
-              color="white"
-            />
+      <View style={{ marginTop: '22%' }}>
+        <Text style={styles.headText}>
+          {padron?.descripcion}
+        </Text>
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 30 }}>
+          <View style={styles.textInputContainer}>
+            <TextInput color="black" placeholderTextColor="#C4C4C4" onChangeText={(text) => setSearchText(text)} style={styles.textInputStyle} placeholder="Buscar..." />
           </View>
-        </TouchableWithoutFeedback>
-        {
+
+          <TouchableWithoutFeedback onPress={() => { setTotalAmount(0); handleSearch(); }}>
+            <View style={styles.iconContainer}>
+              <Icon
+                name="search"
+                size={30}
+                color="white"
+              />
+            </View>
+          </TouchableWithoutFeedback>
+          {
           (padron?.descripcion === 'Ciudadano') ? <BusquedaAvanzadaCiudadano onSearch={handleSearch} /> : null
         }
-        {
+          {
           (padron?.descripcion === 'Empresa') ? <BusquedaAvanzadaEmpresa onSearch={handleSearch} /> : null
         }
-        {
+          {
           (padron?.descripcion === 'Predio') ? <BusquedaAvanzadaPredio onSearch={handleSearch} /> : null
         }
-        {
+          {
           (padron?.descripcion === 'Vehicular') ? <BusquedaAvanzadaVehiculo onSearch={handleSearch} /> : null
         }
-      </View>
+        </View>
       </View>
       {console.log('estos son los cargos', resultCargos)}
       {console.log('este es el total', totalAmount)}
-      <ScrollView style={{ alignSelf:'center'}}>
+      <ScrollView style={{ alignSelf: 'center' }}>
         {
           (newData === true && resultCargos?.[0])
             ? (
@@ -348,39 +350,41 @@ const PagoPadron = ({ route }) => {
       </ScrollView>
 
       <View style={styles.footer}>
-      {
-        totalAmount == 0 ?(
+        {
+        totalAmount === 0 ? (
           null
-        ) :
-          <Text style={styles.totalText}>
-            Total:
-            {' $'}
-            {totalAmount}
-          </Text>
+        )
+          : (
+            <Text style={styles.totalText}>
+              Total:
+              {' $'}
+              {totalAmount}
+            </Text>
+          )
       }
-      
+
         <View key={modalKey}>
           {
-            totalAmount > 0 ?(
+            totalAmount > 0 ? (
               <TouchableWithoutFeedback onPress={dopayment}>
                 <View style={styles.buttonPrint}>
                   <Text style={styles.textButton}>Realizar Pago</Text>
                 </View>
               </TouchableWithoutFeedback>
-            ) :
-                
-              <TouchableWithoutFeedback>
-                <View style={styles.buttonPrintDisabled}>
-                  <Text style={styles.textButton}>Realizar Pago</Text>
-                </View>
-              </TouchableWithoutFeedback>
+            )
+
+              : (
+                <TouchableWithoutFeedback>
+                  <View style={styles.buttonPrintDisabled}>
+                    <Text style={styles.textButton}>Realizar Pago</Text>
+                  </View>
+                </TouchableWithoutFeedback>
+              )
 
           }
 
-
-
         </View>
-  
+
       </View>
     </View>
 

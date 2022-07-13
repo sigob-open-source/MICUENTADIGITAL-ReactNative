@@ -158,6 +158,31 @@ const getAdeudoPadron = async (padron, numeroPadron) => {
   return result;
 };
 
+// Endpoint que se llama despues de un pago satisfactorio de los cargos para registrarlo en la base de datos
+const getRecibos = async (importe, cargos, padron_id, tipo_de_padron) => {
+  let result;
+  const body = {
+    metodos_de_pago: [{ metodo: 1, importe }],
+    padrones: [{
+      cargos,
+      padron_id,
+      tipo_de_padron,
+    }],
+    ciudadano: 9,
+    entidad_municipal: 1,
+    canal_de_pago: 3,
+  };
+  try {
+    const response = await http.post('recaudacion/recibos-externo', body);
+    result = response.data;
+  } catch (error) {
+    console.log(error.response.data);
+  }
+  console.log('result recibos');
+  console.log(result);
+  return result;
+};
+
 export {
-  getPadrones, getCiudadano, getVehiculo, getPredio, getEmpresa, getAdeudoPadron,
+  getPadrones, getCiudadano, getVehiculo, getPredio, getEmpresa, getAdeudoPadron, getRecibos,
 };
