@@ -40,7 +40,7 @@ const NetpayCustom = ({ route }) => {
 
 </head>
 
-<body style="padding: 50px;">
+<body style="padding-top: 10%;">
   <div id="netpay-form"></div>
   <script>
     NetPay.setApiKey("pk_netpay_uppwsWcVEwjcMTKhExsKENZif");
@@ -100,7 +100,14 @@ const NetpayCustom = ({ route }) => {
       <Header style={styles.header} item="Netpay Custom" />
 
       <View style={{ flex: 1, paddingTop: 70 }}>
-        <WebView source={{ html }} onMessage={onMessage} />
+        <WebView 
+        source={{ html }} 
+        onMessage={onMessage} 
+        injectedJavaScript={`const meta = document.createElement('meta'); meta.setAttribute('content','initial-scale=1, maximum-scale=1, user-scalable=1'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
+        scrollEnabled
+        scalesPageToFit={false}
+        />
+
       </View>
 
     </View>

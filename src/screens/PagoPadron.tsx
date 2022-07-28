@@ -305,8 +305,7 @@ const PagoPadron = ({ route }) => {
         }
         </View>
       </View>
-      {console.log('estos son los cargos', resultCargos)}
-      {console.log('este es el total', totalAmount)}
+
       <ScrollView style={{ alignSelf: 'center' }}>
         {
           (newData === true && resultCargos?.[0])

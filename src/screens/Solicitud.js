@@ -56,8 +56,8 @@ const Solicitud = (props) => {
 
   const [comment, setComment] = useState('Sin comentario.');
   const [location, setLocation] = useState('Sin locación');
-  const [latitud, setLatitud] = useState('');
-  const [longitud, setLongitud] = useState('');
+  const [latitud, setLatitud] = useState(0);
+  const [longitud, setLongitud] = useState(0);
   const [motivo_de_la_solicitud, setMotivo_de_la_solicitud] = useState(null);
   const [motivoSolID, setMotivoSolID] = useState(null);
   const [motivoDesc, setMotivoDesc] = useState(null);
@@ -72,17 +72,17 @@ const Solicitud = (props) => {
   const [mapaOpen, setMapaOpen] = useState(false);
   const [confirmacionOpen, setConfirmacionOpen] = useState(false);
   const [selectImageOpen, setSelectImageOpen] = useState(false);
-  
+  console.log(parseFloat(latitud),' ',longitud)
   const submit = async () => {
     onShowConfirmationPopUp();
-    console.log(latitud,' ',longitud)
+    
     // Validar que el usuario llenó toda la información necesaria para poedr mandar la solicitufd
 
     const image = archivo;
     const response = await registrarSolicitud(
       comment,
-      0,
-      0,
+      parseFloat(latitud),
+      parseFloat(longitud),
       motivo_de_la_solicitud,
       entidadMunicipalId,
     );
@@ -91,7 +91,9 @@ const Solicitud = (props) => {
         response.seguimientos[0].id,
         image,
       );
+      console.log("RESPONSEFILE: ", responseFile)
       if (responseFile) {
+        
         response.seguimientos[0].archivos.push(responseFile);
       }
       console.log(JSON.stringify(response, null, 2));

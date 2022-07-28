@@ -52,12 +52,12 @@ const getDependencias = async () =>{
   }
 }
 
-const getTramites = async () => {
+const getTramites = async (page) => {
   try{
-    const response = await http.get(`tramites/plantillas-tramites-atencion-ciudadana/`,{
+    const response = await http.get(`tramites/plantillas-tramites-atencion-ciudadana/?page=${page}`,{
       signal:controller.signal
     });
-    return response?.data?.results ?? [];    
+    return response?.data ?? [];    
   } catch (error) {
     controller.abort()
   }
@@ -113,11 +113,11 @@ const registrarArchivo = async (seguimientoId, archivo) => {
     });
     return response.data;
   } catch (error) {
-    console.log('Error en el envio de archivos');
     console.log(error);
   }
   return null;
 };
+
 
 export {
   getTiposDeSolicitudes,

@@ -87,6 +87,7 @@ const OficinasAtencion = (props) => {
 
   // Navegar a la pantalla anterior (Función del footer)
   const goBack = () => {
+    setKeyboardVisible(false);
     props.navigation.goBack();
   };
 

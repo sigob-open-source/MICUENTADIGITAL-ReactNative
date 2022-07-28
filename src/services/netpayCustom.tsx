@@ -35,7 +35,9 @@ const Payment = async (amount: number, cardToken: string, firstName?: string, la
         'Content-Type': 'application/json',
       },
     });
+    console.log(response.data)
     return response.data;
+    
   } catch (error) {
     console.error(error.response);
     console.log(error.result);

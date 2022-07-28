@@ -14,6 +14,7 @@ import {
 import { ubicacionOficinaContext } from '../helpers/Context';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import ModalOficinasAtencion from './modalOficinasAtencion';
 import axios from 'axios';
 import colors from '../utils/colors';
 
@@ -27,6 +28,12 @@ const ModalVerOficinasAtencion = props => {
   const [coords, setCoords] = useState(null);
   const {selectedCoords, setSelectedCoords} = useContext(ubicacionOficinaContext)
   const [shouldRender, setShouldRender] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
+  const [currentCoords, setCurrentCoords] = useState([0,0]);
+  const [desc, setDesc] = useState("Sin descripción.");
+  const [id, setId] = useState(null);
+  const [encargado, setEncargado] = useState("Desconocido");
+  const [concepto, setConcepto] = useState("Desconocido");
 
   const apihandler=()=>{
     try{
@@ -46,10 +53,34 @@ const ModalVerOficinasAtencion = props => {
     }
   }
 
+  const openExtraInfo = (id,coordinates,desc,encargado,concept) => {
+    if (coordinates != null){
+      setCurrentCoords([coordinates.longitud,coordinates.latitud]);
+    }else{
+      setCurrentCoords("Desconocida")
+    }
+    
+    setDesc(desc);
+    if (encargado == null){
+      setEncargado("Desconocido");
+    }else{
+      setEncargado(encargado);
+    }
+    if (concepto != null){
+      setConcepto(concept);
+    }else{
+      setConcepto("Desconocido");
+    }
+    
+    setId(id);
+    setOpenModal(true);
+  }
+
   const renderItem = (item) => {
+    console.log(item.jefe_de_cajeros)
     return(
       <View>
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>openExtraInfo(item.id,item.direccion,item.descripcion,item.jefe_de_cajeros,item.conceptos_de_ingreso)}>
           <View style={styles.content}>
             <Text style={styles.collapsibleText}>{item.descripcion}</Text>
           </View>
@@ -89,6 +120,22 @@ const ModalVerOficinasAtencion = props => {
       visible={props.open}
       onRequestClose={props.onTouchOutside}
     >
+      {
+        id != null ?(
+        <ModalOficinasAtencion
+          open={openModal}
+          id={id}
+          onTouchOutside={()=>setOpenModal(false)}
+          onRequestClose={()=>setOpenModal(false)}
+          coords={selectedCoords}
+          desc={desc}
+          createRoute={props.createRoute}
+          encargado={encargado}
+          concepto={concepto}
+        />
+        ):null
+      }
+
       <View style={{
         flex: 1,
         backgroundColor: '#000000AA',

@@ -117,7 +117,7 @@ const ModalOficinasAtencion = props => {
             </Text>
 
             <Text style={styles.textStyle}>
-              Concepto de Ingreso: 
+              Concepto de Ingreso: Desconocido
             </Text>
             {
               props.concepto != null ? (
@@ -132,7 +132,7 @@ const ModalOficinasAtencion = props => {
             {
               selectedCoords == null ?(
                 <Text style={styles.textStyle}>
-                  Ubicación: Cargando...
+                  Ubicación: Desconocida
                 </Text>
               ) :
                 <Text style={styles.textStyle}>
@@ -140,13 +140,27 @@ const ModalOficinasAtencion = props => {
                 </Text> 
             }
           </ScrollView>
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity onPress={props.createRoute}>
-              <View style={styles.buttonStyle}>
-                <Text style={styles.buttonTextStyle}> Generar ruta </Text>
+
+          {
+            selectedCoords != null ? (
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity onPress={props.createRoute}>
+                  <View style={styles.buttonStyle}>
+                    <Text style={styles.buttonTextStyle}> Generar ruta </Text>
+                  </View>
+                </TouchableOpacity>
               </View>
-            </TouchableOpacity>
-          </View>
+            ) : 
+              <View style={styles.buttonsContainer}>
+                <TouchableOpacity onPress={props.createRoute}>
+                  <View style={styles.buttonStyle}>
+                    <Text style={styles.buttonTextStyleUnavailable}> Dirección desconocida. No es posible generar ruta. </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+          }
+
+
         </View>
 
       </View>
@@ -235,6 +249,22 @@ const styles = StyleSheet.create({
     color:'white',
     fontWeight: '500',
   },
+  buttonTextStyleUnavailable: {
+    color:'black',
+    textAlign:'center',
+    fontWeight: '500',
+  },
+  buttonStyle: {
+    flexDirection:'row',
+    marginHorizontal:10,
+    marginVertical:25,
+    justifyContent:'center',
+    alignItems:'center',
+    width:255,
+    height:40,
+    backgroundColor: "transparent",
+    borderRadius:5,
+  }
 });
 
 export default ModalOficinasAtencion;

@@ -37,11 +37,13 @@ const Tramites = props =>{
   const [modalOpen, setModalOpen] = useState(false);
   const [dependencies, setDependencies] = useState([]);
   const [tiposDeFiltros, setTiposDeFiltros] = useState(['Dependencia/Oficina','Busqueda','Más buscados','Clasificación','Sujeto de interés']);
-  const [filtroSeleccionado, setFiltroSeleccionado] = useState("Dependencia/Oficina");
+  const [filtroSeleccionado, setFiltroSeleccionado] = useState("Busqueda");
   const [Sujeto, setSujeto] = useState(['Empresa','Ciudadano']);
   const [clasificacion, setClasificacion] = useState(['Trámite','Servicio']);
   const [fichaProps, setFichaProps] = useState([]);
   const [isConnected, setIsConnected] = useState(true);
+  const [paginaAHacerleFetch, setPaginaAHacerleFetch] = useState(1);
+  const [loading, setLoading] = useState(true);
 
   //Checar si el usuario está conectado a internet
   const netInfo = useNetInfo();
@@ -56,6 +58,7 @@ const Tramites = props =>{
     if (data == null){
       obetnerDependencias();
       obtenerTramites();
+      
     }
     
   }, []);
@@ -103,7 +106,7 @@ const Tramites = props =>{
       )}
       >
         <View style={styles.tramiteView}>
-          <Text style={styles.collapsibleText}>{item.nombre}</Text>
+          <Text style={styles.collapsibleText}>{item.id+' - '+item.nombre}</Text>
         </View>
       </TouchableOpacity>
     );
@@ -112,17 +115,39 @@ const Tramites = props =>{
 
   
   const obtenerTramites = async () =>{
-    
+    let endOfList = false;
+    let items = [];
+    let currentPage = 1;
+  
     try {
-      const tramites = await getTramites(3);
-    
-      if (tramites.length > 0 && tramites != undefined){
-        setData(tramites)
-        setFilteredData(tramites)
-        setTramitesMunicipales(tramites[0].nombre)      
-      } else{
-        setTramitesMunicipales('Sin Datos.')
+      while(endOfList === false) {
+        const tramites = await getTramites(currentPage);
+        console.log("L: ", tramites.results.length)
+        
+        endOfList = !tramites.next;
+        console.log(endOfList)
+        items = [...items, ...tramites.results];
+        setData(items);
+        setFilteredData(items);
+        setTramitesMunicipales(items[0].nombre);
+        currentPage += 1;
+
+
+        if (endOfList){
+          setLoading(false)            
+         /*if (tramites.next != null){
+            
+            const tramites = await getTramites(paginaAHacerleFetch);
+            console.log(tramites.next)
+            obtenerTramites()
+            console.log("and anotha one")
+          }*/
+        } else{
+          setTramitesMunicipales('Sin Datos.')
+        }
+
       }
+
     } catch (error) {
       Alert.alert("Error","Ha habido un error al comunicarse con el servidor. Favor de intentarlo más tarde.")
       setTramitesMunicipales('Sin Datos.')
@@ -190,7 +215,7 @@ const Tramites = props =>{
 
   const changeFiltro = (item) => {
     if (item == "Más buscados" || item == "Sujeto de interés"){
-      Alert.alert("Alerta","Opción en desarrollo.")
+      Alert.alert("Alerta","Se está realizando mantenimiento a esta opción.")
     }else{
       setFiltroSeleccionado(item);
       setFilteredData(data);
@@ -430,8 +455,9 @@ const Tramites = props =>{
           Trámites
         </Text>
         {
-        tramitesMunicipales == null ? (
+        loading == true ? (
           <View style={{justifyContent:'center', marginTop:20}}>
+            <Text style={{ color: 'gray' }}>Buscando trámites, por favor espere...</Text>
             <ActivityIndicator style={{alignSelf:'center'}}size="large" color="black"/>
           </View>
         )
