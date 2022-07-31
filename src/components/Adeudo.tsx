@@ -45,7 +45,7 @@ const Adeudo = ({
                 </Text>
               ) : 
                 <Text style={styles.text}>
-                  Sin adeudos.
+                  - Sin adeudos.
                 </Text>
             }
 
@@ -89,6 +89,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'black',
+    width:180,
     fontFamily: fonts.light,
   },
   row: {

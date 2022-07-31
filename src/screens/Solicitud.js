@@ -72,7 +72,6 @@ const Solicitud = (props) => {
   const [mapaOpen, setMapaOpen] = useState(false);
   const [confirmacionOpen, setConfirmacionOpen] = useState(false);
   const [selectImageOpen, setSelectImageOpen] = useState(false);
-  console.log(parseFloat(latitud),' ',longitud)
   const submit = async () => {
     onShowConfirmationPopUp();
     
@@ -91,12 +90,12 @@ const Solicitud = (props) => {
         response.seguimientos[0].id,
         image,
       );
-      console.log("RESPONSEFILE: ", responseFile)
+      //console.log("RESPONSEFILE: ", responseFile)
       if (responseFile) {
         
         response.seguimientos[0].archivos.push(responseFile);
       }
-      console.log(JSON.stringify(response, null, 2));
+      //console.log(JSON.stringify(response, null, 2));
 
       Alert.alert(
         'Registro existoso',

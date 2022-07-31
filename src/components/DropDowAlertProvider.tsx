@@ -43,7 +43,7 @@ const DropdownalertProvider = ({ children }: IDropdownAlertProviderProps) => {
 
   useEffect(() => {
     if (notification) {
-      console.log('log de Notificacion', notification);
+      //console.log('log de Notificacion', notification);
 
       dropdownalert.current?.alertWithType?.(
         notification.type,

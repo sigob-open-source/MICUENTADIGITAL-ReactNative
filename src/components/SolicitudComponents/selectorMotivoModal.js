@@ -22,6 +22,10 @@ const MotivoPopUp = props => {
     getData();
     return () => {
       abortController.abort();
+      setMotivos({});
+      setEntidad({});      
+      setLista({});
+      setLoading({});
     }
   }, []);
   // obtiene la lista de los motivos desde accordion.js para así poder mostrarlos dentro del modal
@@ -37,7 +41,6 @@ const MotivoPopUp = props => {
     const list = props.listaMotivos;
     setLista(list);
     if (lista != null){
-      console.log(lista);
       setLoading(false);
       
     }

@@ -79,9 +79,9 @@ const NetpayCustom = ({ route }) => {
       for (let x = 10; data[x] !== '"'; x++) {
         token += data[x];
       }
-      console.log(token);
+      //console.log(token);
       const response = await Payment(amount, token);
-      console.log(response);
+      //console.log(response);
       if (!response) {
         navigation.navigate('pagoRealizado', { message: 'Problema en la transaccion' });
       }

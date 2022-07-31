@@ -31,7 +31,16 @@ const Card = (props) => {
     <View handleEvent={setIsIconType} style={{ ...styles.squareStyle, ...props.style }}>
 
       <FontAwesome5 name={props.iconName} size={40} style={styles.iconContainer} solid color={props.col} />
-      <Text style={styles.textstyle}>{props.nombreItem}</Text>
+        {
+          props.nombreItem == "CasaDeEmpenio" ? (
+            <Text style={styles.textstyle}>Casa de Empeño</Text>
+          ) : 
+          props.nombreItem == "JuegoDeAzar" ? (
+            <Text style={styles.textstyle}>Juego de Azar</Text>
+          ) :
+          <Text style={styles.textstyle}>{props.nombreItem}</Text>
+        }
+
 
     </View>
   );
@@ -65,6 +74,7 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   textstyle: {
+    paddingHorizontal:1,
     textAlign: 'center',
     fontFamily: fonts.semiBold,
     color: 'black',

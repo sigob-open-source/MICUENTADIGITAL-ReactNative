@@ -59,7 +59,6 @@ const dataList = [
     name: 'Peticiones',
     iconname: 'tasks',
     enableEntypo: true,
-    navegacion: 'peticiones',
     necesitaLogin: false,
   },
   {

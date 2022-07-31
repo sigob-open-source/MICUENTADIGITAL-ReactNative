@@ -30,7 +30,6 @@ const VerSolicitud = ({ route }) => {
   const coordsHandler = async () => {
     try {
       const res = await axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${route.params.solicitud.longitud},${route.params.solicitud?.latitud}.json?language=es&types=address&postcode&access_token=sk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNnM2azV4NGI2ODNjcGtkMnlhbHhkNSJ9.OFrtu6biPoxkVm_RU8zz7w`);
-      console.log(res.data.features[0]);
       setAddress(res.data.features[0]);
     } catch (error) {
       console.error(error);

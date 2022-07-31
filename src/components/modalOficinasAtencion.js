@@ -25,13 +25,13 @@ const ModalOficinasAtencion = props => {
 
   const apihandler=()=>{
     try{
-      console.log(props.coords)
+
       axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+props.coords+'.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ')
       .then(response => {
         if (response.data.features[0] != undefined){
           const posts = response.data.features[0].place_name;
           setUbicacion(posts);
-          console.log(posts);
+
         }
 
         
@@ -54,7 +54,7 @@ const ModalOficinasAtencion = props => {
 
   const show = async () => {
     const coordinates = await props.coords
-    console.log("test oppen")
+
     if (coordinates != [null,null]){
       apihandler(coordinates);
       setShouldRender(true);

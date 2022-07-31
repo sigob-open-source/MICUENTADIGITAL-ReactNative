@@ -21,6 +21,9 @@ const Pagos = (props) => {
 
   useEffect(() => {
     getPadronesList();
+    return () => {
+      setPadrones({})
+    }
   }, []);
 
   const getPadronesList = async () => {
@@ -34,7 +37,6 @@ const Pagos = (props) => {
           }
         });
         setPadrones(data);
-        console.log(padrones);
       },
       (error) => {
         console.log(error);
@@ -57,6 +59,7 @@ const Pagos = (props) => {
     if (elementName === 'Notario') return 'gavel';
     if (elementName === 'CasaDeEmpenio') return 'university';
     if (elementName === 'Agencia') return 'lock';
+    if (elementName === 'Contribuyente') return 'user';
     return 'van';
   };
 

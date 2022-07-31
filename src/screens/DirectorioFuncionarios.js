@@ -8,6 +8,7 @@ import {
   FlatList,
   Dimensions,
   Keyboard,
+  Alert,
 } from 'react-native';
 
 import colors from '../utils/colors';
@@ -111,6 +112,7 @@ const DirectorioFunc = (props) => {
 
     return () => {
       keyboardDidHideListener.remove();
+      setFuncionarios({});
       keyboardDidShowListener.remove();
     };    
 
@@ -165,8 +167,14 @@ const DirectorioFunc = (props) => {
     setMostrarResultados(false);
     setKeyboardVisible(false)
     setLoading(true)
-    const funcionarios = await getFuncionarios();
-    setFuncionarios(funcionarios);
+    try {
+      const funcionarios = await getFuncionarios();
+      setFuncionarios(funcionarios);
+    } catch (error) {
+      Alert.alert("ERROR","Hubo un error al comunicarse con el servidor. Por favor intentarlo más tarde.")
+    }
+    
+    
   }
 
   const openModal = (
@@ -320,11 +328,7 @@ const DirectorioFunc = (props) => {
               <Text style={styles.buttonText}>Buscar Funcionario</Text>
             </View>
           </TouchableOpacity>
-        ) :
-
-            <View style={styles.searchButtonDisabled}>
-              <Text style={styles.buttonText}>Buscar Funcionario</Text>
-            </View>
+        ) : null
 
       }
 

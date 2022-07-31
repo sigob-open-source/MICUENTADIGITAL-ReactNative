@@ -26,7 +26,6 @@ const VerSolicitudes = (props) => {
   };
 
   const loadMoreItem = () => {
-    console.log('end');
     setCurrentPage(currentPage + 1);
   };
 

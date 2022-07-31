@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  StyleSheet, View, TouchableOpacity,
+  StyleSheet, View, TouchableOpacity, Alert,
 } from 'react-native';
 
 import Header from '../components/Header';
@@ -24,7 +24,7 @@ const SolicitudSelector = (props) => {
           img={require('../../assets/imagenes/header_logo.png')}
         />
         <View style={{marginTop:'24%'}}>
-          <TouchableOpacity onPress={() => props.navigation.push('verSolicitudes')}>
+          <TouchableOpacity onPress={() => Alert.alert("Alerta","Opción en mantenimiento.")}>
             <ButtonRequest texto="Ver Solicitudes" iconName="keyboard-arrow-right" />
           </TouchableOpacity>
 

@@ -20,7 +20,7 @@ const Header = (props) => (
         style={styles.tituloHeader}>{props.item}</Text>
     </View>
 
-    <TouchableWithoutFeedback onPress={() => console.log('Sample Touch')}>
+    <TouchableWithoutFeedback>
       <View style={styles.logoContainer}>
         <Image style={styles.notifContainer} source={props.imgnotif} />
       </View>

@@ -5,6 +5,7 @@ import {
   View,
   Image,
   TouchableOpacity,
+  Alert,
 } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 import Icon from 'react-native-vector-icons/Ionicons';
@@ -39,7 +40,6 @@ const CardSolicitud = props => {
   }, [archivo]);
 
   const passImage = () => {
-    console.log(archivo);
     props.onPassImage(archivo);
   };
 
@@ -85,7 +85,7 @@ const CardSolicitud = props => {
   return (
     <View>
       <View style={{ ...styles.squareStyle, ...props.style }}>
-        <TouchableOpacity onPress={()=> setModalOpen(true)}>
+        <TouchableOpacity onPress={()=> Alert.alert("Alerta","Opción en Mantenimiento.")/*setModalOpen(true)*/}>
           {
             showImage ? (
               <Image

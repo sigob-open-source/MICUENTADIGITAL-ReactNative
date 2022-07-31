@@ -10,15 +10,10 @@ const ModalPago = ({ cargos }) => {
   const [metodo, setMetodo] = useState();
   const [importe, setImporte] = useState(0.00);
 
-  useEffect(() => {
-    console.log('cargoossss');
-    console.log(cargos);
-  }, []);
-
   const handleImporteTotal = () => {
     let total = 0;
     (cargos) ? cargos.map((cargo) => total += cargo.importe) : total = 0.00;
-    console.log(`total${total}`);
+
     return total;
   };
 

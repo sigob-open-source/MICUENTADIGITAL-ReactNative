@@ -57,6 +57,19 @@ const PagoPadron = ({ route }) => {
 
   useEffect(() => {
     setPadron(route.params.padron);
+
+    return () => {
+      setPadron({});
+      setPadronSearched({});
+      setSearchText({});
+      setResultCargos({});
+      setNameSearch({});
+      setNewData({});
+      setIsOpen({});
+      setModalKey({});
+      setIsLoading({});
+      setTotalAmount({});
+    }
   }, []);
 
   // Alerta para cuando no se encontro nada acorde a la busqueda
@@ -101,7 +114,7 @@ const PagoPadron = ({ route }) => {
       setResultCargos(response?.cargos);
       setNewData(true);
       setTotalAmount(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
-      console.log(totalAmount);
+      //console.log(totalAmount);
     }
     setModalKey(modalKey + 1);
     setIsLoading(false);

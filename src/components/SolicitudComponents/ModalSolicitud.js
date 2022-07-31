@@ -6,6 +6,7 @@ import {
   View, 
   Text, 
   ScrollView,
+  Alert,
 } from 'react-native';
 
 import React, { useState, useEffect } from 'react';
@@ -27,21 +28,28 @@ const ModalSolicitud = props => {
 
   useEffect(() => {
     let abortController = new AbortController();
-    getData();
+    try {
+      getData();
+    } catch (error) {
+      console.log(error)
+    }
+    
     return () => {
       abortController.abort();
+      setEntidadId({});
+      setMotivos({});
     }
   }, []);
 
   const getData = async () => {
+    
     const id = 1;
     const tipos = await getTiposDeSolicitudes(id);
-
+  
     setMotivos(tipos)
     if (motivos != null) {
       setEntidadId(id);
-      console.log(renderCard)
-    }
+    }      
   }
 
   const showCards = () =>{

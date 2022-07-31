@@ -22,7 +22,7 @@ const ModalFuncionario = props => {
   const [puesto, setPuesto] = useState(null);
 
   const setGender = () => {
-    console.log(props.foto);
+
     if (props.observaciones == null || props.obesrvaciones == ''){
       setObservaciones('Sin observaciones');
     }else{

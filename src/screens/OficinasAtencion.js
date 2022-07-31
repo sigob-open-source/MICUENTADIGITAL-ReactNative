@@ -63,7 +63,7 @@ const OficinasAtencion = (props) => {
           setOpen(false);
         });
     } catch (error) {
-      console.log(error);
+
     }
   };
 
@@ -256,6 +256,13 @@ const OficinasAtencion = (props) => {
     return () => {
       keyboardDidHideListener.remove();
       keyboardDidShowListener.remove();
+      setOficinas({});
+      setFilteredOficinas({});
+      setRenderPoints({});
+      setCoords({});
+      setRoute({});
+      setZoomLevel({});
+      setOpen({});
     };
   }, [selectedCoords]);
 
@@ -349,13 +356,12 @@ const OficinasAtencion = (props) => {
       />
 
       <View style={styles.textInputStyle}>
-        <View style={{ flexDirection: 'row' }}>
+        <View  style={{ flexDirection: 'row' }}>
 
           <TextInput
             onChangeText={(text) => searchOficina(text)}
-            onPressIn={() => toggleExpanded()}
             placeholderTextColor="#C4C4C4"
-            style={{ paddingLeft: 14 }}
+            style={{ paddingLeft: 14, flex: 1 }}
             placeholder="Buscar Oficinas..."
           />
         </View>

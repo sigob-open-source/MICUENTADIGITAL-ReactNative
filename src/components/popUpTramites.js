@@ -377,7 +377,6 @@ const PopUpTramites = props => {
           } catch (error) {
               Alert.alert("Error","Ha habido un error al descargar el PDF.")
               setLoading(false);
-              console.log("interrumpido")
               console.log(error)
           }
 

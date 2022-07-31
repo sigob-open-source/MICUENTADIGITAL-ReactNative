@@ -37,13 +37,13 @@ const ModalVerOficinasAtencion = props => {
 
   const apihandler=()=>{
     try{
-      console.log(props.coords)
+
       axios.get('https://api.mapbox.com/geocoding/v5/mapbox.places/'+props.coords+'.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ')
       .then(response => {
         if (response.data.features[0] != undefined){
           const posts = response.data.features[0].place_name;
           setUbicacion(posts);
-          console.log(posts);
+
         }
 
         
@@ -77,7 +77,7 @@ const ModalVerOficinasAtencion = props => {
   }
 
   const renderItem = (item) => {
-    console.log(item.jefe_de_cajeros)
+   
     return(
       <View>
         <TouchableOpacity onPress={()=>openExtraInfo(item.id,item.direccion,item.descripcion,item.jefe_de_cajeros,item.conceptos_de_ingreso)}>
@@ -102,7 +102,7 @@ const ModalVerOficinasAtencion = props => {
 
   const show = async () => {
     const coordinates = await props.coords
-    console.log("test oppen")
+
     if (coordinates != [null,null]){
       apihandler(coordinates);
       setShouldRender(true);

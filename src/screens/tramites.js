@@ -29,10 +29,10 @@ const Tramites = props =>{
 
   const [collapsed, setCollapsed] = useState(true);
   const [collapsed2, setCollapsed2] = useState(true);
-  const [selectedDependency, setSelectedDependency] = useState(null);
-  const [data, setData] = useState(null);
-  const [dependencias, setDependencias] = useState(null);
-  const [filteredData, setFilteredData] = useState([]);
+  const [selectedDependency, setSelectedDependency] = useState(null);//Saber que dependencia ha seleccionado el usuario para filtrar los trámites
+  const [data, setData] = useState(null);//Datos de los trámites
+  const [dependencias, setDependencias] = useState(null); //Dependencias obtenidas
+  const [filteredData, setFilteredData] = useState([]); //State para filtrar los trámites
   const [tramitesMunicipales, setTramitesMunicipales] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [dependencies, setDependencies] = useState([]);
@@ -47,22 +47,30 @@ const Tramites = props =>{
 
   //Checar si el usuario está conectado a internet
   const netInfo = useNetInfo();
-
   useEffect(() => {
 
     CheckConnected();
     
   }, [netInfo]);
 
+  //Obtener dependencias y trámites
   useEffect(() => {
     if (data == null){
       obetnerDependencias();
       obtenerTramites();
-      
     }
-    
+    //Evitar memory leaks por hacer fetch a API
+    return () => {
+      setLoading({});
+      setPaginaAHacerleFetch({});
+      setData({});
+      setDependencias({});
+      setFilteredData({});
+      setTramitesMunicipales({})
+    };
   }, []);
 
+  //Checar conexión a internet
   const CheckConnected = async () =>{
 
       const response = await NetInfo.fetch();
@@ -89,7 +97,7 @@ const Tramites = props =>{
 
   }
 
-
+  //Función que se usa para renderizar los trámites obtenidos desde el api, en un FlatList
   const returnTramiteInfo = (item) => {
     return(
       
@@ -98,10 +106,10 @@ const Tramites = props =>{
           item.nombre,
           item.descripcion,
           item.departamentos,
-          item.casos[0],
+          undefined,
           item.homoclave,
           item.departamentos[0].unidad_operativa.descripcion,
-          item.tipo_de_tramite
+          //item.tipo_de_tramite
         ]
       )}
       >
@@ -113,35 +121,30 @@ const Tramites = props =>{
   }
 
 
-  
+  //Función para obtener todos los Trámites, sin importar el número de paginas que haya
   const obtenerTramites = async () =>{
     let endOfList = false;
     let items = [];
     let currentPage = 1;
   
     try {
+      //Mientras haya páginas de las que agarrar info disponible, seguir llamando al API
       while(endOfList === false) {
         const tramites = await getTramites(currentPage);
-        console.log("L: ", tramites.results.length)
+
         
         endOfList = !tramites.next;
-        console.log(endOfList)
+
         items = [...items, ...tramites.results];
         setData(items);
         setFilteredData(items);
         setTramitesMunicipales(items[0].nombre);
         currentPage += 1;
 
-
+        //Terminar la carga si se obtienen todos los trámites de forma éxitosa
         if (endOfList){
-          setLoading(false)            
-         /*if (tramites.next != null){
-            
-            const tramites = await getTramites(paginaAHacerleFetch);
-            console.log(tramites.next)
-            obtenerTramites()
-            console.log("and anotha one")
-          }*/
+          setLoading(false)
+
         } else{
           setTramitesMunicipales('Sin Datos.')
         }
@@ -156,6 +159,7 @@ const Tramites = props =>{
 
   }
 
+  //Obtener las dependencias para así poder filtrar los trámites
   const obetnerDependencias = async () =>{
     try {
       const dependency = await getDependencias();

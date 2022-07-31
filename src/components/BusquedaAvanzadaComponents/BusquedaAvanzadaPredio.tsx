@@ -24,7 +24,7 @@ const BusquedaAvanzadaPredio = ({ cargos, onSearch }) => {
       ...form,
       [name]: text,
     });
-    console.log('sucede');
+
   };
 
   const handleSearch = async () => {

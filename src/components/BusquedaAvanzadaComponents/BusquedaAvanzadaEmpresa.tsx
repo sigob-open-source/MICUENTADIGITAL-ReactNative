@@ -24,7 +24,7 @@ const BusquedaAvanzadaEmpresa = ({ cargos, onSearch }) => {
       ...form,
       [name]: text,
     });
-    console.log('sucede');
+
   };
 
   const handleSearch = async () => {

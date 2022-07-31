@@ -1,5 +1,8 @@
 import moment from 'moment';
 import http from './http';
+import {
+  Alert,
+} from 'react-native';
 
 const controller = new AbortController();
 
@@ -11,8 +14,9 @@ const getTiposDeSolicitudes = async (entidadMunicipalId) => {
     });
     return response?.data ?? [];
   } catch (error) {
-    console.error("ERROR: ",error);
+    console.log("ERROR: ",error);
     controller.abort()
+    Alert.alert("Error","No se ha podido comunicar con el servidor. Favor de intentarlo más tarde.")
   }
   return [];
 };

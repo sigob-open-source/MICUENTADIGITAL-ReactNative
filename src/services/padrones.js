@@ -34,7 +34,7 @@ const getCiudadano = async (search, advanceSearch) => {
         result = response.data[0];
       },
       (error) => {
-        console.error(error);
+
       },
     );
   console.log('result Ciudadano');
