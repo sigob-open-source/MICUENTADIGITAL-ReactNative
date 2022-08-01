@@ -16,7 +16,7 @@ import OficinasAtencion from './src/screens/OficinasAtencion';
 import Pagos from './src/screens/Pagos';
 import PagoPadron from './src/screens/PagoPadron';
 import Tramites from './src/screens/tramites';
-import NetpayPago from './src/screens/NetpayPago';
+import NetpayPago from './src/screens/netpayPago';
 import DropdownalertProvider from './src/components/DropDowAlertProvider';
 import DetallesPadron from './src/screens/DetallesPadron';
 import NetpayCustom from './src/screens/NetpayCustom';

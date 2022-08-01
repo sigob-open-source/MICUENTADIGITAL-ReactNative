@@ -9,14 +9,13 @@ import {
   TextInput,
   FlatList,
   ActivityIndicator,
-  Alert
+  Alert,
 } from 'react-native';
 
 import Collapsible from 'react-native-collapsible';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
-import { getDependencias } from '../services/api';
-import { getTramites } from '../services/api';
-import NetInfo, { useNetInfo } from '@react-native-community/netinfo'
+import NetInfo, { useNetInfo } from '@react-native-community/netinfo';
+import { getDependencias, getTramites } from '../services/api';
 
 import PopUpTramites from '../components/popUpTramites';
 import Header from '../components/Header';
@@ -25,114 +24,105 @@ import ConnectionCheck from '../components/internetChecker';
 
 const WIDTH = Dimensions.get('window').width;
 
-const Tramites = props =>{
-
+const Tramites = (props) => {
   const [collapsed, setCollapsed] = useState(true);
   const [collapsed2, setCollapsed2] = useState(true);
-  const [selectedDependency, setSelectedDependency] = useState(null);//Saber que dependencia ha seleccionado el usuario para filtrar los trámites
-  const [data, setData] = useState(null);//Datos de los trámites
-  const [dependencias, setDependencias] = useState(null); //Dependencias obtenidas
-  const [filteredData, setFilteredData] = useState([]); //State para filtrar los trámites
+  const [selectedDependency, setSelectedDependency] = useState(null);// Saber que dependencia ha seleccionado el usuario para filtrar los trámites
+  const [data, setData] = useState(null);// Datos de los trámites
+  const [dependencias, setDependencias] = useState(null); // Dependencias obtenidas
+  const [filteredData, setFilteredData] = useState([]); // State para filtrar los trámites
   const [tramitesMunicipales, setTramitesMunicipales] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [dependencies, setDependencies] = useState([]);
-  const [tiposDeFiltros, setTiposDeFiltros] = useState(['Dependencia/Oficina','Busqueda','Más buscados','Clasificación','Sujeto de interés']);
-  const [filtroSeleccionado, setFiltroSeleccionado] = useState("Busqueda");
-  const [Sujeto, setSujeto] = useState(['Empresa','Ciudadano']);
-  const [clasificacion, setClasificacion] = useState(['Trámite','Servicio']);
+  const [tiposDeFiltros, setTiposDeFiltros] = useState(['Dependencia/Oficina', 'Busqueda', 'Más buscados', 'Clasificación', 'Sujeto de interés']);
+  const [filtroSeleccionado, setFiltroSeleccionado] = useState('Busqueda');
+  const [Sujeto, setSujeto] = useState(['Empresa', 'Ciudadano']);
+  const [clasificacion, setClasificacion] = useState(['Trámite', 'Servicio']);
   const [fichaProps, setFichaProps] = useState([]);
   const [isConnected, setIsConnected] = useState(true);
   const [paginaAHacerleFetch, setPaginaAHacerleFetch] = useState(1);
   const [loading, setLoading] = useState(true);
 
-  //Checar si el usuario está conectado a internet
+  // Checar si el usuario está conectado a internet
   const netInfo = useNetInfo();
   useEffect(() => {
-
     CheckConnected();
-    
   }, [netInfo]);
 
-  //Obtener dependencias y trámites
+  // Obtener dependencias y trámites
   useEffect(() => {
-    if (data == null){
+    if (data == null) {
       obetnerDependencias();
       obtenerTramites();
     }
-    //Evitar memory leaks por hacer fetch a API
+    // Evitar memory leaks por hacer fetch a API
     return () => {
       setLoading({});
       setPaginaAHacerleFetch({});
       setData({});
       setDependencias({});
       setFilteredData({});
-      setTramitesMunicipales({})
+      setTramitesMunicipales({});
     };
   }, []);
 
-  //Checar conexión a internet
-  const CheckConnected = async () =>{
-
-      const response = await NetInfo.fetch();
-      if (!response.isConnected){
-        setModalOpen(false);
-        setIsConnected(false);
-      }else{
-        setIsConnected(true);
-      }
+  // Checar conexión a internet
+  const CheckConnected = async () => {
+    const response = await NetInfo.fetch();
+    if (!response.isConnected) {
+      setModalOpen(false);
+      setIsConnected(false);
+    } else {
+      setIsConnected(true);
     }
+  };
 
-    //Abre un modal que muestra la ficha del trámite seleccionado
+  // Abre un modal que muestra la ficha del trámite seleccionado
   const onShowPopup = (
-    fichaProp, 
-    ) => {
-    if (isConnected){
-      if (tramitesMunicipales != null){
-        setFichaProps(fichaProp)
+    fichaProp,
+  ) => {
+    if (isConnected) {
+      if (tramitesMunicipales != null) {
+        setFichaProps(fichaProp);
         setModalOpen(true);
       }
-    }else{
-      Alert.alert("Error","Debe estar conectado a internet para realizar esta acción.")
+    } else {
+      Alert.alert('Error', 'Debe estar conectado a internet para realizar esta acción.');
     }
+  };
 
-  }
+  // Función que se usa para renderizar los trámites obtenidos desde el api, en un FlatList
+  const returnTramiteInfo = (item) => (
 
-  //Función que se usa para renderizar los trámites obtenidos desde el api, en un FlatList
-  const returnTramiteInfo = (item) => {
-    return(
-      
-      <TouchableOpacity onPress={() => onShowPopup(
-        [ 
-          item.nombre,
-          item.descripcion,
-          item.departamentos,
-          undefined,
-          item.homoclave,
-          item.departamentos[0].unidad_operativa.descripcion,
-          //item.tipo_de_tramite
-        ]
-      )}
-      >
-        <View style={styles.tramiteView}>
-          <Text style={styles.collapsibleText}>{item.id+' - '+item.nombre}</Text>
-        </View>
-      </TouchableOpacity>
-    );
-  }
+    <TouchableOpacity onPress={() => onShowPopup(
+      [
+        item.nombre,
+        item.descripcion,
+        item.departamentos,
+        undefined,
+        item.homoclave,
+        item.departamentos[0].unidad_operativa.descripcion,
+        // item.tipo_de_tramite
+      ],
+    )}
+    >
+      <View style={styles.tramiteView}>
+        <Text style={styles.collapsibleText}>{`${item.id} - ${item.nombre}`}</Text>
+      </View>
+    </TouchableOpacity>
+  );
 
-
-  //Función para obtener todos los Trámites, sin importar el número de paginas que haya
-  const obtenerTramites = async () =>{
+  // Función para obtener todos los Trámites, sin importar el número de paginas que haya
+  const obtenerTramites = async () => {
     let endOfList = false;
     let items = [];
     let currentPage = 1;
-  
+
     try {
-      //Mientras haya páginas de las que agarrar info disponible, seguir llamando al API
-      while(endOfList === false) {
+      // Mientras haya páginas de las que agarrar info disponible, seguir llamando al API
+      while (endOfList === false) {
         const tramites = await getTramites(currentPage);
 
-        
         endOfList = !tramites.next;
 
         items = [...items, ...tramites.results];
@@ -141,140 +131,122 @@ const Tramites = props =>{
         setTramitesMunicipales(items[0].nombre);
         currentPage += 1;
 
-        //Terminar la carga si se obtienen todos los trámites de forma éxitosa
-        if (endOfList){
-          setLoading(false)
-
-        } else{
-          setTramitesMunicipales('Sin Datos.')
+        // Terminar la carga si se obtienen todos los trámites de forma éxitosa
+        if (endOfList) {
+          setLoading(false);
+        } else {
+          setTramitesMunicipales('Sin Datos.');
         }
-
       }
-
     } catch (error) {
-      Alert.alert("Error","Ha habido un error al comunicarse con el servidor. Favor de intentarlo más tarde.")
-      setTramitesMunicipales('Sin Datos.')
-      console.log("Oh no: ",error)
+      Alert.alert('Error', 'Ha habido un error al comunicarse con el servidor. Favor de intentarlo más tarde.');
+      setTramitesMunicipales('Sin Datos.');
+      console.log('Oh no: ', error);
     }
+  };
 
-  }
-
-  //Obtener las dependencias para así poder filtrar los trámites
-  const obetnerDependencias = async () =>{
+  // Obtener las dependencias para así poder filtrar los trámites
+  const obetnerDependencias = async () => {
     try {
       const dependency = await getDependencias();
-      if (dependency.length > 0 && dependency != undefined){
+      if (dependency.length > 0 && dependency != undefined) {
         setDependencies(dependency);
         setSelectedDependency(dependency[0].descripcion);
-      } else{
-        setSelectedDependency('No hay datos.')
+      } else {
+        setSelectedDependency('No hay datos.');
       }
     } catch (error) {
-      Alert.alert("Error","Ha habido un error al comunicarse con el servidor. Favor de intentarlo más tarde.")
-      setSelectedDependency('No hay datos.')
-      console.log("Oh no: ",error)
+      Alert.alert('Error', 'Ha habido un error al comunicarse con el servidor. Favor de intentarlo más tarde.');
+      setSelectedDependency('No hay datos.');
+      console.log('Oh no: ', error);
     }
- 
-  }
+  };
 
   const setDependency = (item) => {
     setSelectedDependency(item);
     setCollapsed(true);
   };
 
-  const renderItem = (item) => 
-  {
-    return(
-      <View>
-        <TouchableOpacity onPress={() => setDependency(item)}>
-          <View style={styles.content}>
-            <Text numberOfLines={1} style={styles.collapsibleText}>{item}</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    )
-  }
+  const renderItem = (item) => (
+    <View>
+      <TouchableOpacity onPress={() => setDependency(item)}>
+        <View style={styles.content}>
+          <Text numberOfLines={1} style={styles.collapsibleText}>{item}</Text>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
 
   useEffect(() => {
-    if (dependencies != null){
-      switch(filtroSeleccionado){
-        case "Dependencia/Oficina": 
-          if (dependencias != null){
-            setSelectedDependency(dependencies[0].descripcion); 
-          }else{
-            setSelectedDependency("No hay datos."); 
+    if (dependencies != null) {
+      switch (filtroSeleccionado) {
+        case 'Dependencia/Oficina':
+          if (dependencias != null) {
+            setSelectedDependency(dependencies[0].descripcion);
+          } else {
+            setSelectedDependency('No hay datos.');
           }
-          
-        
-        break;
-        case "Busqueda": break;
-        case "Más buscados": Alert.alert("Alerta","Se está realizando mantenimiento a esta opción"); break;
-        case "Clasificación" : setSelectedDependency("Trámite"); break;
-        case "Sujeto de interés":  Alert.alert("Alerta","Se está realizando mantenimiento a esta opción");  break;
-    }
-    }
 
-
+          break;
+        case 'Busqueda': break;
+        case 'Más buscados': Alert.alert('Alerta', 'Se está realizando mantenimiento a esta opción'); break;
+        case 'Clasificación': setSelectedDependency('Trámite'); break;
+        case 'Sujeto de interés': Alert.alert('Alerta', 'Se está realizando mantenimiento a esta opción'); break;
+      }
+    }
   }, [filtroSeleccionado]);
 
   const changeFiltro = (item) => {
-    if (item == "Más buscados" || item == "Sujeto de interés"){
-      Alert.alert("Alerta","Se está realizando mantenimiento a esta opción.")
-    }else{
+    if (item == 'Más buscados' || item == 'Sujeto de interés') {
+      Alert.alert('Alerta', 'Se está realizando mantenimiento a esta opción.');
+    } else {
       setFiltroSeleccionado(item);
       setFilteredData(data);
     }
-  }
+  };
 
-  const renderFiltro = (item) => 
-  {
-    return(
-      <View>
-        <TouchableOpacity onPress={() => changeFiltro(item)}>
-          <View style={styles.content}>
-            <Text numberOfLines={1} style={styles.collapsibleText}>{item}</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-    )
-  }
+  const renderFiltro = (item) => (
+    <View>
+      <TouchableOpacity onPress={() => changeFiltro(item)}>
+        <View style={styles.content}>
+          <Text numberOfLines={1} style={styles.collapsibleText}>{item}</Text>
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
 
   const renderTramite = (item, index) => {
-    if (filtroSeleccionado === "Dependencia/Oficina")
-    {
-      if (item.departamentos[0].unidad_operativa.descripcion === selectedDependency){
-        return(
+    if (filtroSeleccionado === 'Dependencia/Oficina') {
+      if (item.departamentos[0].unidad_operativa.descripcion === selectedDependency) {
+        return (
           returnTramiteInfo(item)
-        )
+        );
       }
-    }else if (filtroSeleccionado === "Clasificación"){
-      if (item.clasificacion === true && selectedDependency === "Trámite"){
-        return(
+    } else if (filtroSeleccionado === 'Clasificación') {
+      if (item.clasificacion === true && selectedDependency === 'Trámite') {
+        return (
           returnTramiteInfo(item)
-        ) 
-      }else if (item.clasificacion === false && selectedDependency === "Servicio"){
-        return(
+        );
+      } if (item.clasificacion === false && selectedDependency === 'Servicio') {
+        return (
           returnTramiteInfo(item)
-        ) 
+        );
       }
-    }else{
-      return(
+    } else {
+      return (
         returnTramiteInfo(item)
-      )      
+      );
     }
-    
-
-
   };
 
   const toggleExpanded = () => {
     if (data != null) {
-      setCollapsed(collapsed => !collapsed)
+      setCollapsed((collapsed) => !collapsed);
     }
   };
 
   const toggleTramiteFiltros = () => {
-    setCollapsed2(collapsed2 => !collapsed2)
+    setCollapsed2((collapsed2) => !collapsed2);
   };
 
   const goBack = () => {
@@ -284,32 +256,38 @@ const Tramites = props =>{
   // Buscar un tramite en especifico filtrando dependiendo de lo que se devuelva en el campo de texto
   const searchTramite = (tramiteToSearch) => {
     if (data != null) {
-      setFilteredData(data.filter((item) => item.nombre.toLowerCase().includes(tramiteToSearch.toLowerCase())))
+      setFilteredData(data.filter((item) => item.nombre.toLowerCase().includes(tramiteToSearch.toLowerCase())));
     }
-  }
+  };
 
   return (
     <View style={{ flex: 1, height: '100%' }}>
-      <ConnectionCheck/>
+      <ConnectionCheck />
       <View style={{ flex: 1, alignItems: 'center' }}>
-        
+
         <PopUpTramites
           openM={modalOpen}
-          close={()=>setModalOpen(false)}
-          onTouchOutside={()=>setModalOpen(false)}
+          close={() => setModalOpen(false)}
+          onTouchOutside={() => setModalOpen(false)}
           tramiteProp={fichaProps}
         />
-        
+
         <Header
           style={styles.header}
           item="Trámites"
           imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
           img={require('../../assets/imagenes/header_logo.png')}
         />
-        <View style={{marginTop:'24%', alignItems:'center'}}>
-        <Text style={{ color: 'black', fontSize: 20, fontWeight: '700', textAlign:'center' }}> Filtrar por </Text>
+        <View style={{ marginTop: '24%', alignItems: 'center' }}>
+          <Text style={{
+            color: 'black', fontSize: 20, fontWeight: '700', textAlign: 'center',
+          }}
+          >
+            {' '}
+            Filtrar por
+          </Text>
 
-        <TouchableWithoutFeedback onPress={toggleTramiteFiltros}>
+          <TouchableWithoutFeedback onPress={toggleTramiteFiltros}>
             <View style={styles.collapsibleHeader}>
               <Text numberOfLines={1} style={styles.headerText}>{filtroSeleccionado}</Text>
               {
@@ -318,19 +296,19 @@ const Tramites = props =>{
                 ) : <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-up" color="black" />
               }
             </View>
-        </TouchableWithoutFeedback>
+          </TouchableWithoutFeedback>
 
-        <View style={styles.collapsibleContainer}>
-          <Collapsible collapsed={collapsed2}>
-            <FlatList
-              data={tiposDeFiltros}
-              renderItem={({ item, index }) => renderFiltro(item, index)}
-              keyExtractor={(item, index) => index.toString()}
-            />
+          <View style={styles.collapsibleContainer}>
+            <Collapsible collapsed={collapsed2}>
+              <FlatList
+                data={tiposDeFiltros}
+                renderItem={({ item, index }) => renderFiltro(item, index)}
+                keyExtractor={(item, index) => index.toString()}
+              />
             </Collapsible>
           </View>
-        {
-          filtroSeleccionado === "Dependencia/Oficina" ? (
+          {
+          filtroSeleccionado === 'Dependencia/Oficina' ? (
             <>
               <TouchableWithoutFeedback onPress={toggleExpanded}>
                 <View style={styles.collapsibleHeader}>
@@ -354,12 +332,12 @@ const Tramites = props =>{
                   />
                 </Collapsible>
               </View>
-              </>
+            </>
           ) : null
         }
 
-        {
-          filtroSeleccionado === "Busqueda" ?(
+          {
+          filtroSeleccionado === 'Busqueda' ? (
 
             <>
               <Text style={{
@@ -367,29 +345,32 @@ const Tramites = props =>{
                 fontSize: 20,
                 fontWeight: '700',
                 marginTop: 5,
-                textAlign:'center'
+                textAlign: 'center',
               }}
               >
                 {' '}
                 Busqueda
-              </Text><View style={styles.textInputContainer}>
-                  <TextInput
-                    style={styles.textInputStyle}
-                    placeholder="Buscar..."
-                    placeholderTextColor="gray"
-                    onChangeText={(text) => searchTramite(text) } />
-                  <TouchableOpacity>
-                    <View style={{
-                      borderRadius: 10, width: 46, height: 46, justifyContent: 'center',
-                    }} />
-                  </TouchableOpacity>
-                </View>
-              </>
+              </Text>
+              <View style={styles.textInputContainer}>
+                <TextInput
+                  style={styles.textInputStyle}
+                  placeholder="Buscar..."
+                  placeholderTextColor="gray"
+                  onChangeText={(text) => searchTramite(text)}
+                />
+                <TouchableOpacity>
+                  <View style={{
+                    borderRadius: 10, width: 46, height: 46, justifyContent: 'center',
+                  }}
+                  />
+                </TouchableOpacity>
+              </View>
+            </>
           ) : null
         }
 
-        {
-          filtroSeleccionado === "Sujeto de interés" ? (
+          {
+          filtroSeleccionado === 'Sujeto de interés' ? (
             <>
               <TouchableWithoutFeedback onPress={toggleExpanded}>
                 <View style={styles.collapsibleHeader}>
@@ -413,12 +394,12 @@ const Tramites = props =>{
                   />
                 </Collapsible>
               </View>
-              </>
+            </>
           ) : null
         }
 
-{
-          filtroSeleccionado === "Clasificación" ? (
+          {
+          filtroSeleccionado === 'Clasificación' ? (
             <>
               <TouchableWithoutFeedback onPress={toggleExpanded}>
                 <View style={styles.collapsibleHeader}>
@@ -442,27 +423,27 @@ const Tramites = props =>{
                   />
                 </Collapsible>
               </View>
-              </>
+            </>
           ) : null
         }
 
-        <Text style={{
-          color: 'black',
-          fontSize: 20,
-          fontWeight: '700',
-          marginTop: 30,
-          marginBottom:30,
-          textAlign:'center'
-        }}
-        >
-          {' '}
-          Trámites
-        </Text>
-        {
+          <Text style={{
+            color: 'black',
+            fontSize: 20,
+            fontWeight: '700',
+            marginTop: 30,
+            marginBottom: 30,
+            textAlign: 'center',
+          }}
+          >
+            {' '}
+            Trámites
+          </Text>
+          {
         loading == true ? (
-          <View style={{justifyContent:'center', marginTop:20}}>
+          <View style={{ justifyContent: 'center', marginTop: 20 }}>
             <Text style={{ color: 'gray' }}>Buscando trámites, por favor espere...</Text>
-            <ActivityIndicator style={{alignSelf:'center'}}size="large" color="black"/>
+            <ActivityIndicator style={{ alignSelf: 'center' }} size="large" color="black" />
           </View>
         )
           : (
@@ -485,7 +466,7 @@ const Tramites = props =>{
             </>
           )
       }
-      </View>
+        </View>
       </View>
 
       <Footer
@@ -496,7 +477,7 @@ const Tramites = props =>{
 
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   searchButton: {
@@ -591,7 +572,7 @@ const styles = StyleSheet.create({
   },
   headerText: {
     fontWeight: '500',
-    width:270,
+    width: 270,
     marginLeft: '3%',
     fontSize: 18,
     color: 'black',
@@ -619,13 +600,13 @@ const styles = StyleSheet.create({
   tramiteView: {
     width: WIDTH,
     height: 50,
-    marginBottom:10,
+    marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
-    borderTopWidth:2,
-    borderBottomWidth:2,
-    borderColor:'#79142A',
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: '#79142A',
   },
 });
 

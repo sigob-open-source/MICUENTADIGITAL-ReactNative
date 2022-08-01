@@ -79,9 +79,9 @@ const NetpayCustom = ({ route }) => {
       for (let x = 10; data[x] !== '"'; x++) {
         token += data[x];
       }
-      //console.log(token);
+      // console.log(token);
       const response = await Payment(amount, token);
-      //console.log(response);
+      // console.log(response);
       if (!response) {
         navigation.navigate('pagoRealizado', { message: 'Problema en la transaccion' });
       }
@@ -97,15 +97,15 @@ const NetpayCustom = ({ route }) => {
   return (
 
     <View style={styles.container}>
-      <Header style={styles.header} item="Netpay Custom" />
+      <Header style={styles.header} item="Netpay" />
 
       <View style={{ flex: 1, paddingTop: 70 }}>
-        <WebView 
-        source={{ html }} 
-        onMessage={onMessage} 
-        injectedJavaScript={`const meta = document.createElement('meta'); meta.setAttribute('content','initial-scale=1, maximum-scale=1, user-scalable=1'); meta.setAttribute('name', 'viewport'); document.getElementsByTagName('head')[0].appendChild(meta); `}
-        scrollEnabled
-        scalesPageToFit={false}
+        <WebView
+          source={{ html }}
+          onMessage={onMessage}
+          injectedJavaScript={'const meta = document.createElement(\'meta\'); meta.setAttribute(\'content\',\'initial-scale=1, maximum-scale=1, user-scalable=1\'); meta.setAttribute(\'name\', \'viewport\'); document.getElementsByTagName(\'head\')[0].appendChild(meta); '}
+          scrollEnabled
+          scalesPageToFit={false}
         />
 
       </View>

@@ -69,7 +69,7 @@ const PagoPadron = ({ route }) => {
       setModalKey({});
       setIsLoading({});
       setTotalAmount({});
-    }
+    };
   }, []);
 
   // Alerta para cuando no se encontro nada acorde a la busqueda
@@ -82,7 +82,7 @@ const PagoPadron = ({ route }) => {
   const handleSearch = async (formData) => {
     setIsLoading(true);
     setNewData(false);
-
+    //console.log(padron.descripcion);
     let response;
     let numeroDePadron;
     if (padron?.descripcion === 'Ciudadano') {
@@ -114,7 +114,7 @@ const PagoPadron = ({ route }) => {
       setResultCargos(response?.cargos);
       setNewData(true);
       setTotalAmount(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
-      //console.log(totalAmount);
+      // console.log(totalAmount);
     }
     setModalKey(modalKey + 1);
     setIsLoading(false);
