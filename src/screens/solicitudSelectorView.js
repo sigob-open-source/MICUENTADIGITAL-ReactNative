@@ -15,7 +15,7 @@ const SolicitudSelector = (props) => {
 
   return (
     <View style={{ flex: 1, height: '100%' }}>
-      <ConnectionCheck/>
+      <ConnectionCheck />
       <View style={{ flex: 1, alignItems: 'center' }}>
         <Header
           style={styles.header}
@@ -23,8 +23,8 @@ const SolicitudSelector = (props) => {
           imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
           img={require('../../assets/imagenes/header_logo.png')}
         />
-        <View style={{marginTop:'24%'}}>
-          <TouchableOpacity onPress={() => Alert.alert("Alerta","Opción en mantenimiento.")}>
+        <View style={{ marginTop: '5%' }}>
+          <TouchableOpacity onPress={() => Alert.alert('Alerta', 'Opción en mantenimiento.')}>
             <ButtonRequest texto="Ver Solicitudes" iconName="keyboard-arrow-right" />
           </TouchableOpacity>
 
@@ -32,7 +32,6 @@ const SolicitudSelector = (props) => {
             <ButtonRequest texto="Registrar una Solicitud" iconName="keyboard-arrow-right" />
           </TouchableOpacity>
         </View>
-
 
       </View>
 

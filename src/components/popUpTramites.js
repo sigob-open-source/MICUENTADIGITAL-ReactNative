@@ -1,211 +1,238 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  View, 
-  Text, 
-  StyleSheet, 
-  Modal, 
-  TouchableWithoutFeedback, 
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  TouchableWithoutFeedback,
   TouchableOpacity,
   PermissionsAndroid,
   FlatList,
   Alert,
   Dimensions,
-  ActivityIndicator
+  ActivityIndicator,
 } from 'react-native';
 
 import Mailer from 'react-native-mail';
-import RNFetchBlob from 'rn-fetch-blob'
-import FileViewer from "react-native-file-viewer";
-import RNHTMLtoPDF from 'react-native-html-to-pdf'
-import colors from '../utils/colors';
+import RNFetchBlob from 'rn-fetch-blob';
+import FileViewer from 'react-native-file-viewer';
+import RNHTMLtoPDF from 'react-native-html-to-pdf';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DropdownAlert from 'react-native-dropdownalert';
+import colors from '../utils/colors';
 
-const PopUpTramites = props => {
+const PopUpTramites = (props) => {
   const [descTramite, setDescTramite] = useState(null);
-  const [nayaritImage, setNayaritImage] = useState('assets/imagenes/logo_horizontal.png')
+  const [nayaritImage, setNayaritImage] = useState('assets/imagenes/logo_horizontal.png');
   const [year, setYear] = useState(new Date().getFullYear());
   const [requisitos, setRequisitos] = useState(null);
   const [homoclave, setHomoclave] = useState(null);
   const [tipoTramite, setTipoTramite] = useState(null);
   const [dependencia, setDependencia] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [render, setRender] = useState(`<h1>Sin requisitos.</h1>`);
+  const [render, setRender] = useState('<h1>Sin requisitos.</h1>');
 
   let dropDownAlertRef = useRef();
 
   useEffect(() => {
-    if (loading){
-      if (!props.openM){
+    if (loading) {
+      if (!props.openM) {
         dropDownAlertRef.closeAction;
         setLoading(false);
       }
     }
     const requisites = props.tramiteProp[3];
-    if (requisites != undefined){
-      setRender( `<h1> Requisitos: ${props.tramiteProp[3].requisitos.map(entry => {
-        return `<h1>  - ${entry.descripcion}</h1>`
-      })}`)
-    }else {
-      setRender(`<h1>Sin requisitos.</h1>`);
+    if (requisites != undefined) {
+      setRender(`<h1> Requisitos: ${props.tramiteProp[3].requisitos.map((entry) => `<h1>  - ${entry.descripcion}</h1>`)}`);
+    } else {
+      setRender('<h1>Sin requisitos.</h1>');
     }
   }, [props.openM]);
 
   useEffect(() => {
-    if (props.tramiteProp[3] == undefined){
-      setRequisitos(["No se encontraron requisitos."])
-    }else{
+    if (props.tramiteProp[3] == undefined) {
+      setRequisitos(['No se encontraron requisitos.']);
+    } else {
       setRequisitos(props.tramiteProp[3]);
     }
 
-    if (props.tramiteProp[4] == null){
-      setHomoclave("Desconocida")
-    }else{
+    if (props.tramiteProp[4] == null) {
+      setHomoclave('Desconocida');
+    } else {
       setHomoclave(props.tramiteProp[4]);
     }
 
-    if (props.tramiteProp[5] == null){
-      setDependencia("Desconocida.")
-    }else{
+    if (props.tramiteProp[5] == null) {
+      setDependencia('Desconocida.');
+    } else {
       setDependencia(props.tramiteProp[5]);
     }
 
-    if (props.tramiteProp[6] == null){
-      setTipoTramite("Desconocido")
-    }else{
+    if (props.tramiteProp[6] == null) {
+      setTipoTramite('Desconocido');
+    } else {
       setTipoTramite(props.tramiteProp[6]);
     }
   }, [props.tramiteProp]);
 
-  const cerrarModal = () =>{
-      props.onTouchOutside;
-  }
-  const renderRequisitos = () =>{
-    return(
-      <FlatList
-        data={props.tramiteProp[3]}
-        renderItem={({item,index}) => <Text style={styles.textStyle}>Requisitos: {item.requisitos.descripcion}</Text>}
-        keyExtractor={(item, index) => index.toString()}
-      />
-    )
-  }
+  const cerrarModal = () => {
+    props.onTouchOutside;
+  };
+  const renderRequisitos = () => (
+    <FlatList
+      data={props.tramiteProp[3]}
+      renderItem={({ item, index }) => (
+        <Text style={styles.textStyle}>
+          Requisitos:
+          {item.requisitos.descripcion}
+        </Text>
+      )}
+      keyExtractor={(item, index) => index.toString()}
+    />
+  );
 
-  const renderOutsideTouchable = (onTouch) =>  {
+  const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
     return (
-      <TouchableWithoutFeedback onPress={!loading ? (props.onTouchOutside):null} style={{ flex: 1, width: '100%' }}>
+      <TouchableWithoutFeedback onPress={!loading ? (props.onTouchOutside) : null} style={{ flex: 1, width: '100%' }}>
         {view}
       </TouchableWithoutFeedback>
     );
-  }
+  };
 
-  const listFooter = () => {
-    return(
-      <View style={{flex:1,height:180}}>
+  const listFooter = () => (
+    <View style={{ flex: 1, height: 180 }}>
 
-        <FlatList
-          ListHeaderComponent={
-            <>
-              <Text style={styles.textStyle}>Descripción: {props.tramiteProp[1]}</Text>
-              <Text style={styles.textStyle}>Departamentos:</Text>  
-            </>
-          }
-          data={props.tramiteProp[2]}
-          renderItem={({ item, index }) => <Text style={styles.textStyle2}>{item.clave} - {item.descripcion}</Text>}
-          keyExtractor={(item, index) => index.toString()}
-          ListFooterComponent={
-            <>
-            
-              {props.tramiteProp[4] != null ? (<Text style={styles.textStyle}>Homoclave: {props.tramiteProp[4]}</Text>):<Text style={styles.textStyle}>Homoclave: Desconocida</Text>}
-              {props.tramiteProp[5] != null ? (<Text style={styles.textStyle}>Dependencia: {props.tramiteProp[5]}</Text>):<Text style={styles.textStyle}>Dependencia: Desconocida</Text>}
-              {props.tramiteProp[6] != null ? (<Text style={styles.textStyle}>Tipo de Trámite: {props.tramiteProp[6]}</Text>):<Text style={styles.textStyle}>Tipo de Trámite: Desconocido</Text>}
-            
-              {props.tramiteProp[3] == undefined ? (
-                <Text style={styles.textStyle}>Requisitos: No se han encontrado requisitos.</Text>
-              ) : 
-              <View>
-                <Text style={styles.textStyle}>Requisitos: </Text>
-                <FlatList
-                  data={props.tramiteProp[3].requisitos}
-                  renderItem={({item,index}) => <Text style={styles.textStyle}>    - {item.descripcion}</Text>}
-                  keyExtractor={(item, index) => index.toString()}
-                />
-              </View>
+      <FlatList
+        ListHeaderComponent={(
+          <>
+            <Text style={styles.textStyle}>
+              Descripción:
+              {props.tramiteProp[1]}
+            </Text>
+            <Text style={styles.textStyle}>Departamentos:</Text>
+          </>
+          )}
+        data={props.tramiteProp[2]}
+        renderItem={({ item, index }) => (
+          <Text style={styles.textStyle2}>
+            {item.clave}
+            {' '}
+            -
+            {' '}
+            {item.descripcion}
+          </Text>
+        )}
+        keyExtractor={(item, index) => index.toString()}
+        ListFooterComponent={(
+          <>
 
-              }
-            
-            </>}
-            
-          />
-       
-      </View>
-    );
-  }
+            {props.tramiteProp[4] != null ? (
+              <Text style={styles.textStyle}>
+                Homoclave:
+                {props.tramiteProp[4]}
+              </Text>
+            ) : <Text style={styles.textStyle}>Homoclave: Desconocida</Text>}
+            {props.tramiteProp[5] != null ? (
+              <Text style={styles.textStyle}>
+                Dependencia:
+                {props.tramiteProp[5]}
+              </Text>
+            ) : <Text style={styles.textStyle}>Dependencia: Desconocida</Text>}
+            {props.tramiteProp[6] != null ? (
+              <Text style={styles.textStyle}>
+                Tipo de Trámite:
+                {props.tramiteProp[6]}
+              </Text>
+            ) : <Text style={styles.textStyle}>Tipo de Trámite: Desconocido</Text>}
 
+            {props.tramiteProp[3] == undefined ? (
+              <Text style={styles.textStyle}>Requisitos: No se han encontrado requisitos.</Text>
+            )
+              : (
+                <View>
+                  <Text style={styles.textStyle}>Requisitos: </Text>
+                  <FlatList
+                    data={props.tramiteProp[3].requisitos}
+                    renderItem={({ item, index }) => (
+                      <Text style={styles.textStyle}>
+                        {' '}
+                        -
+                        {item.descripcion}
+                      </Text>
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
+                </View>
+              )}
 
-    const sendEmail = (ruta) => {
-    
-          Mailer.mail({
-            subject: 'Ficha Trámite',
-            recipients: [''],
-            body: '',
-            isHTML: true, // iOS only, exclude if false
-            attachments: [{
-              path:ruta,  // The absolute path of the file from which to read data.
-              type: 'pdf',   // Mime Type: jpg, png, doc, ppt, html, pdf
-            }]
-          }, (error, event) => {
-              if(error) {
-                AlertIOS.alert('Error', 'Could not send mail. Please send a mail to support@example.com');
-              }
-          })
+          </>
+          )}
+      />
+
+    </View>
+  );
+
+  const sendEmail = (ruta) => {
+    Mailer.mail({
+      subject: 'Ficha Trámite',
+      recipients: [''],
+      body: '',
+      isHTML: true, // iOS only, exclude if false
+      attachments: [{
+        path: ruta, // The absolute path of the file from which to read data.
+        type: 'pdf', // Mime Type: jpg, png, doc, ppt, html, pdf
+      }],
+    }, (error, event) => {
+      if (error) {
+        AlertIOS.alert('Error', 'Could not send mail. Please send a mail to support@example.com');
       }
-  
+    });
+  };
 
   const abrirPDF = (ruta) => {
     const path = FileViewer.open(ruta) // absolute-path-to-my-local-file.
-    .then(() => {
+      .then(() => {
       // success
-    })
-    .catch((error) => {
+      })
+      .catch((error) => {
       // error
-    });
-  }
+      });
+  };
 
-  const createPDF = async(type) => {
+  const createPDF = async (type) => {
     try {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: 'Permisos requeridos',
-            message:
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: 'Permisos requeridos',
+          message:
               'Se requieren permisos para guardar archivos en el dispositivo. ',
-            buttonNeutral: 'Preguntame más tarde',
-            buttonNegative: 'Cancelar',
-            buttonPositive: 'OK',
-          },
-        );
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          buttonNeutral: 'Preguntame más tarde',
+          buttonNegative: 'Cancelar',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        try {
+          setLoading(true);
           try {
 
-            setLoading(true);
-            try {
-              
-            } catch (error) {
-              
-            }
-            if (type == 0){
-              dropDownAlertRef.alertWithType('info', 'En proceso...', "Generando PDF...");
-            }
-            const data = props.tramiteProp[0];
-            const today = new Date();
-            const hours = (today.getHours() < 10 ? '0' : '') + today.getHours();
-            const minutes = (today.getMinutes() < 10 ? '0' : '') + today.getMinutes();
-            const seconds = (today.getSeconds() < 10 ? '0' : '') + today.getSeconds();
+          } catch (error) {
 
-            let options = {
-              html: `
+          }
+          if (type == 0) {
+            dropDownAlertRef.alertWithType('info', 'En proceso...', 'Generando PDF...');
+          }
+          const data = props.tramiteProp[0];
+          const today = new Date();
+          const hours = (today.getHours() < 10 ? '0' : '') + today.getHours();
+          const minutes = (today.getMinutes() < 10 ? '0' : '') + today.getMinutes();
+          const seconds = (today.getSeconds() < 10 ? '0' : '') + today.getSeconds();
+
+          const options = {
+            html: `
               <style>
               * {
                 box-sizing: border-box;
@@ -302,9 +329,7 @@ const PopUpTramites = props => {
                 <div class="column">
                   <div class="row even" id="hello">
                     <div col-md-12">
-                      <h1>Departamentos: ${ props.tramiteProp[2].map(entry => {
-                        return `<h1>${entry.clave} - ${entry.descripcion}</h1>`
-                        }).join(' ')}</h1>
+                      <h1>Departamentos: ${props.tramiteProp[2].map((entry) => `<h1>${entry.clave} - ${entry.descripcion}</h1>`).join(' ')}</h1>
                       <h1>Homoclave: ${homoclave}</h1>
                     </div>
                   </div>
@@ -331,68 +356,64 @@ const PopUpTramites = props => {
               
               </body>
               `,
-              fileName: `ficha_tramite_${hours + minutes + seconds}`,
-              directory: 'Download',
-              base64: true,
-              width:737,
-              height:1283
-              };
-              let file = await RNHTMLtoPDF.convert(options)
-      
-              // RNFetchBlob.fs.dirs.DownloadDir it's getting the download folder from internal storage
-              let filePath = RNFetchBlob.fs.dirs.DownloadDir + `/ficha_tramite_${hours + minutes + seconds}.pdf`;
-              RNFetchBlob.fs.writeFile(filePath, file.base64, 'base64')
-                  .then(response => {
-  
-                  })
-                  .catch(errors => {
-                      console.log(" Error Log: ", errors);
-                  })
-                  setLoading(false);
-                  dropDownAlertRef.closeAction();
-                  if (type == 0){
-                    
-                    Alert.alert(
-                      "PDF descargado",
-                      `Su PDF se descargó exitosamente.`,
-                      [
-                        {
-                          text: "Reenviar PDF por correo",
-                          onPress: ()=> sendEmail(filePath)
-                        },
-                        {
-                          text: "Abrir PDF",
-                          onPress: ()=> abrirPDF(filePath)
-                        },
-                        {
-                          text: "OK",
-                          style:'cancel'
-                        }
-                      ]
-                      )
-                  }else{
-                    sendEmail(filePath);
-                  }  
-          
-          } catch (error) {
-              Alert.alert("Error","Ha habido un error al descargar el PDF.")
-              setLoading(false);
-              console.log(error)
-          }
+            fileName: `ficha_tramite_${hours + minutes + seconds}`,
+            directory: 'Download',
+            base64: true,
+            width: 737,
+            height: 1283,
+          };
+          const file = await RNHTMLtoPDF.convert(options);
 
-        } else {
+          // RNFetchBlob.fs.dirs.DownloadDir it's getting the download folder from internal storage
+          const filePath = `${RNFetchBlob.fs.dirs.DownloadDir}/ficha_tramite_${hours + minutes + seconds}.pdf`;
+          RNFetchBlob.fs.writeFile(filePath, file.base64, 'base64')
+            .then((response) => {
+
+            })
+            .catch((errors) => {
+              console.log(' Error Log: ', errors);
+            });
           setLoading(false);
-          Alert.alert("Permiso denegado", "Debe de conceder los permisos necesarios para generar el PDF.")
+          dropDownAlertRef.closeAction();
+          if (type == 0) {
+            Alert.alert(
+              'PDF descargado',
+              'Su PDF se descargó exitosamente.',
+              [
+                {
+                  text: 'Reenviar PDF por correo',
+                  onPress: () => sendEmail(filePath),
+                },
+                {
+                  text: 'Abrir PDF',
+                  onPress: () => abrirPDF(filePath),
+                },
+                {
+                  text: 'OK',
+                  style: 'cancel',
+                },
+              ],
+            );
+          } else {
+            sendEmail(filePath);
+          }
+        } catch (error) {
+          Alert.alert('Error', 'Ha habido un error al descargar el PDF.');
+          setLoading(false);
+          console.log(error);
         }
-      } catch (err) {
-        console.warn(err);
+      } else {
+        setLoading(false);
+        Alert.alert('Permiso denegado', 'Debe de conceder los permisos necesarios para generar el PDF.');
       }
-           
+    } catch (err) {
+      console.warn(err);
     }
+  };
 
-    const close = () => {
-      props.close
-    }
+  const close = () => {
+    props.close;
+  };
 
   return (
     <Modal
@@ -400,22 +421,21 @@ const PopUpTramites = props => {
       animationType="fade"
       visible={props.openM}
       onRequestClose={
-        loading?(
+        loading ? (
           props.close
-        ): null
+        ) : null
       }
     >
       <View>
         <DropdownAlert
           ref={(ref) => {
-              if (ref) {
-                dropDownAlertRef = ref;
-              }
+            if (ref) {
+              dropDownAlertRef = ref;
             }
-          }
+          }}
         />
       </View>
-  
+
       <View style={{
         flex: 1,
         backgroundColor: '#000000AA',
@@ -429,10 +449,10 @@ const PopUpTramites = props => {
         <View style={styles.whiteSquareContainer}>
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <Text style={styles.titleText}>información del trámite</Text>
-            <TouchableOpacity onPress={!loading ? (props.onTouchOutside):null}>
+            <TouchableOpacity onPress={!loading ? (props.onTouchOutside) : null}>
               <MaterialCommunityIcons style={{ marginRight: 15 }} size={30} name="arrow-left" color="black" />
             </TouchableOpacity>
-            
+
           </View>
 
           <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
@@ -452,13 +472,13 @@ const PopUpTramites = props => {
           {listFooter()}
 
           <View style={styles.buttonsContainer}>
-            <TouchableOpacity onPress={()=> !loading ? (createPDF(0)):null}>
+            <TouchableOpacity onPress={() => (!loading ? (createPDF(0)) : null)}>
               <View style={styles.buttonStyle}>
                 <Text style={styles.buttonTextStyle}>Descargar Ficha PDF</Text>
               </View>
             </TouchableOpacity>
 
-            <TouchableOpacity onPress={()=> !loading ? (createPDF(1)):null}>
+            <TouchableOpacity onPress={() => (!loading ? (createPDF(1)) : null)}>
               <View style={styles.buttonStyle}>
                 <Text style={styles.buttonTextStyle}>Reenviar por Correo</Text>
               </View>
@@ -470,7 +490,7 @@ const PopUpTramites = props => {
 
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -479,24 +499,24 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   buttonsContainer: {
-    flexDirection:'column',
-    alignItems:'center',
-    justifyContent:'center',
-    alignContent:'center', 
-  }, 
+    flexDirection: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
   buttonStyle: {
-    flexDirection:'row',
-    marginHorizontal:10,
-    marginVertical:10,
-    justifyContent:'center',
-    alignItems:'center',
-    width:145,
-    height:40,
+    flexDirection: 'row',
+    marginHorizontal: 10,
+    marginVertical: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 145,
+    height: 40,
     backgroundColor: colors.secundario,
-    borderRadius:5,
-  },  
+    borderRadius: 5,
+  },
   buttonTextStyle: {
-    color:'white',
+    color: 'white',
     fontWeight: '500',
   },
   whiteSquareContainer: {
@@ -532,16 +552,16 @@ const styles = StyleSheet.create({
     color: 'black',
   },
   containerPDF: {
-      flex: 1,
-      justifyContent: 'flex-start',
-      alignItems: 'center',
-      marginTop: 25,
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    marginTop: 25,
   },
   pdf: {
-      flex:1,
-      width:Dimensions.get('window').width,
-      height:Dimensions.get('window').height,
-    }
+    flex: 1,
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
 });
 
 export default PopUpTramites;

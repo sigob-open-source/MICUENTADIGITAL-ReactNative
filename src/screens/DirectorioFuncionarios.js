@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  StyleSheet, 
-  View, 
-  Text, 
-  TextInput, 
+  StyleSheet,
+  View,
+  Text,
+  TextInput,
   TouchableOpacity,
   FlatList,
   Dimensions,
@@ -22,7 +22,6 @@ import ConnectionCheck from '../components/internetChecker';
 const WIDTH = Dimensions.get('window').width;
 
 const DirectorioFunc = (props) => {
-
   const [funcionarios, setFuncionarios] = useState(null);
   const [funcionariosFiltered, setFuncionariosFiltered] = useState(null);
   const [nombre, setNombre] = useState(null);
@@ -30,7 +29,7 @@ const DirectorioFunc = (props) => {
   const [apellidoMaterno, setApellidoMaterno] = useState(null);
   const [lada, setLada] = useState(null);
   const [numero, setNumero] = useState(null);
-  const [curp, setCurp] = useState(null)
+  const [curp, setCurp] = useState(null);
   const [rfc, setRfc] = useState(null);
   const [observaciones, setObservaciones] = useState(null);
   const [puesto, setPuesto] = useState(null);
@@ -42,7 +41,7 @@ const DirectorioFunc = (props) => {
   const [texto, setTexto] = useState('');
   const [buscarOficinaTexto, setBuscarOficinaText] = useState('');
   const [selected, setSelected] = useState(0);
-  const [mostrarResultados, setMostrarResultados] = useState(false)
+  const [mostrarResultados, setMostrarResultados] = useState(false);
   const [opacity, setOpacity] = useState(1);
   const [keyboardVisible, setKeyboardVisible] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -50,89 +49,79 @@ const DirectorioFunc = (props) => {
   const [correo, setCorreo] = useState(null);
 
   useEffect(() => {
-    if (funcionarios != null){
-      if (selected === 0){
+    if (funcionarios != null) {
+      if (selected === 0) {
         setLoading(false);
         setMostrarResultados(false);
-        setFuncionariosFiltered([]);      
+        setFuncionariosFiltered([]);
       }
-  
-      if (selected === 1){
-        setKeyboardVisible(false)
-        if (buscarOficinaTexto != ''){
+
+      if (selected === 1) {
+        setKeyboardVisible(false);
+        if (buscarOficinaTexto != '') {
           setMostrarResultados(true);
-        }else{
+        } else {
           setLoading(false);
           setMostrarResultados(false);
           setFuncionariosFiltered([]);
         }
-        const filterOficina = funcionarios.filter((item) => {
-          return `${item.object_id}` 
+        const filterOficina = funcionarios.filter((item) => `${item.object_id}`
           .toLowerCase()
-          .includes(buscarOficinaTexto.toLowerCase());
-        }) 
-        setFuncionariosFiltered(filterOficina)
-      }
-      else if (selected === 2)
-      {
-        if (texto != ''){
+          .includes(buscarOficinaTexto.toLowerCase()));
+        setFuncionariosFiltered(filterOficina);
+      } else if (selected === 2) {
+        if (texto != '') {
           setMostrarResultados(true);
-        }else{
+        } else {
           setLoading(false);
           setMostrarResultados(false);
           setFuncionariosFiltered([]);
         }
-        const filter = funcionarios.filter((item) => {
-          return `${item.nombre} ${item.apellido_paterno} ${item.apellido_materno}` 
+        const filter = funcionarios.filter((item) => `${item.nombre} ${item.apellido_paterno} ${item.apellido_materno}`
           .toLowerCase()
-          .includes(texto.toLowerCase());
-        }) 
-        setFuncionariosFiltered(filter)
+          .includes(texto.toLowerCase()));
+        setFuncionariosFiltered(filter);
         setTexto('');
       }
     }
-
   }, [funcionarios]);
 
-
-  useEffect(()=>{
-    
+  useEffect(() => {
     const keyboardDidShowListener = Keyboard.addListener(
       'keyboardDidShow',
       () => {
         setKeyboardVisible(true); // or some other action
-      }
+      },
     );
     const keyboardDidHideListener = Keyboard.addListener(
       'keyboardDidHide',
       () => {
         setKeyboardVisible(false); // or some other action
-      }
+      },
     );
 
     return () => {
       keyboardDidHideListener.remove();
       setFuncionarios({});
       keyboardDidShowListener.remove();
-    };    
-
-  },[])
-
-  useEffect(()=>{
-    if (selected == 1){
-      setTexto('');
-    }else{
-      setBuscarOficinaText('');
-    }
-  },[selected])
+    };
+  }, []);
 
   useEffect(() => {
-    if (keyboardVisible){
+    if (selected == 1) {
+      setTexto('');
+    } else {
+      setBuscarOficinaText('');
+    }
+  }, [selected]);
+
+  useEffect(() => {
+    if (keyboardVisible) {
       setOpacity(0.3);
-    }else{
+    } else {
       setOpacity(1);
     }
-  },[keyboardVisible])
+  }, [keyboardVisible]);
 
   const getData = async () => {
     const funcionarios = await getFuncionarios();
@@ -146,53 +135,52 @@ const DirectorioFunc = (props) => {
   const clearText = (text) => {
     setSelected(1);
     setBuscarOficinaText(text);
-    if (text == "." || text == "," || text == " " || text == "-"){
-      setBuscarOficinaText("");
+    if (text == '.' || text == ',' || text == ' ' || text == '-') {
+      setBuscarOficinaText('');
     }
     setTexto('');
-  }
+  };
 
   const clearBuscarOficinaText = (text) => {
     setSelected(2);
     setBuscarOficinaText('');
     setTexto(text);
-    if (text == " "){
-      setTexto("");
-    }{}
-  }
+    if (text == ' ') {
+      setTexto('');
+    } {}
+  };
 
-  //buscar funcionario por texto / nombre apellido etc
+  // buscar funcionario por texto / nombre apellido etc
   const buscarPorTexto = async () => {
     setFuncionarios(null);
     setMostrarResultados(false);
-    setKeyboardVisible(false)
-    setLoading(true)
+    setKeyboardVisible(false);
+    setLoading(true);
     try {
       const funcionarios = await getFuncionarios();
       setFuncionarios(funcionarios);
     } catch (error) {
-      Alert.alert("ERROR","Hubo un error al comunicarse con el servidor. Por favor intentarlo más tarde.")
+      Alert.alert('ERROR', 'Hubo un error al comunicarse con el servidor. Por favor intentarlo más tarde.');
     }
-    
-    
-  }
+  };
 
   const openModal = (
-      nombre, 
-      apePater, 
-      apeMater, 
-      lada, 
-      num, 
-      curp, 
-      rfc, 
-      observ, 
-      puesto,
-      genero, 
-      estadoFunc, 
-      estado,foto, 
-      numCel,
-      correo
-    ) => {
+    nombre,
+    apePater,
+    apeMater,
+    lada,
+    num,
+    curp,
+    rfc,
+    observ,
+    puesto,
+    genero,
+    estadoFunc,
+    estado,
+    foto,
+    numCel,
+    correo,
+  ) => {
     setNombre(nombre);
     setApellidoPaterno(apePater);
     setApellidoMaterno(apeMater);
@@ -209,16 +197,15 @@ const DirectorioFunc = (props) => {
     setFoto(foto);
     setNumeroCelular(numCel);
     setCorreo(correo);
-  }
+  };
 
-  const renderItem = (item) => {
-    return(
-      <View>
-        <TouchableOpacity  onPress={
-          ()=> openModal(
+  const renderItem = (item) => (
+    <View>
+      <TouchableOpacity onPress={
+          () => openModal(
             item.nombre,
             item.apellido_paterno,
-            item.apellido_materno, 
+            item.apellido_materno,
             item.lada,
             item.numero_de_empleado,
             item.CURP,
@@ -226,92 +213,91 @@ const DirectorioFunc = (props) => {
             item.observaciones,
             item.puesto,
             item.genero,
-            item.estado_del_funcionario.descripcion,              
+            item.estado_del_funcionario.descripcion,
             item.estado_civil,
             item.foto,
             item.numero_de_celular,
-            item.correo_electronico
-          )}>
-          <View style={styles.content}>
-    
-            <Text style={styles.collapsibleText}>{item.nombre+' '+item.apellido_paterno+' '+item.apellido_materno}</Text>
-          </View>
-        </TouchableOpacity>
+            item.correo_electronico,
+          )
+}
+      >
+        <View style={styles.content}>
 
-      </View>
-    )
-  }
+          <Text style={styles.collapsibleText}>{`${item.nombre} ${item.apellido_paterno} ${item.apellido_materno}`}</Text>
+        </View>
+      </TouchableOpacity>
+
+    </View>
+  );
 
   return (
     <View style={{ flex: 1, height: '100%' }}>
-      <ConnectionCheck/>
+      <ConnectionCheck />
       <View style={{ flex: 1, alignItems: 'center' }}>
         <Header
           style={styles.header}
-          item="Peticiones"
+          item="Directorio"
           imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
           img={require('../../assets/imagenes/header_logo.png')}
         />
-        <View style={{marginTop:'22%'}}>
-        <ModalFuncionario
-          nombre={nombre}
-          apellidoPaterno={apellidoPaterno}
-          apellidoMaterno={apellidoMaterno}
-          lada={lada}
-          numero={numero}
-          curp={curp}
-          foto={foto}
-          rfc={rfc}
-          observaciones={observaciones}
-          puesto={puesto}
-          genero={genero}
-          estadoFunc={estadoFuncionario}
-          estado={estado}
-          open={modalOpen}
-          telefono={NumeroCelular}
-          correo={correo}
-          onTouchOutside={()=> setModalOpen(false)}
-        />
+        <View style={{ marginTop: '5%' }}>
+          <ModalFuncionario
+            nombre={nombre}
+            apellidoPaterno={apellidoPaterno}
+            apellidoMaterno={apellidoMaterno}
+            lada={lada}
+            numero={numero}
+            curp={curp}
+            foto={foto}
+            rfc={rfc}
+            observaciones={observaciones}
+            puesto={puesto}
+            genero={genero}
+            estadoFunc={estadoFuncionario}
+            estado={estado}
+            open={modalOpen}
+            telefono={NumeroCelular}
+            correo={correo}
+            onTouchOutside={() => setModalOpen(false)}
+          />
 
-        <Text style={{textAlign:'center', color: 'black', fontSize: 20, fontWeight: '700' }}> Buscar Funcionario </Text>
-
-        <View style={styles.textInputContainer}>
-            <TextInput 
-              keyboardType={'number-pad'}
-              style={styles.textInputStyle} 
-              placeholder="Dependencia/Oficina.*" 
-              placeholderTextColor="gray" 
+          <View style={styles.textInputContainer}>
+            <TextInput
+              keyboardType="number-pad"
+              style={styles.textInputStyle}
+              placeholder="Dependencia/Oficina.*"
+              placeholderTextColor="gray"
               value={buscarOficinaTexto}
-              onPressIn={()=>setKeyboardVisible(true)}
-              onSubmitEditing={()=>buscarPorTexto()}
+              onPressIn={() => setKeyboardVisible(true)}
+              onSubmitEditing={() => buscarPorTexto()}
               onChangeText={(text) => clearText(text)}
             />
-        </View>
+          </View>
 
-        <View style={styles.textInputContainer}>
-          <TextInput 
-            style={styles.textInputStyle} 
-            value={texto}
-            placeholder="Busqueda de texto." 
-            placeholderTextColor="gray" 
-            onChangeText={(text) => clearBuscarOficinaText(text)}
-            onPressIn={()=>setKeyboardVisible(true)}
-            onSubmitEditing={()=>buscarPorTexto(texto)}
-          />
-        </View>
-        {
+          <View style={styles.textInputContainer}>
+            <TextInput
+              style={styles.textInputStyle}
+              value={texto}
+              placeholder="Busqueda de texto."
+              placeholderTextColor="gray"
+              onChangeText={(text) => clearBuscarOficinaText(text)}
+              onPressIn={() => setKeyboardVisible(true)}
+              onSubmitEditing={() => buscarPorTexto(texto)}
+            />
+          </View>
+          {
           mostrarResultados ? (
-              <View style={[styles.flatView,{opacity:opacity}]}>
+            <View style={[styles.flatView, { opacity }]}>
               <FlatList
                 data={funcionariosFiltered}
                 renderItem={({ item, index }) => renderItem(item)}
                 keyExtractor={(item, index) => index.toString()}
               />
-            </View>              
+            </View>
           ) : null
         }
 
-        {
+          {
           loading ? (
             <View style={styles.loadingView}>
               <Loading size="large" loading />
@@ -319,11 +305,11 @@ const DirectorioFunc = (props) => {
           ) : null
         }
 
-      </View>
+        </View>
       </View>
       {
-        !(texto == null || texto == '') || !(buscarOficinaTexto == null || buscarOficinaTexto == '') ?(
-          <TouchableOpacity onPress={()=>buscarPorTexto()} onPressIn={Keyboard.dismiss}>
+        !(texto == null || texto == '') || !(buscarOficinaTexto == null || buscarOficinaTexto == '') ? (
+          <TouchableOpacity onPress={() => buscarPorTexto()} onPressIn={Keyboard.dismiss}>
             <View style={styles.searchButton}>
               <Text style={styles.buttonText}>Buscar Funcionario</Text>
             </View>
@@ -332,7 +318,6 @@ const DirectorioFunc = (props) => {
 
       }
 
-    
       <Footer
         back={goBack}
         showBack
@@ -348,10 +333,10 @@ const styles = StyleSheet.create({
     width: 336,
     height: 46,
     borderRadius: 5,
-    alignSelf:'center',
+    alignSelf: 'center',
     backgroundColor: colors.secundario,
     justifyContent: 'center',
-    marginVertical:15,
+    marginVertical: 15,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 7,
@@ -362,10 +347,10 @@ const styles = StyleSheet.create({
     width: 336,
     height: 46,
     borderRadius: 5,
-    alignSelf:'center',
+    alignSelf: 'center',
     backgroundColor: colors.alternativo,
     justifyContent: 'center',
-    marginVertical:15,
+    marginVertical: 15,
     shadowColor: 'black',
     shadowOffset: { width: 0, height: 3 },
     shadowRadius: 7,
@@ -379,8 +364,8 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   loadingView: {
-    marginTop:40,
-  }, 
+    marginTop: 40,
+  },
   header: {
     flexDirection: 'row',
     height: 64,
@@ -428,13 +413,13 @@ const styles = StyleSheet.create({
   content: {
     width: WIDTH,
     height: 50,
-    marginBottom:10,
+    marginBottom: 10,
     flexDirection: 'row',
     alignItems: 'center',
     backgroundColor: 'white',
-    borderTopWidth:2,
-    borderBottomWidth:2,
-    borderColor:'#79142A',
+    borderTopWidth: 2,
+    borderBottomWidth: 2,
+    borderColor: '#79142A',
   },
   collapsibleText: {
     flexShrink: 1,
@@ -443,7 +428,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     fontSize: 0.05 * WIDTH,
     color: 'black',
-    textAlign:'center'
+    textAlign: 'center',
   },
   tramiteView: {
     width: WIDTH,
@@ -454,9 +439,9 @@ const styles = StyleSheet.create({
     backgroundColor: 'white',
   },
   flatView: {
-    alignSelf:'center',
+    alignSelf: 'center',
     marginTop: 30,
-  }
+  },
 });
 
 export default DirectorioFunc;

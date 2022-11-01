@@ -20,7 +20,7 @@ const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
     if (type == 'success') {
       Alert.alert(
 
-        'Pago exitiso',
+        'Pago Exitoso',
         'Su pago se encuentra en proceso!',
         [
           {
@@ -73,7 +73,7 @@ const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
       showAlert('failed');
     }
 
-    //console.log(JSON.stringify(json, null, 2));
+    // console.log(JSON.stringify(json, null, 2));
   }
 
   const html = `<!DOCTYPE html>

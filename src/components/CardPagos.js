@@ -20,8 +20,8 @@ const Card = (props) => {
     return (
       <View handleEvent={setIsIconType} style={{ ...styles.squareStyle, ...props.style }}>
 
-        <Icon size={40} style={styles.iconContainer} name={props.iconName} color={props.col} />
-        <Text style={styles.textstyle}>{props.nombreItem}</Text>
+        <Icon size={40} style={styles.iconContainer} name={props.iconName} color={props.isDesable ? 'CCCCCC' : props.col} />
+        <Text style={props.isDesable ? styles.textstyleDes : styles.textstyle}>{props.nombreItem}</Text>
 
       </View>
 
@@ -30,17 +30,19 @@ const Card = (props) => {
   return (
     <View handleEvent={setIsIconType} style={{ ...styles.squareStyle, ...props.style }}>
 
-      <FontAwesome5 name={props.iconName} size={40} style={styles.iconContainer} solid color={props.col} />
-        {
-          props.nombreItem == "CasaDeEmpenio" ? (
-            <Text style={styles.textstyle}>Casa de Empeño</Text>
-          ) : 
-          props.nombreItem == "JuegoDeAzar" ? (
-            <Text style={styles.textstyle}>Juego de Azar</Text>
-          ) :
-          <Text style={styles.textstyle}>{props.nombreItem}</Text>
+      <FontAwesome5 name={props.iconName} size={40} style={styles.iconContainer} solid color={props.isDesable ? 'CCCCCC' : props.col} />
+      {
+          props.nombreItem == 'CasaDeEmpenio' ? (
+            <Text style={props.isDesable ? styles.textstyleDes : styles.textstyle}>{props.nombreItem}>Casa de Empeño</Text>
+          )
+            : props.nombreItem == 'JuegoDeAzar' ? (
+              <Text style={props.isDesable ? styles.textstyleDes : styles.textstyle}>{props.nombreItem}>Juego de Azar</Text>
+            )
+              : props.nombreItem == 'Alcohol' ? (
+                <Text style={props.isDesable ? styles.textstyleDes : styles.textstyle}>Licencia de Alcoholes</Text>
+              )
+              : <Text style={props.isDesable ? styles.textstyleDes : styles.textstyle}>{props.nombreItem}</Text>
         }
-
 
     </View>
   );
@@ -48,6 +50,20 @@ const Card = (props) => {
 
 const styles = StyleSheet.create({
   squareStyle: {
+    borderRadius: 5,
+    width: 104,
+    height: 95,
+    backgroundColor: 'white',
+    justifyContent: 'center',
+    alignItems: 'center',
+    shadowColor: 'black',
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 7,
+    shadowOpacity: 0.09,
+    elevation: 5,
+    marginHorizontal: 12,
+  },
+  squareStyleDes: {
     borderRadius: 5,
     width: 104,
     height: 95,
@@ -74,10 +90,16 @@ const styles = StyleSheet.create({
     margin: 5,
   },
   textstyle: {
-    paddingHorizontal:1,
+    paddingHorizontal: 1,
     textAlign: 'center',
     fontFamily: fonts.semiBold,
     color: 'black',
+  },
+  textstyleDes: {
+    paddingHorizontal: 1,
+    textAlign: 'center',
+    fontFamily: fonts.semiBold,
+    color: '#CCCCCC',
   },
 });
 

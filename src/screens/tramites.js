@@ -34,8 +34,8 @@ const Tramites = (props) => {
   const [tramitesMunicipales, setTramitesMunicipales] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
   const [dependencies, setDependencies] = useState([]);
-  const [tiposDeFiltros, setTiposDeFiltros] = useState(['Dependencia/Oficina', 'Busqueda', 'Más buscados', 'Clasificación', 'Sujeto de interés']);
-  const [filtroSeleccionado, setFiltroSeleccionado] = useState('Busqueda');
+  const [tiposDeFiltros, setTiposDeFiltros] = useState(['Dependencia/Oficina', 'Búsqueda', 'Más buscados', 'Clasificación', 'Sujeto de interés']);
+  const [filtroSeleccionado, setFiltroSeleccionado] = useState('Búsqueda');
   const [Sujeto, setSujeto] = useState(['Empresa', 'Ciudadano']);
   const [clasificacion, setClasificacion] = useState(['Trámite', 'Servicio']);
   const [fichaProps, setFichaProps] = useState([]);
@@ -188,7 +188,7 @@ const Tramites = (props) => {
           }
 
           break;
-        case 'Busqueda': break;
+        case 'Búsqueda': break;
         case 'Más buscados': Alert.alert('Alerta', 'Se está realizando mantenimiento a esta opción'); break;
         case 'Clasificación': setSelectedDependency('Trámite'); break;
         case 'Sujeto de interés': Alert.alert('Alerta', 'Se está realizando mantenimiento a esta opción'); break;
@@ -275,18 +275,9 @@ const Tramites = (props) => {
         <Header
           style={styles.header}
           item="Trámites"
-          imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
-          img={require('../../assets/imagenes/header_logo.png')}
         />
-        <View style={{ marginTop: '24%', alignItems: 'center' }}>
-          <Text style={{
-            color: 'black', fontSize: 20, fontWeight: '700', textAlign: 'center',
-          }}
-          >
-            {' '}
-            Filtrar por
-          </Text>
 
+        <View style={{ marginTop: '5%', alignItems: 'center' }}>
           <TouchableWithoutFeedback onPress={toggleTramiteFiltros}>
             <View style={styles.collapsibleHeader}>
               <Text numberOfLines={1} style={styles.headerText}>{filtroSeleccionado}</Text>
@@ -337,35 +328,22 @@ const Tramites = (props) => {
         }
 
           {
-          filtroSeleccionado === 'Busqueda' ? (
+          filtroSeleccionado === 'Búsqueda' ? (
 
-            <>
-              <Text style={{
-                color: 'black',
-                fontSize: 20,
-                fontWeight: '700',
-                marginTop: 5,
-                textAlign: 'center',
-              }}
-              >
-                {' '}
-                Busqueda
-              </Text>
-              <View style={styles.textInputContainer}>
-                <TextInput
-                  style={styles.textInputStyle}
-                  placeholder="Buscar..."
-                  placeholderTextColor="gray"
-                  onChangeText={(text) => searchTramite(text)}
+            <View style={styles.textInputContainer}>
+              <TextInput
+                style={styles.textInputStyle}
+                placeholder="Buscar..."
+                placeholderTextColor="gray"
+                onChangeText={(text) => searchTramite(text)}
+              />
+              <TouchableOpacity>
+                <View style={{
+                  borderRadius: 10, width: 46, height: 46, justifyContent: 'center',
+                }}
                 />
-                <TouchableOpacity>
-                  <View style={{
-                    borderRadius: 10, width: 46, height: 46, justifyContent: 'center',
-                  }}
-                  />
-                </TouchableOpacity>
-              </View>
-            </>
+              </TouchableOpacity>
+            </View>
           ) : null
         }
 
@@ -426,19 +404,6 @@ const Tramites = (props) => {
             </>
           ) : null
         }
-
-          <Text style={{
-            color: 'black',
-            fontSize: 20,
-            fontWeight: '700',
-            marginTop: 30,
-            marginBottom: 30,
-            textAlign: 'center',
-          }}
-          >
-            {' '}
-            Trámites
-          </Text>
           {
         loading == true ? (
           <View style={{ justifyContent: 'center', marginTop: 20 }}>
@@ -460,7 +425,6 @@ const Tramites = (props) => {
                   keyExtractor={(item, index) => index.toString()}
                 />
               )
-
           }
 
             </>
@@ -523,7 +487,8 @@ const styles = StyleSheet.create({
   },
   textInputContainer: {
     marginTop: 5,
-    width: 336,
+    marginBottom: 10,
+    width: '88%',
     height: 46,
     alignSelf: 'center',
     flexDirection: 'row',
@@ -559,7 +524,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    width: 336,
+    width: '85%',
     height: 45,
     marginTop: 15,
     borderRadius: 10,
@@ -594,19 +559,21 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     fontWeight: '500',
     marginLeft: '1.5%',
-    fontSize: 0.05 * WIDTH,
+    fontSize: 16,
     color: 'black',
   },
   tramiteView: {
     width: WIDTH,
-    height: 50,
-    marginBottom: 10,
+    height: 75,
+    marginBottom: 5,
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'center',
     backgroundColor: 'white',
     borderTopWidth: 2,
     borderBottomWidth: 2,
-    borderColor: '#79142A',
+    borderColor: '#d9d9d9',
+    padding: 10,
   },
 });
 

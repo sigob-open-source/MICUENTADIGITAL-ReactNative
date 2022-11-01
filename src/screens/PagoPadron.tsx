@@ -33,6 +33,7 @@ import {
   getEmpresa,
   getCiudadano,
   getAdeudoPadron,
+  postGenererReferenciasNetpay,
 } from '../services/padrones';
 
 import { getReferencia } from '../services/recaudacion';
@@ -79,28 +80,28 @@ const PagoPadron = ({ route }) => {
     message: 'No se encontró nada que concuerde con la busqueda',
   });
 
-  const handleSearch = async (formData) => {
+  const handleSearch = async () => {
     setIsLoading(true);
     setNewData(false);
-    //console.log(padron.descripcion);
+    // console.log(padron.descripcion);
     let response;
     let numeroDePadron;
     if (padron?.descripcion === 'Ciudadano') {
-      response = await getCiudadano(searchText, formData);
+      response = await getCiudadano({ q: searchText });
       numeroDePadron = 1;
       (response !== null) ? setNameSearch(response?.nombre_completo) : null;
     } else if (padron?.descripcion === 'Empresa') {
-      response = await getEmpresa(searchText, formData);
+      response = await getEmpresa(searchText);
       numeroDePadron = 2;
       (response !== null) ? setNameSearch(response?.razon_social) : null;
       // setNameSearch(response.nombre_comercial);
     } else if (padron?.descripcion === 'Predio') {
-      response = await getPredio(searchText, formData);
+      response = await getPredio(searchText);
       numeroDePadron = 3;
       (response !== null) ? setNameSearch(response?.cuenta_unica_de_predial) : null;
       // setNameSearch(response?.cuenta_unica_de_predial);
     } else if (padron?.descripcion === 'Vehicular') {
-      response = await getVehiculo(searchText, formData);
+      response = await getVehiculo(searchText);
       numeroDePadron = 4;
       (response !== null) ? setNameSearch(response?.numero_de_placa) : null;
       // setNameSearch(response?.numero_de_placa);
@@ -116,23 +117,21 @@ const PagoPadron = ({ route }) => {
       setTotalAmount(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
       // console.log(totalAmount);
     }
+    console.log(response);
     setModalKey(modalKey + 1);
     setIsLoading(false);
   };
 
   // Funcion llamada al dar al boton realizar pago
   const dopayment = async () => {
-    const sumall:number = resultCargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0);
+    const sumall = resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0);
+    console.log('suma', sumall);
 
-    // console.log(padron);
-    // console.log(totalAmount);
-    // console.log(resultCargos);
-    // console.log(padronSearched);
-    const allCargos = resultCargos.map((cargo) => cargo.id);
-    // console.log(allCargos);
-    navigation.push('netpayCustom', {
-      amount: sumall, tipo_de_padron: padron.id, cargos: allCargos, padron_id: padronSearched.id,
-    });
+    const responseNetpay = await tokenizeAmount(sumall.toFixed(2));
+
+    if (responseNetpay) {
+      navigation.push('netpaypago', { responseNetpay });
+    }
   };
 
   // Calcula los totales y descuentas
@@ -286,7 +285,7 @@ const PagoPadron = ({ route }) => {
   return (
     <View style={styles.container}>
       <Header item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
-      <View style={{ marginTop: '22%' }}>
+      <View style={{ marginTop: '5%' }}>
         <Text style={styles.headText}>
           {padron?.descripcion}
         </Text>
@@ -304,18 +303,6 @@ const PagoPadron = ({ route }) => {
               />
             </View>
           </TouchableWithoutFeedback>
-          {
-          (padron?.descripcion === 'Ciudadano') ? <BusquedaAvanzadaCiudadano onSearch={handleSearch} /> : null
-        }
-          {
-          (padron?.descripcion === 'Empresa') ? <BusquedaAvanzadaEmpresa onSearch={handleSearch} /> : null
-        }
-          {
-          (padron?.descripcion === 'Predio') ? <BusquedaAvanzadaPredio onSearch={handleSearch} /> : null
-        }
-          {
-          (padron?.descripcion === 'Vehicular') ? <BusquedaAvanzadaVehiculo onSearch={handleSearch} /> : null
-        }
         </View>
       </View>
 

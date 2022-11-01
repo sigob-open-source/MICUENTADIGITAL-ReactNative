@@ -1,144 +1,241 @@
-import http from './http';
+import Moment from 'moment';
 
-const getPadrones = async () => {
-  await http.get('catalogos/padrones/').then(
-    (response) => {
-      const result = response.data;
-      return result;
-    },
-    (error) => {
-      console.log(error);
-    },
-  );
+import API from './http';
+
+Moment.defaultFormat = 'DD/MM/YYYY';
+const DATE_FORMAT = 'DD-MM-YYYY';
+const toMoment = (val = '') => Moment(val);
+
+const PADRON_DESCRIPTIONS_MAP = Object.freeze({
+  11: 'Juegos de Azar',
+  13: 'Casa de empeño',
+});
+
+// const getPadrones = async () => {
+//   await http.get('catalogos/padrones/').then(
+//     (response) => {
+//       const result = response.data;
+//       return result;
+//     },
+//     (error) => {
+//       console.log(error);
+//     },
+//   );
+// };
+
+export const postGenererReferenciasNetpay = async (tipoDePadron, padron, cargos, padrones) => {
+  try {
+    const importe = cargos.reduce((acum, curr) => acum + curr.importe, 0);
+    const values = {
+      description: cargos.length === 1
+        ? cargos[0].descripcion : padrones.find((p) => p.id === tipoDePadron)?.descripcion,
+      expiryDate: toMoment(new Date()).add(1, 'days').format('YYYY/MM/DD'),
+      amount: importe,
+      paymentMethod: 'cash',
+      currency: 'MXN',
+      billing: {
+        canal_de_pago: 3,
+        cargos: cargos.map((e) => e.id),
+        padron_id: padron.id,
+        tipo_de_padron: tipoDePadron,
+        importe,
+        fecha: toMoment(new Date()).format(DATE_FORMAT),
+        merchantReferenceCode: null,
+        ciudadano: null,
+      },
+    };
+    const response = await API.post('recaudacion/referencias-pago-netpay-public', values);
+    return {
+      base64: `data:application/pdf;base64,${response.data.data}`,
+      folio_netpay: response.data.folio_netpay,
+    };
+  } catch (error) {
+    console.log(error, true);
+  }
+  return null;
 };
 
-const getCiudadano = async (search, advanceSearch) => {
-  const urlEndpoint = 'cuentaunicasir/ciudadano-caja-atencion-ciudadana/';
-  let result;
-  await http
-    .get(urlEndpoint, {
-      params: {
-        q: search,
-        clave_ciudadana: advanceSearch?.clave_ciudadana,
-        first_name: advanceSearch?.first_name,
-        last_name: advanceSearch?.last_name,
-        second_last_name: advanceSearch?.second_last_name,
-        email: advanceSearch?.email,
-        numero_de_celular: advanceSearch?.numero_de_celular,
-        CURP: advanceSearch?.CURP,
-        RFC: advanceSearch?.RFC,
-      },
-    })
-    .then(
-      (response) => {
-        result = response.data[0];
-      },
-      (error) => {
-
-      },
-    );
-  console.log('result Ciudadano');
-  console.log(result);
-  return result;
+const getPadrones = async (params) => {
+  try {
+    const response = await API.get('catalogos/padrones', { params });
+    return response.data.filter((e) => e.id !== 5)
+      .map((e) => ({ ...e, descripcion: PADRON_DESCRIPTIONS_MAP[e.id] || e.descripcion }));
+  } catch (error) {
+    console.log(error);
+  }
+  return [];
 };
 
-const getVehiculo = async (search, advanceSearch) => {
-  const urlEndpoint = 'recaudacion/vehiculos-caja/';
-  let result;
-  await http
-    .get(urlEndpoint, {
-      params: {
-        q: search,
-        numero_de_placa: advanceSearch?.numero_de_placa,
-        tipo_de_vehiculo: advanceSearch?.tipo_de_vehiculo,
-        linea: advanceSearch?.linea,
-        clase_del_vehiculo: advanceSearch?.clase_del_vehiculo,
-        servicio: advanceSearch?.servicio,
-        estatus_del_vehiculo: advanceSearch?.estatus_del_vehiculo,
-      },
-    })
-    .then(
-      (response) => {
-        result = response.data[0];
-      },
-      (error) => {
-        console.error(error);
-      },
-    );
-
-  return result;
+const validateResut = (_data, tipoDePadron) => {
+  const data = _data?.results || _data || [];
+  if (data.length === 1) {
+    return {
+      ...data[0],
+      idPadronUpdate: data[0]?.empresa?.contribuyente?.id || data[0]?.empresa?.ciudadano?.id
+      || data[0]?.contribuyente?.id || data[0]?.ciudadano?.id
+      || data[0]?.contribuyente_propietario?.id || data[0]?.propietario?.id || data[0].id,
+      tipoDePadronNeedsInfo: [1, 15].includes(tipoDePadron)
+        ? tipoDePadron : getTipoDePadron(data[0]),
+    };
+  }
+  return null;
 };
 
-const getPredio = async (search, advanceSearch) => {
-  const urlEndpoint = 'catastro/predio-caja/';
-  let result;
-  await http
-    .get(urlEndpoint, {
-      params: {
-        q: search,
-        razon_social: advanceSearch?.razon_social,
-        nombre_comercial: advanceSearch?.nombre_comercial,
-        pagina_web: advanceSearch?.pagina_web,
-        RFC: advanceSearch?.RFC,
-        tipo_de_establecimiento: advanceSearch?.tipo_de_establecimiento,
-        domicilio_fiscal__codigo_postal: advanceSearch?.codigo_postal,
-        domicilio_fiscal_calle_principal: advanceSearch?.calle_principal,
-        domicilio_fiscal__numero_exterior: advanceSearch?.numero_exterior,
-        cuenta_unica_de_predial: advanceSearch?.cuenta_unica_de_predial,
-        CURT: advanceSearch?.CURT,
-        clave_catastral_estandar: advanceSearch?.clave_catastral_estandar,
-        clave_catastral_municipal: advanceSearch?.clave_catastral_municipal,
-        direccion__codigo_postal: advanceSearch?.direccion_codigo_postal,
-        direccion__calle_principal: advanceSearch?.direccion_calle_principal,
-        direccion_numero_exterior: advanceSearch?.direccion_numero_exterior,
-      },
-    })
-    .then(
-      (response) => {
-        result = response.data[0];
-      },
-      (error) => {
-        console.error(error);
-      },
-    );
-
-  return result;
+const getCiudadano = async (params) => {
+  try {
+    const response = await API.get('cuentaunicasir/ciudadano-caja-public', { params });
+    return validateResut(response.data, 1);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
 };
 
-const getEmpresa = async (search, advanceSearch) => {
-  const urlEndpoint = 'cuentaunicasir/empresas-caja-atencion-ciudadana/';
-  let result;
-  await http
-    .get(urlEndpoint, {
-      params: {
-        q: search,
-        razon_social: advanceSearch?.razon_social,
-        nombre_comercial: advanceSearch?.nombre_comercial,
-        pagina_web: advanceSearch?.pagina_web,
-        RFC: advanceSearch?.RFC,
-        tipo_de_establecimiento: advanceSearch?.tipo_de_establecimiento,
-        domicilio_fiscal__codigo_postal: advanceSearch?.codigo_postal,
-        domicilio_fiscal_calle_principal: advanceSearch?.calle_principal,
-        domicilio_fiscal__numero_exterior: advanceSearch?.numero_exterior,
-      },
-    })
-    .then(
-      (response) => {
-        result = response.data[0];
-      },
-      (error) => {
-        console.error(error);
-      },
-    );
+const getEmpresa = async (params) => {
+  try {
+    const response = await API.get('cuentaunicasir/empresas-caja-atencion-ciudadana/', { params });
+    return validateResut(response.data, 2);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
 
-  return result;
+const getPredio = async (params) => {
+  try {
+    const response = await API.get('cuentaunicasir/predio-caja-atencion-ciudadana/', { params });
+    return validateResut(response.data, 3);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getVehiculo = async (params) => {
+  try {
+    const response = await API.get('cuentaunicasir/vehiculos-caja-atencion-ciudadana', { params });
+    return validateResut(response.data, 4);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getHospedaje = async (params) => {
+  try {
+    const response = await API.get('empresas/hospedaje-caja-public/', { params });
+    return validateResut(response.data, 6);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getArrendamiento = async (params) => {
+  try {
+    const response = await API.get('empresas/arrendamiento-caja-public/', { params });
+    return validateResut(response.data, 7);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getNomina = async (params) => {
+  try {
+    const response = await API.get('empresas/nomina-caja-public/', { params });
+    return validateResut(response.data, 8);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getAlcohol = async (params) => {
+  try {
+    const response = await API.get('empresas/alcohol-caja-public/', { params });
+    return validateResut(response.data, 9);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getCedular = async (params) => {
+  try {
+    const response = await API.get('empresas/cedular-caja-public/', { params });
+    return validateResut(response.data, 10);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getJuegoDeAzar = async (params) => {
+  try {
+    const response = await API.get('empresas/juego-de-azar-caja-public/', { params });
+    return validateResut(response.data, 11);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getNotario = async (params) => {
+  try {
+    const response = await API.get('empresas/notario-caja-public/', { params });
+    return validateResut(response.data, 12);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getCasaDeEmpenio = async (params) => {
+  try {
+    const response = await API.get('empresas/casa-de-empenio-caja-public/', { params });
+    return validateResut(response.data, 13);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getAgencia = async (params) => {
+  try {
+    const response = await API.get('empresas/agencia-caja-public/', { params });
+    return validateResut(response.data, 14);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getContribuyente = async (params) => {
+  try {
+    const response = await API.get('empresas/contribuyentes-caja-public/', { params });
+    return validateResut(response.data, 15);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getMotocicleta = async (params) => {
+  try {
+    const response = await API.get('recaudacion/motocicletas-caja-public/', { params });
+    return validateResut(response.data, 16);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
 };
 
 const getAdeudoPadron = async (padron, numeroPadron) => {
   let result;
   if (padron !== undefined && padron !== null) {
-    await http
-      .post('cuentaunicasir/consulta-caja-atencion-ciudadana/padron/', {
+    await API
+      .post('recaudacion/consulta-caja-public/entidad/', {
         padron_id: padron?.id,
         padron: numeroPadron,
         canal_de_pago: 3,
@@ -174,7 +271,7 @@ const getRecibos = async (importe, cargos, padron_id, tipo_de_padron) => {
     canal_de_pago: 3,
   };
   try {
-    const response = await http.post('recaudacion/recibos-externo', body);
+    const response = await API.post('recaudacion/recibos-externo', body);
     result = response.data;
   } catch (error) {
     console.log(error.response.data);
@@ -184,6 +281,30 @@ const getRecibos = async (importe, cargos, padron_id, tipo_de_padron) => {
   return result;
 };
 
+export const GET_PADRONES_MAP = Object.freeze({
+  1: getCiudadano,
+  2: getEmpresa,
+  3: getPredio,
+  4: getVehiculo,
+  6: getHospedaje,
+  7: getArrendamiento,
+  8: getNomina,
+  9: getAlcohol,
+  10: getCedular,
+  11: getJuegoDeAzar,
+  12: getNotario,
+  13: getCasaDeEmpenio,
+  14: getAgencia,
+  15: getContribuyente,
+  16: getMotocicleta,
+});
+
 export {
-  getPadrones, getCiudadano, getVehiculo, getPredio, getEmpresa, getAdeudoPadron, getRecibos,
+  getPadrones,
+  getCiudadano,
+  getVehiculo,
+  getPredio,
+  getEmpresa,
+  getAdeudoPadron,
+  getRecibos,
 };

@@ -1,7 +1,8 @@
-import React, { 
-  useRef, 
-  useState, 
-  useEffect } from 'react';
+import React, {
+  useRef,
+  useState,
+  useEffect,
+} from 'react';
 import {
   StyleSheet,
   View,
@@ -10,7 +11,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
-  AppState
+  AppState,
 } from 'react-native';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -31,16 +32,15 @@ const WIDTH = Dimensions.get('window').width;
 
 const Solicitud = (props) => {
   const appState = useRef(AppState.currentState);
-  const [appStateVisible, setAppStateVisible] = useState(appState.current)
+  const [appStateVisible, setAppStateVisible] = useState(appState.current);
 
   useEffect(() => {
-
-    const subscription = AppState.addEventListener("change", nextAppState => {
+    const subscription = AppState.addEventListener('change', (nextAppState) => {
       if (
-        appState.current.match(/inactive|background/) &&
-        nextAppState === "active"
+        appState.current.match(/inactive|background/)
+        && nextAppState === 'active'
       ) {
-      }else{
+      } else {
         setMapaOpen(false);
         setComentarioOpen(false);
       }
@@ -74,7 +74,7 @@ const Solicitud = (props) => {
   const [selectImageOpen, setSelectImageOpen] = useState(false);
   const submit = async () => {
     onShowConfirmationPopUp();
-    
+
     // Validar que el usuario llenó toda la información necesaria para poedr mandar la solicitufd
 
     const image = archivo;
@@ -90,12 +90,11 @@ const Solicitud = (props) => {
         response.seguimientos[0].id,
         image,
       );
-      //console.log("RESPONSEFILE: ", responseFile)
+      // console.log("RESPONSEFILE: ", responseFile)
       if (responseFile) {
-        
         response.seguimientos[0].archivos.push(responseFile);
       }
-      //console.log(JSON.stringify(response, null, 2));
+      // console.log(JSON.stringify(response, null, 2));
 
       Alert.alert(
         'Registro existoso',
@@ -135,10 +134,10 @@ const Solicitud = (props) => {
   const openModal = (type) => {
     if (!hasSwitchedView) {
       setHasSwitchedView(true);
-      switch(type){
-        case 0: setMotivoOpen(true); setMapaOpen(false); setComentarioOpen(false);break;
-        case 1: setMapaOpen(true); setMotivoOpen(false); setComentarioOpen(false);  break;
-        case 2: setComentarioOpen(true); setMotivoOpen(false); setMapaOpen(false);break;
+      switch (type) {
+        case 0: setMotivoOpen(true); setMapaOpen(false); setComentarioOpen(false); break;
+        case 1: setMapaOpen(true); setMotivoOpen(false); setComentarioOpen(false); break;
+        case 2: setComentarioOpen(true); setMotivoOpen(false); setMapaOpen(false); break;
       }
       setTimeout(() => {
         setHasSwitchedView(false);
@@ -149,7 +148,7 @@ const Solicitud = (props) => {
   const closeModal = (type) => {
     if (!hasSwitchedView) {
       setHasSwitchedView(true);
-      switch(type){
+      switch (type) {
         case 0: setMotivoOpen(false); break;
         case 1: setMapaOpen(false); break;
         case 2: setComentarioOpen(false); break;
@@ -159,7 +158,7 @@ const Solicitud = (props) => {
       }, 1);
     }
   };
-  
+
   const onShowConfirmationPopUp = () => {
     if ((location == 'Sin locación') || (archivo == null) || (motivo_de_la_solicitud === null) || (comment === 'Sin comentario.' || comment === '')) {
       Alert.alert(
@@ -171,7 +170,6 @@ const Solicitud = (props) => {
     }
   };
 
-
   const goBack = () => {
     props.navigation.goBack();
   };
@@ -179,12 +177,12 @@ const Solicitud = (props) => {
   return (
 
     <View style={styles.container}>
-      <ConnectionCheck/>
+      <ConnectionCheck />
       <ModalSolicitud
         title="Elegir Motivo"
         open={motivoOpen}
         onclose={motivoToParent}
-        close={()=>closeModal(0)}
+        close={() => closeModal(0)}
       />
 
       <Header
@@ -199,11 +197,11 @@ const Solicitud = (props) => {
         title="Escribe tu comentario"
         open={comentarioOpen}
         modalToParent={modalToParent}
-        close={()=>closeModal(2)}
+        close={() => closeModal(2)}
       />
 
       <MapaModal
-        close={()=>closeModal(1)}
+        close={() => closeModal(1)}
         open={mapaOpen}
         otherOpen={motivoOpen}
         mapToParent={mapToParent}
@@ -211,11 +209,11 @@ const Solicitud = (props) => {
 
       <ScrollView contentContainerStyle={{ padding: 10, paddingHorizontal: 0 }}>
         <View style={{ flex: 1, marginTop: 9, marginHorizontal: '2%' }}>
-          <View style={{marginTop:'24%'}}>
-          <TouchableOpacity onPress={() => openModal(0)}>
-            <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow />
-          </TouchableOpacity>
-          {
+          <View style={{ marginTop: '5%' }}>
+            <TouchableOpacity onPress={() => openModal(0)}>
+              <ButtonRequest texto="Motivo de Solicitud" iconName="keyboard-arrow-down" showArrow />
+            </TouchableOpacity>
+            {
             showMotivo ? (
               <View style={styles.optionCard}>
                 <View style={styles.collapsibleContent}>
@@ -226,51 +224,52 @@ const Solicitud = (props) => {
             ) : null
           }
 
-          <ConfirmacionPopUp
+            <ConfirmacionPopUp
 
-            nombreSolicitud={motivoDesc}
-            comentario={comment}
-            ubicacion={location}
-            confirmacion={submit}
-            open={confirmacionOpen}
-            close={()=>setConfirmacionOpen(false)}
-          />
+              nombreSolicitud={motivoDesc}
+              comentario={comment}
+              ubicacion={location}
+              confirmacion={submit}
+              open={confirmacionOpen}
+              close={() => setConfirmacionOpen(false)}
+            />
 
-          <CardSolicitud 
-          onPassImage={imageToParent} 
-          open={()=> openModal(1)}
-          getText={comment} 
-          getLocation={location} />
+            <CardSolicitud
+              onPassImage={imageToParent}
+              open={() => openModal(1)}
+              getText={comment}
+              getLocation={location}
+            />
 
-          <TouchableOpacity onPress={() => openModal(2)}>
-            <ButtonRequest texto="Cambiar Comentario" />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => openModal(2)}>
+              <ButtonRequest texto="Cambiar Comentario" />
+            </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => openModal(1)}>
-            <ButtonRequest texto="Cambiar Dirección" />
-          </TouchableOpacity>
+            <TouchableOpacity onPress={() => openModal(1)}>
+              <ButtonRequest texto="Cambiar Dirección" />
+            </TouchableOpacity>
 
-          <View>
-            <View style={styles.sendRequestGeneralContainer}>
-              <TouchableOpacity onPress={onShowConfirmationPopUp}>
-                <View style={styles.sendRequestStyle}>
+            <View>
+              <View style={styles.sendRequestGeneralContainer}>
+                <TouchableOpacity onPress={onShowConfirmationPopUp}>
+                  <View style={styles.sendRequestStyle}>
 
-                  <View style={styles.sendRequestContainer}>
-                    <Text style={{
-                      color: 'black',
-                      fontSize: 20,
-                      fontWeight: '500',
-                    }}
-                    >
-                      Enviar Solicitud
-                    </Text>
+                    <View style={styles.sendRequestContainer}>
+                      <Text style={{
+                        color: 'black',
+                        fontSize: 20,
+                        fontWeight: '500',
+                      }}
+                      >
+                        Enviar Solicitud
+                      </Text>
+                    </View>
+
                   </View>
 
-                </View>
-
-              </TouchableOpacity>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
           </View>
         </View>
 

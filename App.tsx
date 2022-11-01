@@ -21,6 +21,12 @@ import DropdownalertProvider from './src/components/DropDowAlertProvider';
 import DetallesPadron from './src/screens/DetallesPadron';
 import NetpayCustom from './src/screens/NetpayCustom';
 import PagoRealizado from './src/screens/PagoRealizado';
+import PDFviewer from './src/screens/PDFviewer';
+import WebviewCartografia from './src/screens/WebviewCartografia';
+import WebviewZonificacion from './src/screens/WebviewZonificacion';
+import WebviewEstrados from './src/screens/WebviewEstrados';
+import WebviewConvocatorias from './src/screens/WebviewConvocatorias';
+import WebviewCobildo from './src/screens/WebviewCabildo';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -42,10 +48,16 @@ const AppContainer = () => (
       <Stack.Screen name="solicitudSelect" component={SolicitudSelector} />
       <Stack.Screen name="verSolicitudes" component={VerSolicitudes} />
       <Stack.Screen name="tramites" component={Tramites} />
-      <Stack.Screen name="netpaypago" options={{ animation: 'none' }} component={NetpayPago} />
+      <Stack.Screen name="pdfViewer" options={{ animation: 'none' }} component={PDFviewer} />
       <Stack.Screen name="detallesPadron" component={DetallesPadron} />
-      <Stack.Screen name="netpayCustom" component={NetpayCustom} />
       <Stack.Screen name="pagoRealizado" component={PagoRealizado} />
+      <Stack.Screen name="netpaypago" options={{ animation: 'none' }} component={NetpayPago} />
+      <Stack.Screen name="netpayCustom" component={NetpayCustom} />
+      <Stack.Screen name="cartografia" options={{ animation: 'none' }} component={WebviewCartografia} />
+      <Stack.Screen name="zonoficacion" options={{ animation: 'none' }} component={WebviewZonificacion} />
+      <Stack.Screen name="cobildo" options={{ animation: 'none' }} component={WebviewCobildo} />
+      <Stack.Screen name="convocatorias" options={{ animation: 'none' }} component={WebviewConvocatorias} />
+      <Stack.Screen name="estrados" options={{ animation: 'none' }} component={WebviewEstrados} />
     </Stack.Navigator>
   </NavigationContainer>
 );

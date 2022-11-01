@@ -12,17 +12,16 @@ const Peticiones = (props) => {
   };
   return (
     <View style={{ flex: 1 }}>
-      <ConnectionCheck/>
+      <ConnectionCheck />
       <View style={{ flex: 1 }}>
 
         <Header
           style={styles.header}
-
           item="Peticiones"
           imgnotif={require('../../assets/imagenes/notificationGet_icon.png')}
           img={require('../../assets/imagenes/header_logo.png')}
         />
-        <View style={{marginTop:'24%'}}>
+        <View style={{ marginTop: '5%' }}>
           <ButtonRequest texto="Pagos" showArrow iconName="keyboard-arrow-right" />
           <ButtonRequest texto="Directorio de Funcionarios" showArrow iconName="keyboard-arrow-right" />
           <ButtonRequest texto="Oficinas de Atención" showArrow iconName="keyboard-arrow-right" />
