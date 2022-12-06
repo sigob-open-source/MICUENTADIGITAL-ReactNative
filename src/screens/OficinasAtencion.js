@@ -93,7 +93,10 @@ const OficinasAtencion = (props) => {
 
   // Obtiene todas las oficinas
   const getData = async () => {
-    const response = await getOficinas();
+    const response = await getOficinas({ page: 1 });
+    console.log('====================================');
+    console.log(response);
+    console.log('====================================');
     setOficinas(response);
     setFilteredOficinas(response);
     setRenderPoints(true);
@@ -101,7 +104,10 @@ const OficinasAtencion = (props) => {
 
   // Obtiene oficinas desde el endpoint de trámites
   const getDataTramites = async () => {
-    const response = await getTramites(1);
+    const response = await getTramites({ page: 1 });
+    console.log('====================================');
+    console.log('info tramites', response);
+    console.log('====================================');
     for (let i = 0; i < response.length; i++) {
       setOficinas((oficinas) => [...oficinas, response[i].departamentos]);
     }
@@ -356,7 +362,7 @@ const OficinasAtencion = (props) => {
       />
 
       <View style={styles.textInputStyle}>
-        <View  style={{ flexDirection: 'row' }}>
+        <View style={{ flexDirection: 'row' }}>
 
           <TextInput
             onChangeText={(text) => searchOficina(text)}

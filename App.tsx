@@ -27,7 +27,13 @@ import WebviewZonificacion from './src/screens/WebviewZonificacion';
 import WebviewEstrados from './src/screens/WebviewEstrados';
 import WebviewConvocatorias from './src/screens/WebviewConvocatorias';
 import WebviewCobildo from './src/screens/WebviewCabildo';
-
+import LoginScreen from './src/screens/Login';
+import Login from './src/screens/Login';
+import InicioFactura from './src/screens/InicioDeFacturacion';
+import InformacionRecibo from './src/screens/InformacionDelRecibo';
+import InformacionFiscal from './src/screens/InformacionFiscal';
+import RegistroCiudadano from './src/screens/InicioRegistroCiudadano';
+import Walkthrout from './src/screens/Walkthrough';
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -37,6 +43,12 @@ const AppContainer = () => (
       headerShown: false,
     }}
     >
+      <Stack.Screen name="walkthrout" component={Walkthrout} />
+      <Stack.Screen name="loginScreen" component={LoginScreen} />
+      <Stack.Screen name="informacionRecibo" component={InformacionRecibo} />
+      <Stack.Screen name="informacionFiscal" component={InformacionFiscal} />
+      <Stack.Screen name="registroCiudadano" component={RegistroCiudadano} />
+      <Stack.Screen name="inicioFactura" component={InicioFactura} />
       <Stack.Screen name="menuInicio" component={MenuInicio} />
       <Stack.Screen name="pagoPadron" component={PagoPadron} />
       <Stack.Screen name="pagos" component={Pagos} />
@@ -57,7 +69,6 @@ const AppContainer = () => (
       <Stack.Screen name="zonoficacion" options={{ animation: 'none' }} component={WebviewZonificacion} />
       <Stack.Screen name="cobildo" options={{ animation: 'none' }} component={WebviewCobildo} />
       <Stack.Screen name="convocatorias" options={{ animation: 'none' }} component={WebviewConvocatorias} />
-      <Stack.Screen name="estrados" options={{ animation: 'none' }} component={WebviewEstrados} />
     </Stack.Navigator>
   </NavigationContainer>
 );

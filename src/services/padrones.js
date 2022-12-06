@@ -1,10 +1,9 @@
 import Moment from 'moment';
-
+import { toCurrency, toMoment } from '../utils/formatters';
 import API from './http';
 
 Moment.defaultFormat = 'DD/MM/YYYY';
 const DATE_FORMAT = 'DD-MM-YYYY';
-const toMoment = (val = '') => Moment(val);
 
 const PADRON_DESCRIPTIONS_MAP = Object.freeze({
   11: 'Juegos de Azar',
@@ -64,6 +63,15 @@ const getPadrones = async (params) => {
     console.log(error);
   }
   return [];
+};
+
+const getTipoDePadron = (padron) => {
+  if (padron.empresa?.contribuyente?.id
+    || padron.contribuyente?.id
+    || padron.contribuyente_propietario?.id) {
+    return 15;
+  }
+  return 1;
 };
 
 const validateResut = (_data, tipoDePadron) => {
@@ -281,6 +289,20 @@ const getRecibos = async (importe, cargos, padron_id, tipo_de_padron) => {
   return result;
 };
 
+const getRecibo = async (folio) => {
+  try {
+    const response = await API.get('/recaudacion/recibos-externo/', { params: { folio } });
+    return response.data.map((e) => ({
+      ...e,
+      fecha_de_creacion: toMoment(e.fecha_de_creacion).format(DATE_FORMAT),
+      importe_total: toCurrency(e.importe_total),
+    }));
+  } catch (error) {
+    console.log(error, true);
+  }
+  return [];
+};
+
 export const GET_PADRONES_MAP = Object.freeze({
   1: getCiudadano,
   2: getEmpresa,
@@ -307,4 +329,5 @@ export {
   getEmpresa,
   getAdeudoPadron,
   getRecibos,
+  getRecibo,
 };

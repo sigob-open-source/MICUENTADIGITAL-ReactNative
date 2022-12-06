@@ -10,7 +10,6 @@ const Adeudo = ({
   nombre,
   cargo,
   children,
-
 }) => {
   const [isCollapsable, setIsCollapsable] = useState(true);
 
@@ -41,12 +40,14 @@ const Adeudo = ({
               cargo > 0 ? (
                 <Text style={styles.text}>
                   $
-                  {cargo}
+                  {cargo.toFixed(2)}
                 </Text>
-              ) : 
-                <Text style={styles.text}>
-                  - Sin adeudos.
-                </Text>
+              )
+                : (
+                  <Text style={styles.text}>
+                    - Sin adeudos.
+                  </Text>
+                )
             }
 
           </View>
@@ -89,7 +90,7 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'black',
-    width:180,
+    width: 180,
     fontFamily: fonts.light,
   },
   row: {

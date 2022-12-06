@@ -9,6 +9,7 @@ import {
   Alert,
   ScrollView,
   Text,
+  NativeModules,
 } from 'react-native';
 
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -53,7 +54,6 @@ const PagoPadron = ({ route }) => {
   const [totalAmount, setTotalAmount] = useState(0.0);
 
   const notify = useNotification();
-
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -75,9 +75,9 @@ const PagoPadron = ({ route }) => {
 
   // Alerta para cuando no se encontro nada acorde a la busqueda
   const showAlert = () => notify({
-    type: 'error',
-    title: 'Error de busqueda',
-    message: 'No se encontró nada que concuerde con la busqueda',
+    type: 'warn',
+    title: 'Notificación de Busqueda',
+    message: `No se encontró ningun ${padron?.descripcion} que concuerde con la busqueda`,
   });
 
   const handleSearch = async () => {
@@ -96,9 +96,9 @@ const PagoPadron = ({ route }) => {
       (response !== null) ? setNameSearch(response?.razon_social) : null;
       // setNameSearch(response.nombre_comercial);
     } else if (padron?.descripcion === 'Predio') {
-      response = await getPredio(searchText);
+      response = await getPredio({ q: searchText });
       numeroDePadron = 3;
-      (response !== null) ? setNameSearch(response?.cuenta_unica_de_predial) : null;
+      (response !== null) ? setNameSearch(response?.descripcion) : null;
       // setNameSearch(response?.cuenta_unica_de_predial);
     } else if (padron?.descripcion === 'Vehicular') {
       response = await getVehiculo(searchText);
@@ -117,7 +117,7 @@ const PagoPadron = ({ route }) => {
       setTotalAmount(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
       // console.log(totalAmount);
     }
-    console.log(response);
+    console.log('reponse cargos--', response?.cargos);
     setModalKey(modalKey + 1);
     setIsLoading(false);
   };
@@ -132,6 +132,54 @@ const PagoPadron = ({ route }) => {
     if (responseNetpay) {
       navigation.push('netpaypago', { responseNetpay });
     }
+  };
+  console.log(NativeModules.RNNetPay);
+
+  const calcular = async () => {
+    const sumall = resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0);
+    console.log('suma', sumall);
+
+    if (sumall) {
+      const paymentResponse = await NativeModules.RNNetPay.doTrans(sumall.toFixed(2));
+      console.log('entro a la 145');
+
+      if (paymentResponse.success) {
+        const ticketResponse = await NativeModules.RNNetPay.printTicket();
+
+        if (ticketResponse.success) {
+          notify(dispatch, {
+            type: 'success',
+            title: 'Pago realizado',
+            message: 'El pago se ha procesado exitosamente',
+          });
+
+          navigation.dispatch(
+            CommonActions.reset({
+              index: 0,
+              routes: [
+                {
+                  name: 'menuInicio',
+                  params: {},
+                },
+              ],
+            }),
+          );
+        } else {
+          notify(dispatch, {
+            type: 'error',
+            title: 'Error',
+            message: 'No se pudo generar el Ticket',
+          });
+        }
+      }
+    } else {
+      notify(dispatch, {
+        type: 'error',
+        title: 'Error',
+        message: 'No se pudo generar el pago',
+      });
+    }
+    setLoading(false);
   };
 
   // Calcula los totales y descuentas
@@ -284,12 +332,16 @@ const PagoPadron = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Header item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
+      <Header item={padron?.descripcion === 'Predio' ? 'Pago de Predial' : padron?.descripcion} imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
+
       <View style={{ marginTop: '5%' }}>
-        <Text style={styles.headText}>
-          {padron?.descripcion}
+        <Text style={styles.inputText}>
+          {padron?.descripcion === 'Predio' ? 'Buscar por Clave catastral:\nEjemplo: xx-xxx-xxx-xxx-xxxx' : ''}
+          {padron?.descripcion === 'Ciudadano' ? 'Buscar por: Clave, RFC o CURP' : ''}
+          {padron?.descripcion === 'Contribuyente' ? 'Buscar por: Clave, RFC o CURP' : ''}
         </Text>
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 30 }}>
+
+        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
           <View style={styles.textInputContainer}>
             <TextInput color="black" placeholderTextColor="#C4C4C4" onChangeText={(text) => setSearchText(text)} style={styles.textInputStyle} placeholder="Buscar..." />
           </View>
@@ -298,7 +350,7 @@ const PagoPadron = ({ route }) => {
             <View style={styles.iconContainer}>
               <Icon
                 name="search"
-                size={30}
+                size={18}
                 color="white"
               />
             </View>
@@ -329,7 +381,6 @@ const PagoPadron = ({ route }) => {
                 ))}
               />
             )
-
             : null
         }
         {/* <Adeudo key={index} nombre={nameSearch || ''} padron={padron?.descripcion} cargo={cargo} /> */}
@@ -357,7 +408,7 @@ const PagoPadron = ({ route }) => {
             <Text style={styles.totalText}>
               Total:
               {' $'}
-              {totalAmount}
+              {totalAmount?.toFixed(2)}
             </Text>
           )
       }
@@ -402,6 +453,13 @@ const styles = StyleSheet.create({
     color: 'black',
     fontSize: 20,
     fontFamily: fonts.black,
+    marginBottom: 10,
+  },
+  inputText: {
+    color: '#404040',
+    fontSize: 12,
+    fontFamily: fonts.medium,
+    marginHorizontal: 23,
   },
   menuContainer: {
     marginVertical: '3%',
@@ -411,7 +469,7 @@ const styles = StyleSheet.create({
   },
   textInputContainer: {
     flex: 1,
-    marginVertical: 15,
+    marginVertical: 5,
     height: 46,
     alignSelf: 'center',
     justifyContent: 'center',
@@ -453,7 +511,8 @@ const styles = StyleSheet.create({
     height: 46,
     padding: 5,
     paddingHorizontal: 8,
-
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   iconAvanzadoContainer: {
     backgroundColor: '#79142A',

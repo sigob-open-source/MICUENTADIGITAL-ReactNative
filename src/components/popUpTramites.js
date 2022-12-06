@@ -109,6 +109,7 @@ const PopUpTramites = (props) => {
           <>
             <Text style={styles.textStyle}>
               Descripción:
+              {' '}
               {props.tramiteProp[1]}
             </Text>
             <Text style={styles.textStyle}>Departamentos:</Text>
@@ -450,39 +451,50 @@ const PopUpTramites = (props) => {
           <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
             <Text style={styles.titleText}>información del trámite</Text>
             <TouchableOpacity onPress={!loading ? (props.onTouchOutside) : null}>
-              <MaterialCommunityIcons style={{ marginRight: 15 }} size={30} name="arrow-left" color="black" />
+              <MaterialCommunityIcons style={{ marginRight: 15 }} size={18} name="arrow-left" color="#404040" />
             </TouchableOpacity>
-
           </View>
 
-          <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
+          <View style={{ width: '100%', backgroundColor: '#DADADA', height: 1 }} />
 
-          <Text style={{
-            fontWeight: '500',
-            marginLeft: 15,
-            fontSize: 22,
-            alignSelf: 'flex-start',
-            marginVertical: 10,
-            color: 'black',
-          }}
-          >
-            {props.tramiteProp[0]}
-          </Text>
+          <View style={{ flex: 1, padding: 10, alignItems: 'center' }}>
 
-          {listFooter()}
+            <Text style={{
+              fontWeight: '500',
+              marginLeft: 15,
+              fontSize: 13,
+              alignSelf: 'flex-start',
+              color: '#262626',
+            }}
+            >
+              {props.tramiteProp[0]}
+            </Text>
 
-          <View style={styles.buttonsContainer}>
-            <TouchableOpacity onPress={() => (!loading ? (createPDF(0)) : null)}>
-              <View style={styles.buttonStyle}>
-                <Text style={styles.buttonTextStyle}>Descargar Ficha PDF</Text>
-              </View>
-            </TouchableOpacity>
+            <View style={{
+              marginVertical: 10, width: '50%', backgroundColor: '#DADADA', height: 1,
+            }}
+            />
 
-            <TouchableOpacity onPress={() => (!loading ? (createPDF(1)) : null)}>
-              <View style={styles.buttonStyle}>
-                <Text style={styles.buttonTextStyle}>Reenviar por Correo</Text>
-              </View>
-            </TouchableOpacity>
+            {listFooter()}
+
+            <View style={{
+              marginVertical: 2, width: '89%', backgroundColor: '#DADADA', height: 1,
+            }}
+            />
+
+            <View style={styles.buttonsContainer}>
+              <TouchableOpacity onPress={() => (!loading ? (createPDF(0)) : null)}>
+                <View style={styles.buttonStyle}>
+                  <Text style={styles.buttonTextStyle}>Descargar Ficha PDF</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity onPress={() => (!loading ? (createPDF(1)) : null)}>
+                <View style={styles.buttonStyle}>
+                  <Text style={styles.buttonTextStyle}>Reenviar por Correo</Text>
+                </View>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -506,14 +518,13 @@ const styles = StyleSheet.create({
   },
   buttonStyle: {
     flexDirection: 'row',
-    marginHorizontal: 10,
-    marginVertical: 10,
     justifyContent: 'center',
     alignItems: 'center',
     width: 145,
     height: 40,
     backgroundColor: colors.secundario,
     borderRadius: 5,
+    margin: 2,
   },
   buttonTextStyle: {
     color: 'white',
@@ -522,34 +533,34 @@ const styles = StyleSheet.create({
   whiteSquareContainer: {
     position: 'absolute',
     zIndex: 10,
-    width: 300,
-    height: 465,
+    width: '90%',
+    height: '95%',
     backgroundColor: 'white',
     borderRadius: 10,
   },
   titleText: {
     fontWeight: '500',
-    fontSize: 18,
+    fontSize: 13,
     marginLeft: 15,
     alignSelf: 'flex-start',
     marginVertical: 15,
-    color: 'black',
+    color: '#404040',
   },
   textStyle: {
     marginVertical: 5,
-    fontWeight: '500',
+    fontWeight: '400',
     marginLeft: 15,
-    fontSize: 15,
+    fontSize: 12,
     alignSelf: 'flex-start',
-    color: 'black',
+    color: '#262626',
   },
   textStyle2: {
     marginVertical: 5,
     fontWeight: '500',
     marginLeft: 25,
-    fontSize: 15,
+    fontSize: 12,
     alignSelf: 'flex-start',
-    color: 'black',
+    color: '#262626',
   },
   containerPDF: {
     flex: 1,

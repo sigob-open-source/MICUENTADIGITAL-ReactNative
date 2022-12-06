@@ -3,7 +3,7 @@ import {
 } from 'react-native';
 import React from 'react';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import IMAGEN from '../../assets/imagenes/publiJrz.jpg';
+import IMAGEN from '../../assets/imagenes/publiJrz.jpeg';
 
 const Banner = () => (
   <>
@@ -61,11 +61,7 @@ const Banner = () => (
 
     <View style={styles.banner}>
       <Image style={styles.bannerImage} source={IMAGEN} />
-      <View style={styles.bannerTitulo}>
-        <Text style={styles.bannerText}>App Ciudadana</Text>
-        <Text style={styles.bannerSubText}>Tramites, pagos, solicitudes y mas!! al alcance </Text>
-        <Text style={styles.bannerSubText}>de tu mano en una sola aplicacion ciudadana.</Text>
-      </View>
+      <View style={styles.bannerTitulo} />
     </View>
   </>
 
@@ -91,7 +87,7 @@ const styles = StyleSheet.create({
   },
   banner: {
     backgroundColor: '#FFFFFF',
-    height: 320,
+    height: 500,
     marginTop: 15,
     width: '100%',
     shadowColor: 'black',
@@ -149,7 +145,7 @@ const styles = StyleSheet.create({
   iconsRedes: {
     backgroundColor: '#5F2A46',
     height: 50,
-    width: 70,
+    width: 60,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,

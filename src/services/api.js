@@ -1,8 +1,8 @@
 import moment from 'moment';
-import http from './http';
 import {
   Alert,
 } from 'react-native';
+import http from './http';
 
 const controller = new AbortController();
 
@@ -10,13 +10,13 @@ const getTiposDeSolicitudes = async (entidadMunicipalId) => {
   try {
     const response = await http.post('solicitudes/tipos-de-solicitudes/', {
       entidad_municipal: entidadMunicipalId,
-      signal: controller.signal
+      signal: controller.signal,
     });
     return response?.data ?? [];
   } catch (error) {
-    console.log("ERROR: ",error);
-    controller.abort()
-    Alert.alert("Error","No se ha podido comunicar con el servidor. Favor de intentarlo más tarde.")
+    console.log('ERROR: ', error);
+    controller.abort();
+    Alert.alert('Error', 'No se ha podido comunicar con el servidor. Favor de intentarlo más tarde.');
   }
   return [];
 };
@@ -33,51 +33,59 @@ const getSolicitudes = async (entidadMunicipalId, page) => {
   }
 };
 
-
-const getOficinas = async () =>{
+const getOficinas = async () => {
   try {
-    const response = await http.get(`configuracion/unidades-de-recaudacion-public/`,{
-      signal:controller.signal
+    const response = await http.get('configuracion/unidades-de-recaudacion-public/', {
+      signal: controller.signal,
     });
-    return response?.data?.results ?? [];    
+    return response?.data?.results ?? [];
   } catch (error) {
-    controller.abort()
+    controller.abort();
   }
-}
+};
 
-const getDependencias = async () =>{
-  try{
-    const response = await http.get(`/configuracion/dependencias-public/`,{
-      signal:controller.signal
-    });
-    return response?.data ?? [];    
+const getOficinasDeAtencion = async (params) => {
+  try {
+    const response = await API.get('/configuracion/caar-public/', { params });
+    return response.data;
   } catch (error) {
-    controller.abort()
+    console.log(error);
   }
-}
+  return [];
+};
+
+const getDependencias = async () => {
+  try {
+    const response = await http.get('/configuracion/dependencias-public/', {
+      signal: controller.signal,
+    });
+    return response?.data ?? [];
+  } catch (error) {
+    controller.abort();
+  }
+};
 
 const getTramites = async (page) => {
-  try{
-    const response = await http.get(`tramites/plantillas-tramites-atencion-ciudadana/?page=${page}`,{
-      signal:controller.signal
-    });
-    return response?.data ?? [];    
-  } catch (error) {
-    controller.abort()
-  }
-}
-
-
-const getFuncionarios = async () =>{
   try {
-    const response = await http.get(`usuarios/funcionario-public/`,{
-      signal:controller.signal
+    const response = await http.get(`tramites/plantillas-tramites-atencion-ciudadana/?page=${page}`, {
+      signal: controller.signal,
     });
-    return response?.data ?? [];    
+    return response?.data ?? [];
   } catch (error) {
-    controller.abort()
+    controller.abort();
   }
-}
+};
+
+const getFuncionarios = async () => {
+  try {
+    const response = await http.get('usuarios/funcionario-public/', {
+      signal: controller.signal,
+    });
+    return response?.data ?? [];
+  } catch (error) {
+    controller.abort();
+  }
+};
 
 const registrarSolicitud = async (
   comentario,
@@ -122,7 +130,6 @@ const registrarArchivo = async (seguimientoId, archivo) => {
   return null;
 };
 
-
 export {
   getTiposDeSolicitudes,
   getSolicitudes,
@@ -131,5 +138,5 @@ export {
   getOficinas,
   getFuncionarios,
   getDependencias,
-  getTramites
+  getTramites,
 };

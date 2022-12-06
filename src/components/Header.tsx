@@ -14,7 +14,7 @@ const Header = (props) => (
       <View style={styles.logoContainer}>
         <FontAwesome5
           name="bars"
-          size={30}
+          size={23}
           solid
           color="#5F2A46"
         />
@@ -46,7 +46,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   tituloHeader: {
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: '800',
     color: '#5F2A46',
     textAlign: 'center',
@@ -68,7 +68,7 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: '#FFFFFF',
-    height: 70,
+    height: 50,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',

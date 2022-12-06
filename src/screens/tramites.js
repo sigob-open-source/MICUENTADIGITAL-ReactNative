@@ -107,7 +107,7 @@ const Tramites = (props) => {
     )}
     >
       <View style={styles.tramiteView}>
-        <Text style={styles.collapsibleText}>{`${item.id} - ${item.nombre}`}</Text>
+        <Text numberOfLines={3} ellipsizeMode="tail" style={styles.collapsibleText}>{`${item.id} - ${item.nombre}`}</Text>
       </View>
     </TouchableOpacity>
   );
@@ -130,6 +130,7 @@ const Tramites = (props) => {
         setFilteredData(items);
         setTramitesMunicipales(items[0].nombre);
         currentPage += 1;
+        setLoading(false);
 
         // Terminar la carga si se obtienen todos los trámites de forma éxitosa
         if (endOfList) {
@@ -260,6 +261,12 @@ const Tramites = (props) => {
     }
   };
 
+  const loadMoreItem = () => {
+    console.log('====================================');
+    console.log('muchos items mas');
+    console.log('====================================');
+  };
+
   return (
     <View style={{ flex: 1, height: '100%' }}>
       <ConnectionCheck />
@@ -295,6 +302,8 @@ const Tramites = (props) => {
                 data={tiposDeFiltros}
                 renderItem={({ item, index }) => renderFiltro(item, index)}
                 keyExtractor={(item, index) => index.toString()}
+                onEndReached={loadMoreItem}
+                onEndReachedThreshold={0}
               />
             </Collapsible>
           </View>
@@ -433,12 +442,6 @@ const Tramites = (props) => {
         </View>
       </View>
 
-      <Footer
-        back={goBack}
-        showBack
-        style={styles.footer}
-      />
-
     </View>
   );
 };
@@ -559,7 +562,7 @@ const styles = StyleSheet.create({
     flexWrap: 'wrap',
     fontWeight: '500',
     marginLeft: '1.5%',
-    fontSize: 16,
+    fontSize: 12,
     color: 'black',
   },
   tramiteView: {
