@@ -6,7 +6,6 @@ import {
   TouchableWithoutFeedback,
   TextInput,
   ActivityIndicator,
-  Alert,
   ScrollView,
   Text,
   NativeModules,
@@ -20,15 +19,11 @@ import colors from '../utils/colors';
 import { tokenizeAmount } from '../services/netpay';
 
 import Header from '../components/Header';
-import Footer from '../components/Footer';
-import BusquedaAvanzadaCiudadano from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaCiudadano';
-import BusquedaAvanzadaEmpresa from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaEmpresa';
-import BusquedaAvanzadaPredio from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaPredio';
-import BusquedaAvanzadaVehiculo from '../components/BusquedaAvanzadaComponents/BusquedaAvanzadaVehiculo';
 import Adeudo from '../components/Adeudo';
 import CardItem from '../components/CardItem';
 
 import {
+  getPadrones,
   getVehiculo,
   getPredio,
   getEmpresa,
@@ -52,14 +47,16 @@ const PagoPadron = ({ route }) => {
   const [modalKey, setModalKey] = useState(100);
   const [isLoading, setIsLoading] = useState(false);
   const [totalAmount, setTotalAmount] = useState(0.0);
+  const [padrones, setPadrones] = useState();
 
   const notify = useNotification();
   const navigation = useNavigation();
 
   useEffect(() => {
     setPadron(route.params.padron);
-
+    const _padrones = getPadrones();
     return () => {
+      setPadrones(_padrones);
       setPadron({});
       setPadronSearched({});
       setSearchText({});
@@ -117,23 +114,26 @@ const PagoPadron = ({ route }) => {
       setTotalAmount(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
       // console.log(totalAmount);
     }
-    console.log('reponse cargos--', response?.cargos);
     setModalKey(modalKey + 1);
     setIsLoading(false);
   };
+  console.log(padronSearched);
 
   // Funcion llamada al dar al boton realizar pago
   const dopayment = async () => {
     const sumall = resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0);
-    console.log('suma', sumall);
 
     const responseNetpay = await tokenizeAmount(sumall.toFixed(2));
 
+    const referenciaNetpay = await postGenererReferenciasNetpay(padron.id, padronSearched, resultCargos, padrones);
+    const folioNetpay = referenciaNetpay?.folio_netpay;
+
     if (responseNetpay) {
-      navigation.push('netpaypago', { responseNetpay });
+      console.log('referencia', referenciaNetpay);
+
+      navigation.push('netpaypago', { responseNetpay, folioNetpay });
     }
   };
-  console.log(NativeModules.RNNetPay);
 
   const calcular = async () => {
     const sumall = resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0);
@@ -416,7 +416,7 @@ const PagoPadron = ({ route }) => {
         <View key={modalKey}>
           {
             totalAmount > 0 ? (
-              <TouchableWithoutFeedback onPress={dopayment}>
+              <TouchableWithoutFeedback onPress={calcular}>
                 <View style={styles.buttonPrint}>
                   <Text style={styles.textButton}>Realizar Pago</Text>
                 </View>

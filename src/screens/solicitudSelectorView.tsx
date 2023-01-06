@@ -32,18 +32,12 @@ const SolicitudSelector = (props) => {
             <ButtonRequest texto="Registrar una Solicitud" iconName="keyboard-arrow-right" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => props.navigation.push('solicitud')}>
-            <ButtonRequest texto="Solicitud de Queja" iconName="keyboard-arrow-right" />
+          <TouchableOpacity onPress={() => props.navigation.push('tipoDeRegistro')}>
+            <ButtonRequest texto="Registrar queja" iconName="keyboard-arrow-right" />
           </TouchableOpacity>
         </View>
 
       </View>
-
-      <Footer
-        back={goBack}
-        showBack
-        style={styles.footer}
-      />
 
     </View>
   );

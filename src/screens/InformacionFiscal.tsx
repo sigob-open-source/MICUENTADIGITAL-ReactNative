@@ -18,7 +18,7 @@ const InformacionDelRecibo = () => {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: '#ffffff' }}>
-      <ScrollView>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.cardContainer}>
           <Text style={styles.titleCard}>Informacion Fiscal</Text>
 

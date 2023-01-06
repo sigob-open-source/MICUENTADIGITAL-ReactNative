@@ -34,6 +34,11 @@ import InformacionRecibo from './src/screens/InformacionDelRecibo';
 import InformacionFiscal from './src/screens/InformacionFiscal';
 import RegistroCiudadano from './src/screens/InicioRegistroCiudadano';
 import Walkthrout from './src/screens/Walkthrough';
+import TipoDeRegistro from './src/screens/TipoDeRegistro';
+import InformacionDeQueja from './src/screens/InformacionDeQueja';
+import ArchivosDeQuejas from './src/screens/ArchivosDeQuejas';
+import InfoServidorPublico from './src/screens/InfoServidorPublico';
+
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -44,6 +49,11 @@ const AppContainer = () => (
     }}
     >
       <Stack.Screen name="walkthrout" component={Walkthrout} />
+      <Stack.Screen name="infoServidorPublico" component={InfoServidorPublico} />
+      <Stack.Screen name="tipoDeRegistro" component={TipoDeRegistro} />
+      <Stack.Screen name="PDFviewer" component={PDFviewer} />
+      <Stack.Screen name="informacionQueja" component={InformacionDeQueja} />
+      <Stack.Screen name="archivosDeQuejas" component={ArchivosDeQuejas} />
       <Stack.Screen name="loginScreen" component={LoginScreen} />
       <Stack.Screen name="informacionRecibo" component={InformacionRecibo} />
       <Stack.Screen name="informacionFiscal" component={InformacionFiscal} />

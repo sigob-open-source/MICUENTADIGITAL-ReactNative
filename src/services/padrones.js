@@ -43,13 +43,11 @@ export const postGenererReferenciasNetpay = async (tipoDePadron, padron, cargos,
         ciudadano: null,
       },
     };
-    const response = await API.post('recaudacion/referencias-pago-netpay-public', values);
-    return {
-      base64: `data:application/pdf;base64,${response.data.data}`,
-      folio_netpay: response.data.folio_netpay,
-    };
+    console.log(JSON.stringify(values));
+    const response = await API.post('recaudacion/referencias-pago-netpay-public/', values);
+    return response.data;
   } catch (error) {
-    console.log(error, true);
+    console.log(JSON.stringify(error.response.data), true);
   }
   return null;
 };
@@ -301,6 +299,18 @@ const getRecibo = async (folio) => {
     console.log(error, true);
   }
   return [];
+};
+
+export const generarReciboPorNetPay = async (values) => {
+  try {
+    const response = await API.post('/recaudacion/recibo/generar-recibo-por-referencia-de-pago-netpay/', values);
+    return {
+      base64: `data:application/pdf;base64,${response.data.data}`,
+    };
+  } catch (error) {
+    console.log(JSON.stringify(error.response.data), true);
+    return null;
+  }
 };
 
 export const GET_PADRONES_MAP = Object.freeze({

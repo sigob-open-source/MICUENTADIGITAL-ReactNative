@@ -11,12 +11,16 @@ import { useDropdownAlert } from '../utils/notifications';
 import Header from '../components/Header';
 import { useNotification } from '../components/DropDowAlertProvider';
 
-const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
+import {
+  generarReciboPorNetPay,
+} from '../services/padrones';
+
+const NetpayPago = ({ route: { params: { responseNetpay, folioNetpay } } }) => {
   const notify = useNotification();
 
   const navigation = useNavigation();
 
-  const showAlert = (type) => {
+  const showAlert = (type, responseRecibo) => {
     if (type == 'success') {
       Alert.alert(
 
@@ -26,12 +30,12 @@ const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
           {
             text: 'Entendido',
             style: 'cancel',
-            onPress: () => navigation.navigate('pagos'),
+            onPress: () => navigation.navigate('PDFviewer', { responseRecibo }),
           },
         ],
       );
     }
-    if (type == 'failed') {
+    if (type === 'failed') {
       Alert.alert(
 
         'Error al realizar pago',
@@ -46,7 +50,8 @@ const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
       );
     }
   };
-  function onMessage(data) {
+
+  const onMessage = async (data) => {
     // Intentar parsear el JSON
     let json;
     try {
@@ -54,14 +59,23 @@ const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
     } catch (error) {
       console.log(error);
     }
+    console.log('====================================');
+    console.log('json netpay', json);
+    console.log('====================================');
 
     if (json?.status === 'success') {
+      const responseRecibo = await generarReciboPorNetPay({
+        folio: folioNetpay,
+        canal_de_pago: 3,
+        response: json,
+      });
+
       notify({
         type: 'success',
         title: 'Éxito',
-        message: 'Consulta exitosa',
+        message: 'Consulta exitosa ',
       });
-      showAlert('success');
+      showAlert('success', responseRecibo);
     }
 
     if (json?.status === 'failed') {
@@ -74,7 +88,7 @@ const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
     }
 
     // console.log(JSON.stringify(json, null, 2));
-  }
+  };
 
   const html = `<!DOCTYPE html>
   <html>
@@ -88,8 +102,8 @@ const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
     <div style="visibility: hidden;">
       <button style="display: none !important;" id='netpay-checkout' data-street1='Filosofos 100' data-country='Mexico'
         data-city='Monterrey' data-postal-code='64700' data-state='Nuevo Leon'
-        data-token=${responseNetpay} data-phone-number='8110000000'
-        data-email='accept@netpay.com.mx' data-merchant-reference-code='77777777' data-onsuccess='onPaymentSuccess'
+        data-token='${responseNetpay}' data-phone-number='8110000000'
+        data-email='accept@netpay.com.mx' data-merchant-reference-code='${folioNetpay}' data-onsuccess='onPaymentSuccess'
         data-onerror='onPaymentError' data-product-count='2' data-commerce-name='Netpay Sandbox'>Pagar</button>
     </div>
     <script src="https://docs.netpay.mx/cdn/js/latest/checkout.plus.dev.js"></script>
@@ -99,8 +113,8 @@ const NetpayPago = ({ route: { params: { responseNetpay } } }) => {
         const btn = document.getElementById('netpay-checkout');
         btn.click();
       }
-      NetPay.init('pk_netpay_uppwsWcVEwjcMTKhExsKENZif')
-      NetPay.setSandboxMode(true)
+      NetPay.init('pk_netpay_DBmockYZopdDnTdhYhGJCDXfe')
+      NetPay.setSandboxMode(false)
       function onPaymentSuccess(r) {
         window.ReactNativeWebView.postMessage(JSON.stringify(r))
       }

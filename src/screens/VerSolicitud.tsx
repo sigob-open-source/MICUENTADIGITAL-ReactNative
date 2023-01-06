@@ -52,7 +52,6 @@ const VerSolicitud = ({ route }) => {
           <View style={styles.rectangle}>
             <Image
               style={styles.image}
-              source={{ uri: solicitud?.seguimientos[0]?.archivos[0]?.archivo } || require('../../assets/imagenes/amanecer-playa.jpg')}
             />
           </View>
           <ComentarioInfo headText="Comentario de Usuario" subText={solicitud?.comentario || 'prueba'} iconName="person" />

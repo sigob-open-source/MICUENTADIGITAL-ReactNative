@@ -7,7 +7,6 @@ import Header from '../components/Header';
 const WebviewEstrados = (props) => (
   <View style={{ flex: 1 }}>
     <Header item="Estrados" />
-
     <View style={{
       flex: 1,
     }}

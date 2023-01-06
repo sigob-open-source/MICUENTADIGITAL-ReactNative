@@ -14,9 +14,7 @@ const ContentSolicitud = ({ fecha, solicitud }) => {
   return (
     <TouchableWithoutFeedback onPress={() => navigation.push('verSolicitud', { solicitud })}>
       <View style={styles.contentSolicitud}>
-        <View style={styles.rectangle}>
-          <Image style={styles.image} source={{ uri: solicitud?.seguimientos[0]?.archivos[0]?.archivo } || require('../../assets/imagenes/amanecer-playa.jpg')} />
-        </View>
+        <View style={styles.rectangle} />
         <Text style={styles.text}>
           Solicitud
           {' '}
