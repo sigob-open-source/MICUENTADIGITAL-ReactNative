@@ -253,6 +253,7 @@ const MenuInicio = (props) => {
       </View>
 
       <View style={{ flex: 1, marginHorizontal: '2%' }}>
+
         <FlatList
           data={formatData(dataList, numColumns)}
           renderItem={_renderItem}
@@ -262,8 +263,12 @@ const MenuInicio = (props) => {
             <>
               <View style={styles.separator} />
 
-              <Banner />
+              <View style={styles.pagosStyle}>
+                <Text>Pagos de adeudos</Text>
+              </View>
 
+              <View style={styles.separator} />
+              <Banner />
               <View style={styles.separator} />
 
               <View style={styles.notifications}>
@@ -400,6 +405,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 100,
     marginHorizontal: 5,
+  },
+  pagosStyle: {
+    backgroundColor: '#ffffff',
+    height: 50,
+    width: '100%',
+    borderRadius: 10,
+    padding: 10,
+    shadowColor: 'black',
+    shadowOpacity: 0.15,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 3,
+    elevation: 3,
+    marginHorizontal: 4,
   },
 });
 
