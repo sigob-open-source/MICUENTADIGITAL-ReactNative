@@ -3,7 +3,7 @@ import axios from 'axios';
 const tokenizeAmount = async (total) => {
   let token;
   try {
-    const response = await axios.post('https://gateway-154.netpaydev.com/gateway-ecommerce', {
+    const response = await axios.post('https://suite.netpay.com.mx/gateway-ecommerce/token/amount', {
       amount: total,
     }, {
       headers: {

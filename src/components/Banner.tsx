@@ -6,64 +6,57 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import IMAGEN from '../../assets/imagenes/publiJrz.jpeg';
 
 const Banner = () => (
-  <>
-    <View style={styles.aboutUs}>
-      <View style={{ flex: 1 }}>
-        <View>
-          <Text style={styles.subTituloInfo}>Redes Sociales</Text>
-          <View style={{
-            flexDirection: 'row',
-            justifyContent: 'space-around',
-          }}
-          >
-            <TouchableOpacity onPress={() => Linking.openURL('https://www.facebook.com/GobiernoCdJuarez')}>
-              <View style={styles.iconsRedes}>
-                <FontAwesome5
-                  name="facebook"
-                  size={25}
-                  solid
-                  color="#ffffff"
-                />
-              </View>
-            </TouchableOpacity>
+  <View style={styles.aboutUs}>
+    <View style={{ flex: 1 }}>
+      <View>
+        <Text style={styles.subTituloInfo}>Redes Sociales</Text>
+        <View style={{
+          flexDirection: 'row',
+          justifyContent: 'space-around',
+        }}
+        >
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.facebook.com/GobiernoCdJuarez')}>
+            <View style={styles.iconsRedes}>
+              <FontAwesome5
+                name="facebook"
+                size={25}
+                solid
+                color="#ffffff"
+              />
+            </View>
+          </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => Linking.openURL('https://twitter.com/municipiojuarez')}>
-              <View style={styles.iconsRedes}>
-                <FontAwesome5
-                  name="twitter"
-                  size={25}
-                  solid
-                  color="#ffffff"
-                />
-              </View>
-            </TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL('https://twitter.com/municipiojuarez')}>
+            <View style={styles.iconsRedes}>
+              <FontAwesome5
+                name="twitter"
+                size={25}
+                solid
+                color="#ffffff"
+              />
+            </View>
+          </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/channel/UC-GVeZjSK9YQr0PL7rlvcTg/featured')}>
-              <View style={styles.iconsRedes}>
-                <FontAwesome5
-                  name="youtube"
-                  size={23}
-                  solid
-                  color="#ffffff"
-                />
-              </View>
-            </TouchableOpacity>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/channel/UC-GVeZjSK9YQr0PL7rlvcTg/featured')}>
+            <View style={styles.iconsRedes}>
+              <FontAwesome5
+                name="youtube"
+                size={23}
+                solid
+                color="#ffffff"
+              />
+            </View>
+          </TouchableOpacity>
 
-            <TouchableOpacity onPress={() => Linking.openURL('https://www.juarez.gob.mx/')}>
-              <View style={styles.webButton}>
-                <Text style={styles.aButton}> Ir al portal web</Text>
-              </View>
-            </TouchableOpacity>
-          </View>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.juarez.gob.mx/')}>
+            <View style={styles.webButton}>
+              <Text style={styles.aButton}> Ir al portal web</Text>
+            </View>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
-
-    <View style={styles.banner}>
-      <Image style={styles.bannerImage} source={IMAGEN} />
-      <View style={styles.bannerTitulo} />
-    </View>
-  </>
+  </View>
 
 );
 

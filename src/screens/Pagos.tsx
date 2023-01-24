@@ -87,21 +87,6 @@ const Pagos = (props) => {
     props.navigation.goBack();
   };
 
-  const _renderItem = ({ item, index }) => (
-    <TouchableWithoutFeedback onPress={() => props.navigation.push(item.navegacion)}>
-      <View style={{ flex: 1, alignItems: 'center' }}>
-        <Square
-          col={item.color}
-          isBlank={item.isBlank}
-          style={styles.menuContainer}
-          enableEntypo={item.enableEntypo}
-          nombreItem={item.name}
-          iconName={item.iconname}
-        />
-      </View>
-    </TouchableWithoutFeedback>
-  );
-
   return (
     <View style={{ flex: 1 }}>
 

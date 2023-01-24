@@ -22,11 +22,11 @@ const Login = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('registroCiudadano')}>
+        {/* <TouchableOpacity onPress={() => navigation.navigate('registroCiudadano')}>
           <View style={styles.buttonCredenciales}>
             <Text style={styles.textButtonSin}>Iniciar Sesion con Cuenta Unica</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity onPress={() => navigation.navigate('menuInicio')}>
           <View style={styles.buttonSinCredenciales}>

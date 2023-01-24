@@ -412,7 +412,6 @@ const PagoPadron = ({ route }) => {
             </Text>
           )
       }
-        d
 
         <View key={modalKey}>
           {

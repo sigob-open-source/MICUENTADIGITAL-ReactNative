@@ -12,6 +12,7 @@ import {
 
 import { useNetInfo } from '@react-native-community/netinfo';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { useNavigation } from '@react-navigation/native';
 
 import Square from '../components/CardPagos';
 import Header from '../components/Header';
@@ -23,15 +24,6 @@ import colors from '../utils/colors';
 // el icono del botón,color del botón en caso de que esté desactivado, nombre etc.
 
 const dataList = [
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Pagos',
-    iconname: 'wallet',
-    enableEntypo: true,
-    navegacion: 'pagos',
-    necesitaLogin: false,
-  },
   {
     isBlank: false,
     color: '#404040',
@@ -91,30 +83,12 @@ const dataList = [
     isBlank: false,
     color: '#CCCCCC',
     name: 'Solicitudes',
-    iconname: 'file-text',
+    iconname: 'street-view',
     enableEntypo: false,
     navegacion: 'solicitudSelect',
     deshabilitado: true,
   },
-  {
-    isBlank: false,
-    color: '#CCCCCC',
-    name: 'Normatividad',
-    iconname: 'paste',
-    enableEntypo: true,
-    necesitaLogin: false,
-    deshabilitado: true,
-  },
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Convocatorias',
-    iconname: 'scroll',
-    enableEntypo: true,
-    necesitaLogin: false,
-    deshabilitado: false,
-    navegacion: 'convocatorias',
-  },
+
   {
     isBlank: false,
     color: '#404040',
@@ -136,56 +110,11 @@ const dataList = [
     navegacion: 'estrados',
   },
 ];
-// recordatorio para remover la propiedad de enableEntypo
-const dataListSecond = [
-  {
-    isBlank: false,
-    color: '#767778',
-    name: 'Mis Adeudos',
-    iconname: 'chart-bar',
-    enableEntypo: true,
-    necesitaLogin: true,
-  },
-  {
-    isBlank: false,
-    color: '#767778',
-    name: 'Mis Citas',
-    iconname: 'calendar-alt',
-    enableEntypo: true,
-    necesitaLogin: true,
-  },
-  {
-    isBlank: false,
-    color: '#767778',
-    name: 'Mis Trámites',
-    iconname: 'folder-open',
-    enableEntypo: false,
-    necesitaLogin: true,
-  },
-  {
-    isBlank: false,
-    color: '#767778',
-    name: 'Mi Portafolio',
-    iconname: 'folder',
-    enableEntypo: true,
-    necesitaLogin: true,
-  },
-  {
-    isBlank: false,
-    color: '#767778',
-    name: 'Mi buzón',
-    iconname: 'envelope',
-    enableEntypo: true,
-    necesitaLogin: true,
-  },
-
-];
-// Número de columnas que utiliza el flatlist para hacer calculos de como se deben organizar los botones.
 const numColumns = 3;
 
 const MenuInicio = (props) => {
   const netInfo = useNetInfo();
-
+  const navigation = useNavigation();
   const [hasSwitchedView, setHasSwitchedView] = useState(false);
 
   // En el diseño de esta pantalla, en algunos casos pueden quedar iconos vacios, pero estos se siguen mostrando
@@ -263,15 +192,25 @@ const MenuInicio = (props) => {
             <>
               <View style={styles.separator} />
 
-              <View style={styles.pagosStyle}>
-                <Text>Pagos de adeudos</Text>
-              </View>
+              <TouchableOpacity onPress={() => navigation.navigate('pagos')}>
+                <View style={styles.pagosStyle}>
+                  <Text style={styles.pagoTxt}>Pagos de adeudos</Text>
+                  <View style={styles.iconstyel}>
+                    <FontAwesome5
+                      name="money-check-alt"
+                      size={30}
+                      solid
+                      color="#414141"
+                    />
+                  </View>
+                </View>
+              </TouchableOpacity>
 
               <View style={styles.separator} />
               <Banner />
               <View style={styles.separator} />
 
-              <View style={styles.notifications}>
+              {/* <View style={styles.notifications}>
                 <View style={styles.notificationsIcon}>
                   <FontAwesome5
                     name="comments"
@@ -286,16 +225,13 @@ const MenuInicio = (props) => {
                     El presidente comunica un cambio para la ciudad.
                   </Text>
                 </View>
-              </View>
-
-              <View style={styles.separator} />
+              </View> */}
 
               <View />
             </>
           )}
         />
       </View>
-
     </View>
   );
 };
@@ -304,7 +240,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#EDF2F5',
-
   },
   separator: {
     justifyContent: 'center',
@@ -408,16 +343,33 @@ const styles = StyleSheet.create({
   },
   pagosStyle: {
     backgroundColor: '#ffffff',
-    height: 50,
+    height: 60,
     width: '100%',
     borderRadius: 10,
-    padding: 10,
+    paddingHorizontal: 10,
     shadowColor: 'black',
     shadowOpacity: 0.15,
     shadowOffset: { width: 0, height: 2 },
     shadowRadius: 3,
     elevation: 3,
     marginHorizontal: 4,
+    alignItems: 'center',
+    flexDirection: 'row',
+    borderBottomWidth: 5,
+    borderBottomColor: '#86E2C0',
+  },
+  pagoTxt: {
+    color: '#404040',
+    fontWeight: '800',
+    fontSize: 14,
+    flex: 1,
+  },
+  iconstyel: {
+    height: '100%',
+    width: 60,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 7,
   },
 });
 
