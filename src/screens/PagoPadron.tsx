@@ -416,7 +416,7 @@ const PagoPadron = ({ route }) => {
         <View key={modalKey}>
           {
             totalAmount > 0 ? (
-              <TouchableWithoutFeedback onPress={calcular}>
+              <TouchableWithoutFeedback onPress={dopayment}>
                 <View style={styles.buttonPrint}>
                   <Text style={styles.textButton}>Realizar Pago</Text>
                 </View>

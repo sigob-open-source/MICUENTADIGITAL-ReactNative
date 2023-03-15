@@ -16,7 +16,7 @@ const Header = (props) => (
           name="bars"
           size={23}
           solid
-          color="#5F2A46"
+          color="#782745"
         />
       </View>
     </TouchableWithoutFeedback>
@@ -48,7 +48,7 @@ const styles = StyleSheet.create({
   tituloHeader: {
     fontSize: 15,
     fontWeight: '800',
-    color: '#5F2A46',
+    color: '#782745',
     textAlign: 'center',
   },
   logoContainer: {

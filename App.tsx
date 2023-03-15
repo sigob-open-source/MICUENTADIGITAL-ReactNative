@@ -25,6 +25,9 @@ import PDFviewer from './src/screens/PDFviewer';
 import WebviewCartografia from './src/screens/WebviewCartografia';
 import WebviewZonificacion from './src/screens/WebviewZonificacion';
 import WebviewEstrados from './src/screens/WebviewEstrados';
+import WebviewFacturacion from './src/screens/WebviewFacturacion';
+import WebviewTramites from './src/screens/WebviewTramites';
+import WebviewAdeudos from './src/screens/WebviewAdeudos';
 import WebviewConvocatorias from './src/screens/WebviewConvocatorias';
 import WebviewCobildo from './src/screens/WebviewCabildo';
 import LoginScreen from './src/screens/Login';
@@ -79,6 +82,11 @@ const AppContainer = () => (
       <Stack.Screen name="zonoficacion" options={{ animation: 'none' }} component={WebviewZonificacion} />
       <Stack.Screen name="cobildo" options={{ animation: 'none' }} component={WebviewCobildo} />
       <Stack.Screen name="convocatorias" options={{ animation: 'none' }} component={WebviewConvocatorias} />
+      <Stack.Screen name="webTramites" options={{ animation: 'none' }} component={WebviewTramites} />
+      <Stack.Screen name="webAdeudos" options={{ animation: 'none' }} component={WebviewAdeudos} />
+      <Stack.Screen name="webFacturacion" options={{ animation: 'none' }} component={WebviewFacturacion} />
+      <Stack.Screen name="estrados" options={{ animation: 'none' }} component={WebviewEstrados} />
+
     </Stack.Navigator>
   </NavigationContainer>
 );

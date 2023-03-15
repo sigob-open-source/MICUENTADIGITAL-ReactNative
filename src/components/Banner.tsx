@@ -15,7 +15,7 @@ const Banner = () => (
           justifyContent: 'space-around',
         }}
         >
-          <TouchableOpacity onPress={() => Linking.openURL('https://www.facebook.com/GobiernoCdJuarez')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.facebook.com/hermosillogobierno/')}>
             <View style={styles.iconsRedes}>
               <FontAwesome5
                 name="facebook"
@@ -26,7 +26,7 @@ const Banner = () => (
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => Linking.openURL('https://twitter.com/municipiojuarez')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://twitter.com/HermosilloGob')}>
             <View style={styles.iconsRedes}>
               <FontAwesome5
                 name="twitter"
@@ -37,7 +37,7 @@ const Banner = () => (
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/channel/UC-GVeZjSK9YQr0PL7rlvcTg/featured')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/user/HermosilloGob')}>
             <View style={styles.iconsRedes}>
               <FontAwesome5
                 name="youtube"
@@ -48,7 +48,7 @@ const Banner = () => (
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => Linking.openURL('https://www.juarez.gob.mx/')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.hermosillo.gob.mx/')}>
             <View style={styles.webButton}>
               <Text style={styles.aButton}> Ir al portal web</Text>
             </View>
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   webButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#5F2A46',
+    backgroundColor: '#FF6520',
     height: 50,
     width: 150,
     borderRadius: 5,
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   iconsRedes: {
-    backgroundColor: '#5F2A46',
+    backgroundColor: '#FF6520',
     height: 50,
     width: 60,
     justifyContent: 'center',

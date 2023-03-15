@@ -30,7 +30,7 @@ const dataList = [
     name: 'Trámites',
     iconname: 'folder-open',
     enableEntypo: false,
-    navegacion: 'tramites',
+    navegacion: 'webTramites',
     necesitaLogin: false,
   },
   {
@@ -51,42 +51,42 @@ const dataList = [
     navegacion: 'zonoficacion',
     necesitaLogin: false,
   },
+  // {
+  //   isBlank: false,
+  //   color: '#404040',
+  //   name: 'Oficinas de Atención',
+  //   iconname: 'school',
+  //   enableEntypo: true,
+  //   navegacion: 'oficinaAtencion',
+  //   necesitaLogin: false,
+  // },
+  // {
+  //   isBlank: false,
+  //   color: '#404040',
+  //   name: 'Directorio',
+  //   iconname: 'book',
+  //   enableEntypo: true,
+  //   navegacion: 'dirfuncionario',
+  //   necesitaLogin: false,
+  // },
   {
     isBlank: false,
     color: '#404040',
-    name: 'Oficinas de Atención',
-    iconname: 'school',
-    enableEntypo: true,
-    navegacion: 'oficinaAtencion',
-    necesitaLogin: false,
-  },
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Directorio',
-    iconname: 'book',
-    enableEntypo: true,
-    navegacion: 'dirfuncionario',
-    necesitaLogin: false,
-  },
-  {
-    isBlank: false,
-    color: '#CCCCCC',
     name: 'Facturación',
     iconname: 'id-card-alt',
     enableEntypo: true,
-    navegacion: 'inicioFactura',
+    navegacion: 'webFacturacion',
     necesitaLogin: false,
-    deshabilitado: true,
+    deshabilitado: false,
   },
   {
     isBlank: false,
-    color: '#CCCCCC',
+    color: '#404040',
     name: 'Solicitudes',
     iconname: 'street-view',
     enableEntypo: false,
     navegacion: 'solicitudSelect',
-    deshabilitado: true,
+    deshabilitado: false,
   },
 
   {
@@ -194,7 +194,7 @@ const MenuInicio = (props) => {
 
               <TouchableOpacity onPress={() => navigation.navigate('pagos')}>
                 <View style={styles.pagosStyle}>
-                  <Text style={styles.pagoTxt}>Pagos de adeudos</Text>
+                  <Text style={styles.pagoTxt}>Pagos</Text>
                   <View style={styles.iconstyel}>
                     <FontAwesome5
                       name="money-check-alt"
@@ -205,6 +205,20 @@ const MenuInicio = (props) => {
                   </View>
                 </View>
               </TouchableOpacity>
+
+              {/* <TouchableOpacity onPress={() => navigation.navigate('webAdeudos')}>
+                <View style={styles.pagosStyle}>
+                  <Text style={styles.pagoTxt}>Gestión de Trámites Gubernamentales</Text>
+                  <View style={styles.iconstyel}>
+                    <FontAwesome5
+                      name="file-signature"
+                      size={30}
+                      solid
+                      color="#414141"
+                    />
+                  </View>
+                </View>
+              </TouchableOpacity> */}
 
               <View style={styles.separator} />
               <Banner />
@@ -353,6 +367,7 @@ const styles = StyleSheet.create({
     shadowRadius: 3,
     elevation: 3,
     marginHorizontal: 4,
+    marginVertical: 5,
     alignItems: 'center',
     flexDirection: 'row',
     borderBottomWidth: 5,

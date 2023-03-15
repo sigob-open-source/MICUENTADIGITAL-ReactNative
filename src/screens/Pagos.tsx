@@ -94,7 +94,8 @@ const Pagos = (props) => {
 
       <View style={styles.container}>
 
-        <Header style={styles.header} item="Pagos" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} img={require('../../assets/imagenes/header_logo.png')} />
+        <Header style={styles.header} item="Pagos" />
+
         <View style={{ marginTop: '3%' }}>
           <View style={styles.textInputContainer}>
             <TextInput color="black" placeholderTextColor="#C4C4C4" style={styles.textInputStyle} placeholder="Buscar..." />

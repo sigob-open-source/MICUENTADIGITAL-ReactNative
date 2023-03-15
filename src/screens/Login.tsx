@@ -5,8 +5,8 @@ import React from 'react';
 
 import { useNavigation } from '@react-navigation/native';
 
-import IMAGEN from '../../assets/imagenes/bannerlogin.png';
-import IconLogo from '../../assets/imagenes/logo-finanzas.982abfb9.png';
+import IMAGEN from '../../assets/imagenes/jrzfondo.png';
+import IconLogo from '../../assets/imagenes/logo.png';
 
 const Login = () => {
   const navigation = useNavigation();
@@ -22,11 +22,11 @@ const Login = () => {
       </View>
 
       <View style={styles.buttonContainer}>
-        {/* <TouchableOpacity onPress={() => navigation.navigate('registroCiudadano')}>
+        <TouchableOpacity onPress={() => navigation.navigate('registroCiudadano')}>
           <View style={styles.buttonCredenciales}>
             <Text style={styles.textButtonSin}>Iniciar Sesion con Cuenta Unica</Text>
           </View>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
 
         <TouchableOpacity onPress={() => navigation.navigate('menuInicio')}>
           <View style={styles.buttonSinCredenciales}>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     padding: 30,
   },
   buttonSinCredenciales: {
-    backgroundColor: '#57636C',
+    backgroundColor: '#582E44',
     height: 40,
     width: '100%',
     justifyContent: 'center',
