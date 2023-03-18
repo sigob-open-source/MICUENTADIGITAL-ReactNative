@@ -192,8 +192,8 @@ const MenuInicio = (props) => {
             <>
               <View style={styles.separator} />
 
-              <TouchableOpacity onPress={() => navigation.navigate('pagos')}>
-                <View style={styles.pagosStyle}>
+              <View style={styles.pagosStyle}>
+                <View style={styles.tituloCardContainer}>
                   <Text style={styles.pagoTxt}>Pagos</Text>
                   <View style={styles.iconstyel}>
                     <FontAwesome5
@@ -204,7 +204,23 @@ const MenuInicio = (props) => {
                     />
                   </View>
                 </View>
-              </TouchableOpacity>
+                <View style={styles.buttonBox}>
+                  <TouchableOpacity onPress={() => navigation.navigate('pagos')}>
+                    <View style={styles.butonPagos}>
+                      <Text>Consulta de adeudo</Text>
+                    </View>
+                  </TouchableOpacity>
+
+                  <View style={styles.separator2} />
+                  <TouchableOpacity onPress={() => navigation.navigate('otrosPagos')}>
+                    <View style={styles.butonPagos}>
+                      <Text>Agregar cobro</Text>
+                    </View>
+                  </TouchableOpacity>
+
+                </View>
+
+              </View>
 
               {/* <TouchableOpacity onPress={() => navigation.navigate('webAdeudos')}>
                 <View style={styles.pagosStyle}>
@@ -251,6 +267,14 @@ const MenuInicio = (props) => {
 };
 
 const styles = StyleSheet.create({
+  butonPagos: {
+    height: 40,
+    justifyContent: 'center',
+  },
+  buttonBox: {
+    flex: 1,
+    marginBottom: 5,
+  },
   container: {
     flex: 1,
     backgroundColor: '#EDF2F5',
@@ -261,6 +285,12 @@ const styles = StyleSheet.create({
     width: 336,
     height: 1,
     margin: '2%',
+    backgroundColor: '#DCE1E5',
+  },
+  separator2: {
+    alignSelf: 'center',
+    width: '100%',
+    height: 1,
     backgroundColor: '#DCE1E5',
   },
   mainContainer: {
@@ -357,7 +387,7 @@ const styles = StyleSheet.create({
   },
   pagosStyle: {
     backgroundColor: '#ffffff',
-    height: 60,
+    height: 135,
     width: '100%',
     borderRadius: 10,
     paddingHorizontal: 10,
@@ -368,10 +398,17 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginHorizontal: 4,
     marginVertical: 5,
-    alignItems: 'center',
+    borderTopWidth: 5,
+    borderTopColor: '#86E2C0',
+  },
+  tituloCardContainer: {
     flexDirection: 'row',
-    borderBottomWidth: 5,
-    borderBottomColor: '#86E2C0',
+    width: '100%',
+    height: 40,
+    alignItems: 'center',
+    borderBottomWidth: 0.5,
+    borderBottomColor: '#DADCDF',
+
   },
   pagoTxt: {
     color: '#404040',
@@ -382,9 +419,9 @@ const styles = StyleSheet.create({
   iconstyel: {
     height: '100%',
     width: 60,
-    justifyContent: 'center',
-    alignItems: 'center',
     marginRight: 7,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 });
 

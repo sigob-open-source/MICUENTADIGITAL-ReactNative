@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
   webButton: {
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#FF6520',
+    backgroundColor: '#831D45',
     height: 50,
     width: 150,
     borderRadius: 5,
@@ -136,7 +136,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   iconsRedes: {
-    backgroundColor: '#FF6520',
+    backgroundColor: '#184766',
     height: 50,
     width: 60,
     justifyContent: 'center',

@@ -41,6 +41,7 @@ import TipoDeRegistro from './src/screens/TipoDeRegistro';
 import InformacionDeQueja from './src/screens/InformacionDeQueja';
 import ArchivosDeQuejas from './src/screens/ArchivosDeQuejas';
 import InfoServidorPublico from './src/screens/InfoServidorPublico';
+import OtrosPagos from './src/screens/OtrosPagos';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -76,6 +77,7 @@ const AppContainer = () => (
       <Stack.Screen name="pdfViewer" options={{ animation: 'none' }} component={PDFviewer} />
       <Stack.Screen name="detallesPadron" component={DetallesPadron} />
       <Stack.Screen name="pagoRealizado" component={PagoRealizado} />
+      <Stack.Screen name="otrosPagos" component={OtrosPagos} />
       <Stack.Screen name="netpaypago" options={{ animation: 'none' }} component={NetpayPago} />
       <Stack.Screen name="netpayCustom" component={NetpayCustom} />
       <Stack.Screen name="cartografia" options={{ animation: 'none' }} component={WebviewCartografia} />
