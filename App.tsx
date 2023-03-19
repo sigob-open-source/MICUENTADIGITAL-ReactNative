@@ -42,6 +42,13 @@ import InformacionDeQueja from './src/screens/InformacionDeQueja';
 import ArchivosDeQuejas from './src/screens/ArchivosDeQuejas';
 import InfoServidorPublico from './src/screens/InfoServidorPublico';
 import OtrosPagos from './src/screens/OtrosPagos';
+// Pagos Diversos Screens
+import BuscarPadronScreen from './src/screens/PagosDiversos/BuscarPadron';
+import ConfirmarPadronScreen from './src/screens/PagosDiversos/ConfirmarPadron';
+import BusquedaDeCargosScreen from './src/screens/PagosDiversos/BusquedaDeCargos';
+import ConfiguracionDeCargoScreen from './src/screens/PagosDiversos/ConfiguracionDeCargo';
+import ResumenDeCargosScreen from './src/screens/PagosDiversos/ResumenDeCargos';
+import ResumenDePagoScreen from './src/screens/PagosDiversos/ResumenDePago';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -89,6 +96,12 @@ const AppContainer = () => (
       <Stack.Screen name="webFacturacion" options={{ animation: 'none' }} component={WebviewFacturacion} />
       <Stack.Screen name="estrados" options={{ animation: 'none' }} component={WebviewEstrados} />
 
+      <Stack.Screen name="busquedaPadron" options={{ animation: 'none' }} component={BuscarPadronScreen} />
+      <Stack.Screen name="confirmarPadron" options={{ animation: 'none' }} component={ConfirmarPadronScreen} />
+      <Stack.Screen name="busquedaDeCargos" options={{ animation: 'none' }} component={BusquedaDeCargosScreen} />
+      <Stack.Screen name="configuracionDeCargo" options={{ animation: 'none' }} component={ConfiguracionDeCargoScreen} />
+      <Stack.Screen name="resumenDeCargos" options={{ animation: 'none' }} component={ResumenDeCargosScreen} />
+      <Stack.Screen name="resumenDePago" options={{ animation: 'none' }} component={ResumenDePagoScreen} />
     </Stack.Navigator>
   </NavigationContainer>
 );
