@@ -207,14 +207,14 @@ const MenuInicio = (props) => {
                 <View style={styles.buttonBox}>
                   <TouchableOpacity onPress={() => navigation.navigate('pagos')}>
                     <View style={styles.butonPagos}>
-                      <Text>Consulta de adeudo</Text>
+                      <Text style={styles.pagoSubCategoryText}>Consulta de adeudo</Text>
                     </View>
                   </TouchableOpacity>
 
                   <View style={styles.separator2} />
                   <TouchableOpacity onPress={() => navigation.navigate('otrosPagos')}>
                     <View style={styles.butonPagos}>
-                      <Text>Agregar cobro</Text>
+                      <Text style={styles.pagoSubCategoryText}>Agregar cobro</Text>
                     </View>
                   </TouchableOpacity>
 
@@ -408,7 +408,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomWidth: 0.5,
     borderBottomColor: '#DADCDF',
-
   },
   pagoTxt: {
     color: '#404040',
@@ -422,6 +421,11 @@ const styles = StyleSheet.create({
     marginRight: 7,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  pagoSubCategoryText: {
+    color: '#404040',
+    fontWeight: '400',
+    fontSize: 14,
   },
 });
 
