@@ -51,11 +51,11 @@ const Walkthrough = () => {
           activeDotColor="#E14848"
           activeDotStyle={{ width: 20, height: 8 }}
         >
-          {WalkthroughList.map((i) => (
-            <View style={styles.happyTry}>
-              <Text style={styles.txtDescripcion}>{i.title}</Text>
-              <Text style={styles.subtxt}>{i.descripcion}</Text>
-              <Image style={styles.imagenIlu} source={i.image} />
+          {WalkthroughList.map((item) => (
+            <View style={styles.happyTry} key={item.id}>
+              <Text style={styles.txtDescripcion}>{item.title}</Text>
+              <Text style={styles.subtxt}>{item.descripcion}</Text>
+              <Image style={styles.imagenIlu} source={item.image} />
             </View>
           ))}
         </Swiper>
