@@ -19,6 +19,7 @@ type RootStackParamList = {
   netpayCustom: undefined;
   pagoRealizado: undefined;
   /* Pagos diversos */
+  seleccionarTipoDePadron: undefined;
   busquedaPadron: undefined;
   confirmarPadron: undefined;
   busquedaDeCargos: undefined;

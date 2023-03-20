@@ -212,7 +212,7 @@ const MenuInicio = (props) => {
                   </TouchableOpacity>
 
                   <View style={styles.separator2} />
-                  <TouchableOpacity onPress={() => navigation.navigate(/* 'otrosPagos' */ 'busquedaPadron')}>
+                  <TouchableOpacity onPress={() => navigation.navigate('seleccionarTipoDePadron')}>
                     <View style={styles.butonPagos}>
                       <Text style={styles.pagoSubCategoryText}>Agregar cobro</Text>
                     </View>
