@@ -6,7 +6,6 @@ import {
   Text,
   StyleSheet,
   TouchableWithoutFeedback,
-  ScrollView,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -240,16 +239,6 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
       return !typedPadron.ciudadano.email
         || !typedPadron.ciudadano.lada
         || !typedPadron.ciudadano.numero_de_celular;
-    }
-
-    if ([
-      PADRONES_PAGOS_DIVERSOS.EMPRESA,
-      PADRONES_PAGOS_DIVERSOS.CONTRIBUYENTE,
-    ].includes(tipoDePadron.id)) {
-      const typedPadron = padron as EmpresaCajaProps;
-      return !typedPadron.correo_electronico
-        || !typedPadron.lada_celular
-        || !typedPadron.telefono_celular;
     }
 
     return false;

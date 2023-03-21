@@ -15,7 +15,7 @@ import useTotal from '../hooks/useTotal';
 interface ConceptoDePago {
   id: number;
   description: string;
-  total: number;
+  total: string;
 }
 
 interface ConceptosDePagoProps {
@@ -23,14 +23,8 @@ interface ConceptosDePagoProps {
   style?: ViewStyle;
 }
 
-const conceptosMock = Array.from<ConceptoDePago>({ length: 3 }).map((_, idx) => ({
-  id: idx,
-  description: 'ESPECTACULOS TEATRALES, DE REVISTA Y DE VARIEDADES KERMESES, BAILES, CONCIERTOS Y CONFERENCIAS.',
-  total: 1876.48,
-}));
-
 const ConceptosDePago = ({
-  conceptos = conceptosMock,
+  conceptos = [],
   style = {},
 }: ConceptosDePagoProps) => {
   const importes = useMemo(() => conceptos.map((x) => x.total), [conceptos]);
@@ -165,4 +159,5 @@ const styles = StyleSheet.create({
   },
 });
 
+export type { ConceptoDePago };
 export default ConceptosDePago;

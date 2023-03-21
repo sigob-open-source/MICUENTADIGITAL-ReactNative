@@ -1,12 +1,12 @@
 // External dependencies
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   SafeAreaView,
-  ScrollView,
   StyleSheet,
   Text,
   TouchableWithoutFeedback,
   View,
+  FlatList,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
@@ -17,6 +17,10 @@ import Input from '../../../components/Input';
 import Cart from '../../../components/Cart';
 import Cargo from './Cargo';
 import { RootStackParamList } from '../../../types/navigation';
+import { getTiposDeCargo } from '../../../services/recaudacion/tipos-de-cargos';
+import { useAppSelector } from '../../../store-v2/hooks';
+import { TipoDeCargo } from '../../../services/recaudacion/tipos-de-cargos.types';
+import useDebouncedValue from '../../../hooks/useDebouncedValue';
 
 // Types & Interfaces
 type NavigationProps = NativeStackScreenProps<RootStackParamList, 'busquedaPadron'>;
@@ -24,36 +28,104 @@ type NavigationProps = NativeStackScreenProps<RootStackParamList, 'busquedaPadro
 type BusquedaDeCargosScreenProps = NavigationProps;
 
 // Constants
-const CARGOS = Array.from({ length: 20 }).map((v, idx) => ({
-  id: idx,
-  name: `PELEAS DE GALLOS Y CORRIDAS DE TOROS ${idx + 1}`,
-}));
+const COMMON_PARAMS = Object.freeze({
+  entidad: 1,
+  canales_de_pago: 4,
+  tipo_de_aplicacion: [2, 4, 5, 6],
+  es_accesorio: false,
+  clasificador_de_tipo_de_cargo_en_portal: 2,
+  identificadores: 3,
+});
 
 const BusquedaDeCargosScreen = ({ navigation }: BusquedaDeCargosScreenProps) => {
-  const [search, setSearch] = useState<string>('');
-  const [addedItems] = useState<Record<number, true | false | undefined>>({
-    0: true,
-    1: true,
-    2: true,
-    3: true,
-  });
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const tipoDePadron = useAppSelector((state) => state.pagosDiversos.tipoDePadron)!;
+  const cart = useAppSelector((state) => state.pagosDiversos.cart);
+  const [page, setPage] = useState<number>(1);
+  const [rawSearch, setRawSearch] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+  const [tiposDeCargos, setTiposDeCargos] = useState<TipoDeCargo[]>([]);
 
-  const filteredItems = useMemo(() => {
-    const trimmedSearch = search.trim();
+  const descripcion = useDebouncedValue(rawSearch, 500);
 
-    if (!trimmedSearch) return CARGOS;
-
-    const regexp = new RegExp(trimmedSearch, 'ig');
-
-    return CARGOS.filter((x) => regexp.test(x.name));
-  }, [search]);
-
-  const addCargo = () => {
-    navigation.navigate('configuracionDeCargo');
+  const addCargo = (tipoDeCargo: TipoDeCargo) => {
+    navigation.navigate('configuracionDeCargo', {
+      tipoDeCargo,
+    });
   };
 
-  const addedItemsCount = useMemo(() => CARGOS
-    .reduce((prev, curr, idx) => prev + (addedItems[idx] ? 1 : 0), 0), [addedItems]);
+  const addedItems = useMemo(() => cart.reduce((obj, item) => {
+    // eslint-disable-next-line no-param-reassign
+    obj[item.tipoDeCargo.id] = true;
+    return obj;
+  }, {} as Record<number, boolean>), [cart]);
+
+  const getRequestParams = (currentPage: number = page) => {
+    const params = {
+      ...COMMON_PARAMS,
+      padron: tipoDePadron.id,
+      page: currentPage,
+    } as Record<string, unknown>;
+
+    if (descripcion) {
+      params.descripcion = descripcion;
+    }
+
+    return params;
+  };
+
+  useEffect(() => {
+    if (tipoDePadron.id) {
+      const curretPage = 1;
+      setPage(curretPage);
+      setLoading(true);
+
+      void getTiposDeCargo(getRequestParams(curretPage))
+        .then((data) => setTiposDeCargos(data))
+        .finally(() => setLoading(false));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [tipoDePadron.id, descripcion]);
+
+  const appendCargos = (items: TipoDeCargo[]) => {
+    const seenIds = new Set<TipoDeCargo['id']>();
+
+    setTiposDeCargos([
+      ...tiposDeCargos,
+      ...items,
+    ].filter((x) => {
+      if (seenIds.has(x.id)) {
+        return false;
+      }
+      seenIds.add(x.id);
+      return true;
+    }));
+  };
+
+  const refreshHandler = async () => {
+    setRefreshing(true);
+
+    const response = await getTiposDeCargo(getRequestParams());
+
+    appendCargos(response);
+
+    setRefreshing(false);
+  };
+
+  const fetchNextPage = async () => {
+    setLoading(true);
+    const nextPage = page + 1;
+
+    const response = await getTiposDeCargo(getRequestParams(nextPage));
+
+    if (response.length) {
+      setPage(nextPage);
+    }
+
+    appendCargos(response);
+    setLoading(false);
+  };
 
   return (
     <>
@@ -71,45 +143,52 @@ const BusquedaDeCargosScreen = ({ navigation }: BusquedaDeCargosScreenProps) => 
               placeholderTextColor="#9E9E9E"
               leftIcon={<Icon name="search" size={18} color="#010101" />}
               style={styles.headerInput}
-              value={search}
-              onChangeText={setSearch}
+              value={rawSearch}
+              onChangeText={(v) => setRawSearch(v.trim())}
             />
 
             <TouchableWithoutFeedback onPress={() => navigation.navigate('resumenDeCargos')}>
               <View>
-                <Cart items={addedItemsCount} style={styles.cart} />
+                <Cart items={cart.length} style={styles.cart} />
               </View>
             </TouchableWithoutFeedback>
           </View>
         </SafeAreaView>
       </View>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        {filteredItems.map((item, idx) => (
+      <FlatList
+        refreshing={refreshing}
+        onRefresh={refreshHandler}
+        contentContainerStyle={styles.content}
+        data={tiposDeCargos}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={({ item }) => (
           <View
             key={item.id}
             style={styles.cargo}
           >
             <Cargo
-              onPress={() => addCargo()}
-              name={item.name}
-              added={Boolean(addedItems[idx])}
+              onPress={() => addCargo(item)}
+              name={item.descripcion}
+              total={item.importe_total}
+              added={Boolean(addedItems[item.id])}
             />
           </View>
-        ))}
-
-        {filteredItems.length === 0 && (
+        )}
+        ListEmptyComponent={() => (
           <Text style={styles.noResults}>
-            Sin resultados
+            {loading ? 'Cargando' : 'Sin resultados'}
           </Text>
         )}
-      </ScrollView>
+        onEndReached={fetchNextPage}
+      />
 
       <View style={styles.bottomContainer}>
         <SafeAreaView>
           <View style={styles.bottomInnerContainer}>
             <Button
-              text="Continuar"
+              disabled={cart.length === 0}
+              text={cart.length > 0 ? 'Continuar' : 'Sin elementos'}
               onPress={() => navigation.navigate('resumenDeCargos')}
             />
           </View>
@@ -165,6 +244,7 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#010101',
     textAlign: 'center',
+    marginVertical: 20,
   },
 });
 
