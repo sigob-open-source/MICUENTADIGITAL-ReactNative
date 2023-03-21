@@ -1,5 +1,5 @@
 // External dependencies
-import React from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Text,
   View,
@@ -7,13 +7,19 @@ import {
   TouchableWithoutFeedback,
   ScrollView,
   SafeAreaView,
+  ActivityIndicator,
+  RefreshControl,
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Internal dependencies
+import { useDispatch } from 'react-redux';
 import Card from '../../components/Card';
 import Header, { IconButton } from '../../components/HeaderV2';
 import { RootStackParamList } from '../../types/navigation';
+import { getPadrones } from '../../services/catalogos/padrones';
+import { PadronProps } from '../../services/catalogos/padrones.types';
+import { setTipoDePadron } from '../../store-v2/reducers/pagos-diversos';
 
 // Types & Interfaces
 type NavigationProps = NativeStackScreenProps<RootStackParamList, 'seleccionarTipoDePadron'>;
@@ -21,23 +27,41 @@ type NavigationProps = NativeStackScreenProps<RootStackParamList, 'seleccionarTi
 type SeleccionarTipoDePadronScreenProps = NavigationProps;
 
 // Constants
-const padronesMocks = [
-  {
-    id: 1,
-    name: 'Ciudadano',
-  },
-  {
-    id: 2,
-    name: 'Empresa',
-  },
-  {
-    id: 3,
-    name: 'Contribuyente',
-  },
-];
+const ALLOWED_PADRONES_REGEXP = /ciudadano|empresa|contribuyente/i;
 
 const SeleccionarTipoDePadronScreen = ({ navigation }: SeleccionarTipoDePadronScreenProps) => {
-  '';
+  // Component's state
+  const [padrones, setPadrones] = useState<PadronProps[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [refreshing, setRefreshing] = useState<boolean>(false);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    setLoading(true);
+    getPadrones()
+      .then(setPadrones)
+      .finally(() => setLoading(false));
+  }, []);
+
+  const refresh = async () => {
+    setRefreshing(true);
+    const data = await getPadrones();
+    setPadrones(data);
+    setRefreshing(false);
+  };
+
+  const filteredPadrones = useMemo(() => padrones
+    .filter((x) => ALLOWED_PADRONES_REGEXP.test(x.descripcion)), [padrones]);
+
+  const selectPadron = (index: number) => {
+    const tipoDePadron = filteredPadrones[index];
+
+    if (tipoDePadron) {
+      dispatch(setTipoDePadron(tipoDePadron));
+      navigation.navigate('busquedaPadron');
+    }
+  };
 
   return (
     <>
@@ -48,21 +72,34 @@ const SeleccionarTipoDePadronScreen = ({ navigation }: SeleccionarTipoDePadronSc
 
       <Text style={styles.title}>Seleccione tipo de padrón:</Text>
 
-      <ScrollView contentContainerStyle={styles.content}>
+      <ScrollView
+        contentContainerStyle={styles.content}
+        refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}
+      >
         <SafeAreaView>
+          {loading && <ActivityIndicator size="large" />}
+
           {
-            padronesMocks.map((padron, idx) => (
+            !loading && filteredPadrones.length === 0 && (
+              <Text style={styles.noResults}>
+                Sin Resultados
+              </Text>
+            )
+          }
+
+          {
+            filteredPadrones.map((padron, idx) => (
               <TouchableWithoutFeedback
-                onPress={() => navigation.navigate('busquedaPadron')}
+                onPress={() => selectPadron(idx)}
                 key={padron.id}
               >
                 <View>
                   <Card
                     key={padron.id}
-                    style={{ marginBottom: idx === padronesMocks.length - 1 ? 0 : 8 }}
+                    style={{ marginBottom: idx === filteredPadrones.length - 1 ? 0 : 8 }}
                   >
                     <Text style={styles.padron}>
-                      {padron.name}
+                      {padron.descripcion}
                     </Text>
                   </Card>
                 </View>
@@ -93,6 +130,13 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#010101',
     textTransform: 'uppercase',
+  },
+  noResults: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#9F9F9F',
+    textAlign: 'center',
+    marginTop: 30,
   },
 });
 

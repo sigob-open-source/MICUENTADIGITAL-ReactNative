@@ -57,7 +57,7 @@ const Button = ({
     output.push(style);
 
     if (disabled) {
-      buttonStyles.push(styles.disabled);
+      output.push(styles.disabled);
     }
 
     return output;

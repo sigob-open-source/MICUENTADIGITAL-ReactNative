@@ -24,6 +24,7 @@ interface InputProps {
   style?: ViewStyle,
   textInputStyle?: ViewStyle,
   disabled?: boolean;
+  autoCapitalize?: 'characters' | 'none' | 'sentences' | 'words';
 }
 
 const Input = ({
@@ -40,6 +41,7 @@ const Input = ({
   style = {},
   textInputStyle = {},
   disabled = false,
+  autoCapitalize = 'none',
 }: InputProps) => {
   const [isFocused, setIsFocused] = useState(false);
   const handleBlur = () => {
@@ -74,6 +76,7 @@ const Input = ({
           onChangeText={onChangeText}
           value={value}
           editable={!disabled}
+          autoCapitalize={autoCapitalize}
         />
         {rightIcon && <View style={styles.iconContainer}>{rightIcon}</View>}
       </View>
