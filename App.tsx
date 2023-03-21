@@ -1,7 +1,8 @@
-import React, {
-} from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import React from 'react';
+import { DefaultTheme, NavigationContainer, Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import { Provider } from 'react-redux';
+import store from './src/store-v2';
 import { RootStackParamList } from './src/types/navigation';
 
 // Screens
@@ -54,14 +55,23 @@ import SeleccionarTipoDePadronScreen from './src/screens/PagosDiversos/Seleciona
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
+const theme: Theme = {
+  colors: DefaultTheme.colors,
+  dark: false,
+};
+
 const AppContainer = () => (
-  <NavigationContainer>
-    <Stack.Navigator screenOptions={{
-      headerShown: false,
-    }}
+  <NavigationContainer theme={theme}>
+    <Stack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}
     >
       <Stack.Screen name="walkthrout" component={Walkthrout} />
-      <Stack.Screen name="infoServidorPublico" component={InfoServidorPublico} />
+      <Stack.Screen
+        name="infoServidorPublico"
+        component={InfoServidorPublico}
+      />
       <Stack.Screen name="tipoDeRegistro" component={TipoDeRegistro} />
       <Stack.Screen name="PDFviewer" component={PDFviewer} />
       <Stack.Screen name="informacionQueja" component={InformacionDeQueja} />
@@ -82,34 +92,104 @@ const AppContainer = () => (
       <Stack.Screen name="solicitudSelect" component={SolicitudSelector} />
       <Stack.Screen name="verSolicitudes" component={VerSolicitudes} />
       <Stack.Screen name="tramites" component={Tramites} />
-      <Stack.Screen name="pdfViewer" options={{ animation: 'none' }} component={PDFviewer} />
+      <Stack.Screen
+        name="pdfViewer"
+        options={{ animation: 'none' }}
+        component={PDFviewer}
+      />
       <Stack.Screen name="detallesPadron" component={DetallesPadron} />
       <Stack.Screen name="pagoRealizado" component={PagoRealizado} />
       <Stack.Screen name="otrosPagos" component={OtrosPagos} />
-      <Stack.Screen name="netpaypago" options={{ animation: 'none' }} component={NetpayPago} />
+      <Stack.Screen
+        name="netpaypago"
+        options={{ animation: 'none' }}
+        component={NetpayPago}
+      />
       <Stack.Screen name="netpayCustom" component={NetpayCustom} />
-      <Stack.Screen name="cartografia" options={{ animation: 'none' }} component={WebviewCartografia} />
-      <Stack.Screen name="zonoficacion" options={{ animation: 'none' }} component={WebviewZonificacion} />
-      <Stack.Screen name="cobildo" options={{ animation: 'none' }} component={WebviewCobildo} />
-      <Stack.Screen name="convocatorias" options={{ animation: 'none' }} component={WebviewConvocatorias} />
-      <Stack.Screen name="webTramites" options={{ animation: 'none' }} component={WebviewTramites} />
-      <Stack.Screen name="webAdeudos" options={{ animation: 'none' }} component={WebviewAdeudos} />
-      <Stack.Screen name="webFacturacion" options={{ animation: 'none' }} component={WebviewFacturacion} />
-      <Stack.Screen name="estrados" options={{ animation: 'none' }} component={WebviewEstrados} />
+      <Stack.Screen
+        name="cartografia"
+        options={{ animation: 'none' }}
+        component={WebviewCartografia}
+      />
+      <Stack.Screen
+        name="zonoficacion"
+        options={{ animation: 'none' }}
+        component={WebviewZonificacion}
+      />
+      <Stack.Screen
+        name="cobildo"
+        options={{ animation: 'none' }}
+        component={WebviewCobildo}
+      />
+      <Stack.Screen
+        name="convocatorias"
+        options={{ animation: 'none' }}
+        component={WebviewConvocatorias}
+      />
+      <Stack.Screen
+        name="webTramites"
+        options={{ animation: 'none' }}
+        component={WebviewTramites}
+      />
+      <Stack.Screen
+        name="webAdeudos"
+        options={{ animation: 'none' }}
+        component={WebviewAdeudos}
+      />
+      <Stack.Screen
+        name="webFacturacion"
+        options={{ animation: 'none' }}
+        component={WebviewFacturacion}
+      />
+      <Stack.Screen
+        name="estrados"
+        options={{ animation: 'none' }}
+        component={WebviewEstrados}
+      />
 
-      <Stack.Screen name="seleccionarTipoDePadron" options={{ animation: 'none' }} component={SeleccionarTipoDePadronScreen} />
-      <Stack.Screen name="busquedaPadron" options={{ animation: 'none' }} component={BuscarPadronScreen} />
-      <Stack.Screen name="confirmarPadron" options={{ animation: 'none' }} component={ConfirmarPadronScreen} />
-      <Stack.Screen name="busquedaDeCargos" options={{ animation: 'none' }} component={BusquedaDeCargosScreen} />
-      <Stack.Screen name="configuracionDeCargo" options={{ animation: 'none' }} component={ConfiguracionDeCargoScreen} />
-      <Stack.Screen name="resumenDeCargos" options={{ animation: 'none' }} component={ResumenDeCargosScreen} />
-      <Stack.Screen name="resumenDePago" options={{ animation: 'none' }} component={ResumenDePagoScreen} />
+      <Stack.Screen
+        name="seleccionarTipoDePadron"
+        options={{ animation: 'none' }}
+        component={SeleccionarTipoDePadronScreen}
+      />
+      <Stack.Screen
+        name="busquedaPadron"
+        options={{ animation: 'none' }}
+        component={BuscarPadronScreen}
+      />
+      <Stack.Screen
+        name="confirmarPadron"
+        options={{ animation: 'none' }}
+        component={ConfirmarPadronScreen}
+      />
+      <Stack.Screen
+        name="busquedaDeCargos"
+        options={{ animation: 'none' }}
+        component={BusquedaDeCargosScreen}
+      />
+      <Stack.Screen
+        name="configuracionDeCargo"
+        options={{ animation: 'none' }}
+        component={ConfiguracionDeCargoScreen}
+      />
+      <Stack.Screen
+        name="resumenDeCargos"
+        options={{ animation: 'none' }}
+        component={ResumenDeCargosScreen}
+      />
+      <Stack.Screen
+        name="resumenDePago"
+        options={{ animation: 'none' }}
+        component={ResumenDePagoScreen}
+      />
     </Stack.Navigator>
   </NavigationContainer>
 );
 
 export default () => (
-  <DropdownalertProvider>
-    <AppContainer />
-  </DropdownalertProvider>
+  <Provider store={store}>
+    <DropdownalertProvider>
+      <AppContainer />
+    </DropdownalertProvider>
+  </Provider>
 );

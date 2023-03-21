@@ -1,4 +1,26 @@
 type RootStackParamList = {
+  walkthrout: undefined;
+  infoServidorPublico: undefined;
+  tipoDeRegistro: undefined;
+  PDFviewer: undefined;
+  pdfViewer: undefined;
+  informacionQueja: undefined;
+  archivosDeQuejas: undefined;
+  loginScreen: undefined;
+  informacionRecibo: undefined;
+  informacionFiscal: undefined;
+  registroCiudadano: undefined;
+  inicioFactura: undefined;
+  otrosPagos: undefined;
+  netpaypago: undefined;
+  cartografia: undefined;
+  zonoficacion: undefined;
+  cobildo: undefined;
+  convocatorias: undefined;
+  webTramites: undefined;
+  webAdeudos: undefined;
+  webFacturacion: undefined;
+  estrados: undefined;
   home: undefined;
   menuInicio: undefined;
   peticiones: undefined;
