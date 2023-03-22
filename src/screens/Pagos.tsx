@@ -1,47 +1,58 @@
-import React, { Component, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet, View, TextInput, FlatList, TouchableWithoutFeedback, Text, ScrollView, Pressable,
+  StyleSheet,
+  View,
+  TextInput,
+  FlatList,
+  TouchableWithoutFeedback,
+  Text,
+  ScrollView,
+  Pressable,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/FontAwesome';
-
 import Square from '../components/CardPagos';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import ConnectionCheck from '../components/internetChecker';
-
 import http from '../services/http';
-import getPadrones from '../services/padrones';
 
 const numColumns = 3;
 
 const Pagos = (props) => {
-  const [padrones, setPadrones] = useState();
-  const [listPadrones, setListPadrones] = ([]);
-  const [loading, setLoading] = useState();
+  const [padrones, setPadrones] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     getPadronesList();
     return () => {
-      setPadrones({});
+      setPadrones([]);
     };
   }, []);
 
   const getPadronesList = async () => {
-    let data = [];
-    await http.get('catalogos/padrones/').then(
-      (response) => {
-        const result = response.data;
-        result.map((padron, index) => {
-          if (typeof (padron) === 'object') {
-            (padron?.descripcion !== 'Vehicular' && padron?.descripcion !== 'Todo' && padron?.descripcion !== 'Hospedaje' && padron?.descripcion !== 'Arrendamiento' && padron?.descripcion !== 'Nomina' && padron?.descripcion !== 'Cedular' && padron?.descripcion !== 'JuegoDeAzar' && padron?.descripcion !== 'CasaDeEmpenio' && padron?.descripcion !== 'Agencia' && padron?.descripcion !== 'Motocicleta') ? data = [...data, padron] : null;
-          }
-        });
-        setPadrones(data);
-      },
-      (error) => {
-        console.log(error);
-      },
-    );
+    try {
+      const response = await http.get('catalogos/padrones/');
+      const excludedDescriptions = [
+        'Predio',
+        'Alcohol',
+        'Notario',
+        'Contribuyente',
+        'Remolque',
+        'Zona Exclusiva',
+        'Expediente de comercio informal',
+        'Expediente de mercado',
+        'Contrato de policia',
+        'Expediente de licencia de funcionamiento',
+      ];
+      const padrones = response.data.filter(
+        (padron) => padron
+          && typeof padron === 'object'
+          && !excludedDescriptions.includes(padron.descripcion)
+          && (padron.descripcion === 'Ciudadano' || padron.descripcion === 'Empresa'),
+      );
+      setPadrones(padrones);
+    } catch (error) {
+      console.error(error);
+    }
   };
 
   const checkIcon = (elementName) => {
@@ -89,57 +100,45 @@ const Pagos = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-
       <ConnectionCheck />
-
       <View style={styles.container}>
-
         <Header style={styles.header} item="Pagos" />
-
         <View style={{ marginTop: '3%' }}>
           <View style={styles.textInputContainer}>
-            <TextInput color="black" placeholderTextColor="#C4C4C4" style={styles.textInputStyle} placeholder="Buscar..." />
+            <TextInput
+              color="black"
+              placeholderTextColor="#C4C4C4"
+              style={styles.textInputStyle}
+              placeholder="Buscar..."
+            />
           </View>
-
-          <View style={{
-            flex: 1, justifyContent: 'center',
-          }}
-          >
-            {
-        (padrones)
-          ? (
+          {padrones && (
+          <View style={{ flex: 1, justifyContent: 'center' }}>
             <FlatList
               data={padrones}
-              renderItem={({ padron, index }) => (
-                <Pressable disabled={checkDisebla(padrones[index].descripcion)} onPress={() => props.navigation.push('pagoPadron', { padron: padrones[index] })}>
+              renderItem={({ item }) => (
+                <Pressable
+                  disabled={checkDisebla(item.descripcion)}
+                  onPress={() => props.navigation.push('pagoPadron', { padron: item })}
+                >
                   <Square
                     col="#404040"
                     isBlank={false}
                     style={styles.menuContainer}
                     enableEntypo
-                    nombreItem={padrones[index]?.descripcion || 'default'}
-                    iconName={checkIcon(padrones[index].descripcion)}
-                    isDesable={checkDisebla(padrones[index].descripcion)}
-
+                    nombreItem={item.descripcion || 'default'}
+                    iconName={checkIcon(item.descripcion)}
+                    isDesable={checkDisebla(item.descripcion)}
                   />
                 </Pressable>
-
               )}
-              key={(index) => index}
+              keyExtractor={(item, index) => index.toString()}
               numColumns={3}
             />
-          )
-          : null
-      }
           </View>
+          )}
         </View>
-
-        <Footer
-          back={goBack}
-          showBack
-          style={styles.footer}
-        />
-
+        <Footer back={goBack} showBack style={styles.footer} />
       </View>
     </View>
   );

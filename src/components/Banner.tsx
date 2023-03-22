@@ -15,7 +15,7 @@ const Banner = () => (
           justifyContent: 'space-around',
         }}
         >
-          <TouchableOpacity onPress={() => Linking.openURL('https://www.facebook.com/hermosillogobierno/')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.facebook.com/GobiernoCdJuarez')}>
             <View style={styles.iconsRedes}>
               <FontAwesome5
                 name="facebook"
@@ -26,7 +26,7 @@ const Banner = () => (
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => Linking.openURL('https://twitter.com/HermosilloGob')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://twitter.com/MunicipioJuarez')}>
             <View style={styles.iconsRedes}>
               <FontAwesome5
                 name="twitter"
@@ -37,7 +37,7 @@ const Banner = () => (
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/user/HermosilloGob')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/@municipiodejuarez6912/featured')}>
             <View style={styles.iconsRedes}>
               <FontAwesome5
                 name="youtube"

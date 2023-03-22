@@ -30,7 +30,7 @@ const dataList = [
     name: 'Trámites',
     iconname: 'folder-open',
     enableEntypo: false,
-    navegacion: 'webTramites',
+    navegacion: 'tramites',
     necesitaLogin: false,
   },
   {
@@ -79,15 +79,15 @@ const dataList = [
     necesitaLogin: false,
     deshabilitado: false,
   },
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Solicitudes',
-    iconname: 'street-view',
-    enableEntypo: false,
-    navegacion: 'solicitudSelect',
-    deshabilitado: false,
-  },
+  // {
+  //   isBlank: false,
+  //   color: '#404040',
+  //   name: 'Solicitudes',
+  //   iconname: 'street-view',
+  //   enableEntypo: false,
+  //   navegacion: 'solicitudSelect',
+  //   deshabilitado: false,
+  // },
 
   {
     isBlank: false,

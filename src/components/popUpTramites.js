@@ -187,7 +187,7 @@ const PopUpTramites = (props) => {
       }],
     }, (error, event) => {
       if (error) {
-        AlertIOS.alert('Error', 'Could not send mail. Please send a mail to support@example.com');
+        Alert.alert('Error', 'Could not send mail. Please send a mail to support@example.com');
       }
     });
   };
