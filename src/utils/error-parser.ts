@@ -1,15 +1,15 @@
 // External dependencies
 import { AxiosError } from 'axios';
 
-// Types & Interfaces
-interface APIError {
-  message: string;
-  fields?: Record<string, string>;
-}
+// Internal dependencies
+import { NormalizedAPIError } from '../types/api-ingresos';
 
 function apiErrorParser(error: Error | AxiosError) {
-  const output: APIError = {
-    message: error?.message ?? 'Error de servidor',
+  const output: NormalizedAPIError = {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
+    message: error?.message ?? error?.response?.data?.detail ?? 'Error de servidor',
   };
 
   /* eslint-disable */

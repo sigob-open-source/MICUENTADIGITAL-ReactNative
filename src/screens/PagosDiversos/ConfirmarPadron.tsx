@@ -10,8 +10,9 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { useFormik } from 'formik';
+import { FormikHelpers, useFormik } from 'formik';
 import * as yup from 'yup';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 // Internal dependencies
 import Button from '../../components/Button';
@@ -55,7 +56,8 @@ const FORM_SCHEMA = yup.object({
   phoneNumber: yup
     .string()
     .typeError('Campo no valido')
-    .required('El campo es requerido'),
+    .required('El campo es requerido')
+    .matches(/[0-9]{10}/, 'Ingrese un número válido'),
 });
 
 /**
@@ -74,6 +76,115 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
   const tipoDePadron = pagosDiversosRepo.tipoDePadron!;
   const padron = pagosDiversosRepo.padron!;
 
+  const updateCiudadanoHandler = async (
+    formikHelpers: FormikHelpers<FormValues>,
+    ladaId: number,
+    telefono: number,
+    email: string,
+  ) => {
+    const typedPadron = padron as CiudadanoCajaProps;
+
+    const [updated, errorDetail] = await updateCiudadano(typedPadron.id, {
+      email,
+      lada: ladaId,
+      numero_de_celular: telefono,
+    }, {
+      entidad: 1,
+    });
+
+    if (updated) {
+      const copy = { ...typedPadron };
+
+      copy.email = email;
+      copy.lada = ladaId;
+      copy.numero_de_celular = telefono;
+      setPadron(copy);
+
+      return true;
+    }
+
+    if (errorDetail && errorDetail.fields) {
+      formikHelpers.setFieldError('email', errorDetail.fields.email);
+      formikHelpers.setFieldError('countryCode', errorDetail.fields.lada);
+      formikHelpers.setFieldError('phoneNumber', errorDetail.fields.numero_de_celular);
+    }
+
+    return false;
+  };
+
+  const updateEmpresaHandler = async (
+    formikHelpers: FormikHelpers<FormValues>,
+    ladaId: number,
+    telefono: number,
+    email: string,
+  ) => {
+    const typedPadron = padron as EmpresaCajaProps;
+
+    const [updated, errorDetail] = await updateCiudadano(typedPadron.ciudadano.id, {
+      email,
+      lada: ladaId,
+      numero_de_celular: telefono,
+    }, {
+      entidad: 1,
+    });
+
+    if (updated) {
+      const copy = JSON.parse(JSON.stringify(typedPadron)) as EmpresaCajaProps;
+
+      copy.ciudadano.email = email;
+      copy.ciudadano.lada = ladaId;
+      copy.ciudadano.numero_de_celular = telefono;
+
+      setPadron(copy);
+
+      return true;
+    }
+
+    if (errorDetail && errorDetail.fields) {
+      formikHelpers.setFieldError('email', errorDetail.fields.email);
+      formikHelpers.setFieldError('countryCode', errorDetail.fields.lada);
+      formikHelpers.setFieldError('phoneNumber', errorDetail.fields.numero_de_celular);
+    }
+
+    return false;
+  };
+
+  const updateContribuyenteHandler = async (
+    formikHelpers: FormikHelpers<FormValues>,
+    ladaId: number,
+    telefono: number,
+    email: string,
+  ) => {
+    const typedPadron = padron as CiudadanoCajaProps;
+
+    const [updated, errorDetail] = await updateContribuyete(typedPadron.id, {
+      correo_electronico: email,
+      lada_celular: ladaId,
+      telefono_celular: telefono,
+    }, {
+      entidad: 1,
+    });
+
+    if (updated) {
+      const copy = { ...typedPadron };
+
+      copy.email = email;
+      copy.lada = ladaId;
+      copy.numero_de_celular = telefono;
+      setPadron(copy);
+
+      return true;
+    }
+
+    if (errorDetail && errorDetail.fields) {
+      formikHelpers.setFieldError('email', errorDetail.fields.correo_electronico);
+      formikHelpers.setFieldError('countryCode', errorDetail.fields.lada_celular);
+      formikHelpers.setFieldError('phoneNumber', errorDetail.fields.telefono_celular);
+    }
+
+    return false;
+  };
+
   const formik = useFormik<FormValues>({
     initialValues: {
       countryCode: '',
@@ -82,72 +193,29 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
     },
     validationSchema: FORM_SCHEMA,
     validateOnChange: true,
-    onSubmit: async (values) => {
+    onSubmit: async (values, helpers) => {
       setLoading(true);
       const ladaId = ladas.find((x) => x.lada === values.countryCode)!.id;
       const numeroDeTelefono = parseInt(values.phoneNumber, 10);
 
+      let handler;
+
       if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.CIUDADANO) {
-        const typedPadron = padron as CiudadanoCajaProps;
-        const [updated] = await updateCiudadano(typedPadron.id, {
-          email: values.email,
-          lada: ladaId,
-          numero_de_celular: numeroDeTelefono,
-        }, {
-          entidad: 1,
-        });
-
-        setLoading(false);
-        if (updated) {
-          const copy = { ...typedPadron };
-
-          copy.email = values.email;
-          copy.lada = ladaId;
-          copy.numero_de_celular = numeroDeTelefono;
-          setPadron(copy);
-          navigateToNextScreen();
-        }
+        handler = updateCiudadanoHandler;
       } else if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.EMPRESA) {
-        const typedPadron = padron as EmpresaCajaProps;
-        const [updated] = await updateCiudadano(typedPadron.id, {
-          email: values.email,
-          lada: ladaId,
-          numero_de_celular: numeroDeTelefono,
-        }, {
-          entidad: 1,
-        });
-        setLoading(false);
-
-        if (updated) {
-          const copy = { ...typedPadron };
-
-          copy.ciudadano.email = values.email;
-          copy.ciudadano.lada = ladaId;
-          copy.ciudadano.numero_de_celular = numeroDeTelefono;
-          setPadron(copy);
-          navigateToNextScreen();
-        }
+        handler = updateEmpresaHandler;
       } else if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.CONTRIBUYENTE) {
-        const typedPadron = padron as ContribuyenteCajaProps;
+        handler = updateContribuyenteHandler;
+      }
 
-        const [updated] = await updateContribuyete(typedPadron.id, {
-          correo_electronico: values.email,
-          lada_celular: ladaId,
-          telefono_celular: numeroDeTelefono,
-        }, {
-          entidad: 1,
-        });
+      let shouldContinue = false;
+      if (handler) {
+        shouldContinue = await handler(helpers, ladaId, numeroDeTelefono, values.email);
+      }
 
-        setLoading(false);
-        if (updated) {
-          const copy = { ...typedPadron };
-
-          copy.correo_electronico = values.email;
-          copy.lada_celular = ladaId;
-          copy.telefono_celular = numeroDeTelefono;
-          setPadron(copy);
-          navigateToNextScreen();
-        }
+      setLoading(false);
+      if (shouldContinue) {
+        navigateToNextScreen();
       }
     },
   });
@@ -208,7 +276,7 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
         title="Pagos Diversos"
       />
 
-      <ScrollView contentContainerStyle={styles.container}>
+      <KeyboardAwareScrollView contentContainerStyle={styles.container}>
         <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
           <View>
             <Card style={styles.deleteContainer}>
@@ -262,8 +330,8 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
                       numberOfLines={1}
                     >
                       {
-                          formik.values.countryCode || 'Ingresa tu clave larga distancia automática'
-                        }
+                        formik.values.countryCode || 'Ingresa tu clave larga distancia automática'
+                      }
                     </Text>
 
                     <Icon name="angle-down" size={25} color="#010101" />
@@ -291,7 +359,7 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
           disabled={loading}
           onPress={() => submit()}
         />
-      </ScrollView>
+      </KeyboardAwareScrollView>
 
       <LadaModalPicker
         visible={showCodePicker}

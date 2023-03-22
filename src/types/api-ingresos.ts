@@ -5,6 +5,14 @@ type PaginatedResult<T> = {
   results: T[]
 };
 
+type NormalizedAPIError = {
+  message: string;
+  fields?: Record<string, string | undefined>;
+};
+type UpdateResult = [false, NormalizedAPIError] | [true, null];
+
 export type {
   PaginatedResult,
+  NormalizedAPIError,
+  UpdateResult,
 };

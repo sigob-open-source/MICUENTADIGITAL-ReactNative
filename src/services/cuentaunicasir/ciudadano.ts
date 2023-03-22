@@ -1,7 +1,8 @@
 // Internal dependencies
 import { AxiosError } from 'axios';
 import Logger from '../../lib/logger';
-import { PaginatedResult } from '../../types/api-ingresos';
+import { PaginatedResult, UpdateResult } from '../../types/api-ingresos';
+import apiErrorParser from '../../utils/error-parser';
 import HTTP_GRP from '../http';
 import { CiudadanoCajaProps, CiudadanoUpdatedProps } from './ciudadano-types';
 
@@ -50,6 +51,7 @@ const updateCiudadano = async (
   params: UpdateCiudadanoParams,
 ) => {
   let updated = false;
+  let errorDetail = null;
 
   try {
     const response = await HTTP_GRP.patch<CiudadanoUpdatedProps>(`cuentaunicasir/ciudadano-public/${id}/`, payload, {
@@ -59,6 +61,8 @@ const updateCiudadano = async (
     updated = response.status === 200;
   } catch (error) {
     const typedError = error as Error;
+    errorDetail = apiErrorParser(typedError);
+
     Logger.error({
       event: 'api error',
       message: typedError?.message,
@@ -68,7 +72,7 @@ const updateCiudadano = async (
     });
   }
 
-  return [updated];
+  return [updated, errorDetail] as UpdateResult;
 };
 
 export {
