@@ -342,9 +342,9 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
               <Input
                 value={formik.values.phoneNumber}
                 onChangeText={(value) => formik.setFieldValue('phoneNumber', value)}
-                label="Número de telefono"
+                label="Número de teléfono"
                 keyboardType="phone-pad"
-                placeholder="Ingresa tu número de telefono"
+                placeholder="Ingresa tu número de teléfono"
                 placeholderTextColor="#cccccc"
                 error={formik.errors.phoneNumber}
               />

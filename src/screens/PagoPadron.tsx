@@ -15,8 +15,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import fonts from '../utils/fonts';
 import colors from '../utils/colors';
+import round from '../utils/round';
 
 import { tokenizeAmount } from '../services/netpay';
+
+import Button from '../components/Button';
 
 import Header from '../components/Header';
 import Adeudo from '../components/Adeudo';
@@ -46,28 +49,22 @@ const PagoPadron = ({ route }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [modalKey, setModalKey] = useState(100);
   const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [totalAmount, setTotalAmount] = useState(0.0);
   const [padrones, setPadrones] = useState();
 
   const notify = useNotification();
   const navigation = useNavigation();
 
+  const fetchPadrones = async () => {
+    const _padrones = await getPadrones();
+    setPadrones(_padrones);
+  };
+
   useEffect(() => {
     setPadron(route.params.padron);
-    const _padrones = getPadrones();
-    return () => {
-      setPadrones(_padrones);
-      setPadron({});
-      setPadronSearched({});
-      setSearchText({});
-      setResultCargos({});
-      setNameSearch({});
-      setNewData({});
-      setIsOpen({});
-      setModalKey({});
-      setIsLoading({});
-      setTotalAmount({});
-    };
+    fetchPadrones();
+    return () => {};
   }, []);
 
   // Alerta para cuando no se encontro nada acorde a la busqueda
@@ -111,27 +108,30 @@ const PagoPadron = ({ route }) => {
       response = await getAdeudoPadron(response, numeroDePadron);
       setResultCargos(response?.cargos);
       setNewData(true);
-      setTotalAmount(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
+      const [rounded] = round(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
+      setTotalAmount(rounded);
       // console.log(totalAmount);
     }
     setModalKey(modalKey + 1);
     setIsLoading(false);
   };
-  console.log(padronSearched);
 
   // Funcion llamada al dar al boton realizar pago
   const dopayment = async () => {
-    const sumall = resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0);
+    setLoading(true);
+    console.log('entramos a la funcion');
+    const [sumall] = round(resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0));
 
     const responseNetpay = await tokenizeAmount(sumall.toFixed(2));
 
     const referenciaNetpay = await postGenererReferenciasNetpay(padron.id, padronSearched, resultCargos, padrones);
+
     const folioNetpay = referenciaNetpay?.folio_netpay;
 
-    if (responseNetpay) {
+    if (referenciaNetpay) {
       console.log('referencia', referenciaNetpay);
-
       navigation.push('netpaypago', { responseNetpay, folioNetpay });
+      setLoading(false);
     }
   };
 
@@ -416,11 +416,13 @@ const PagoPadron = ({ route }) => {
         <View key={modalKey}>
           {
             totalAmount > 0 ? (
-              <TouchableWithoutFeedback onPress={dopayment}>
-                <View style={styles.buttonPrint}>
-                  <Text style={styles.textButton}>Realizar Pago</Text>
-                </View>
-              </TouchableWithoutFeedback>
+              <Button
+                onPress={dopayment}
+                style={styles.buttonPrint}
+                text="Pagar"
+                iconName="search"
+                loading={loading}
+              />
             )
 
               : (

@@ -19,29 +19,29 @@ const Walkthrough = () => {
     {
       id: 1,
       title: 'Bienvenido a tu app ciudadana',
-      descripcion: 'Encuentra maravillosas funciones, como pagos de adeudos, Trámites, y consultas ciudadanas.',
+      descripcion: 'Encuentra maravillosas funciones, como pagos de adeudos y Trámites.',
       image: ImagePage1,
     },
     {
       id: 2,
       title: 'Pago de Adeudos',
-      descripcion: 'Realiza pagos como: pagos de predios, automóvil, impuestos, remolques, etc. Y desde la comodidad de tu celular.',
+      descripcion: 'Realiza pagos y consultas desde la comodidad de tu celular.',
       image: ImagePage2,
     },
-    {
-      id: 3,
-      title: 'Realiza Solicitudes y Quejas',
-      descripcion: '¡Ahora pondrás dar seguimientos a tus quejas y solicitudes personalmente y saber en qué proceso va al momento!!',
-      image: ImagePage3,
-    },
+    // {
+    //   id: 3,
+    //   title: 'Visita redes sociales oficiales',
+    //   descripcion: '¡Ahora pondrás dar seguimientos a tus quejas y solicitudes personalmente y saber en qué proceso va al momento!!',
+    //   image: ImagePage3,
+    // },
   ];
   return (
     <SafeAreaView style={{ flex: 1 }}>
 
       <View style={styles.container}>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('loginScreen')}>
+        {/* <TouchableWithoutFeedback onPress={() => navigation.navigate('loginScreen')}>
           <Text style={styles.saltartxt}>Saltar</Text>
-        </TouchableWithoutFeedback>
+        </TouchableWithoutFeedback> */}
 
         <Swiper
           paginationStyle={{
@@ -85,6 +85,7 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 20,
     top: 20,
+    height: 20,
   },
   button: {
     height: 50,

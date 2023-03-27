@@ -95,6 +95,7 @@ const NetpayPago = ({ route: { params: { responseNetpay, folioNetpay } } }) => {
 
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Getting Started</title>
   </head>
 
@@ -113,8 +114,8 @@ const NetpayPago = ({ route: { params: { responseNetpay, folioNetpay } } }) => {
         const btn = document.getElementById('netpay-checkout');
         btn.click();
       }
-      NetPay.init('pk_netpay_DBmockYZopdDnTdhYhGJCDXfe')
-      NetPay.setSandboxMode(false)
+      NetPay.init('pk_netpay_RZWqFZTckZHhIaTBzogznLReu')
+      NetPay.setSandboxMode(true)
       function onPaymentSuccess(r) {
         window.ReactNativeWebView.postMessage(JSON.stringify(r))
       }

@@ -11,12 +11,10 @@ const navigation = useNavigation;
 const Header = (props) => (
   <View style={styles.container}>
     <TouchableWithoutFeedback>
-      <View style={styles.logoContainer}>
-        <FontAwesome5
-          name="bars"
-          size={23}
-          solid
-          color="#782745"
+      <View style={styles.logoContainerIma}>
+        <Image
+          style={styles.logo}
+          source={require('../../assets/imagenes/logo.png')}
         />
       </View>
     </TouchableWithoutFeedback>
@@ -33,7 +31,7 @@ const Header = (props) => (
     <View style={styles.logoContainerIma}>
       <Image
         style={styles.logo}
-        source={require('../../assets/imagenes/logo.png')}
+        // source={require('../../assets/imagenes/logo.png')}
       />
     </View>
 

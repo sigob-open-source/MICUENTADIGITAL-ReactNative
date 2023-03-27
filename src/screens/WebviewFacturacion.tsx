@@ -6,7 +6,7 @@ import Header from '../components/Header';
 
 const WebviewFacturacion = (props) => (
   <View style={{ flex: 1 }}>
-    <Header item="Facturacion" />
+    <Header item="Facturación" />
     <View style={{
       flex: 1,
     }}

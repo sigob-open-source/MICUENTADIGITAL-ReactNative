@@ -23,6 +23,9 @@ const PADRON_DESCRIPTIONS_MAP = Object.freeze({
 // };
 
 export const postGenererReferenciasNetpay = async (tipoDePadron, padron, cargos, padrones) => {
+  console.log('====================================');
+  console.log(padrones);
+  console.log('====================================');
   try {
     const importe = cargos.reduce((acum, curr) => acum + curr.importe, 0);
     const values = {
@@ -47,7 +50,7 @@ export const postGenererReferenciasNetpay = async (tipoDePadron, padron, cargos,
     const response = await API.post('recaudacion/referencias-pago-netpay-public/', values);
     return response.data;
   } catch (error) {
-    console.log(JSON.stringify(error.response.data), true);
+    console.error(error.message, true);
   }
   return null;
 };
