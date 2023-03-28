@@ -17,7 +17,7 @@ import Separator from '../../../components/Separator';
 // Types & Interfaces
 interface CargoProps {
   name: string;
-  total?: number;
+  total?: number | null;
   onPress?: () => void;
   added?: boolean;
   disabled?: boolean;

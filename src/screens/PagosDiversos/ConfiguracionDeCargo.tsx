@@ -1,9 +1,10 @@
 // External dependencies
-import React from 'react';
+import React, { useMemo } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { useFormik } from 'formik';
 import { View, StyleSheet } from 'react-native';
 import * as yup from 'yup';
+import { useDispatch } from 'react-redux';
 
 // Internal dependencies
 import Button from '../../components/Button';
@@ -11,38 +12,19 @@ import Card from '../../components/Card';
 import Header, { IconButton } from '../../components/HeaderV2';
 import Input from '../../components/Input';
 import { RootStackParamList } from '../../types/navigation';
+import { useAppSelector } from '../../store-v2/hooks';
+import { setCart } from '../../store-v2/reducers/pagos-diversos';
 
 // Types & Interfaces
 type NavigationProps = NativeStackScreenProps<RootStackParamList, 'configuracionDeCargo'>;
 
 type ConfiguracionDeCargoScreenProps = NavigationProps;
 
-interface FormValues {
-  cantidad: string;
-  ingresos: string;
-}
-
 // Constants
-const transformToNumber = (value: string) => {
-  const number = parseFloat(value);
-  return number;
-};
-
-const greatherThan = (value: string, min: number) => transformToNumber(value) > min;
-
-const FORM_SCHEMA = yup.object({
-  cantidad: yup
-    .string()
-    .typeError('Campo no válido')
-    .required('El campo es requerido')
-    .matches(/^[0-9]{1,}/g, 'Campo no válido')
-    .test('min_value', 'Ingrese un número mayor a 1', (value) => greatherThan(value, 0)),
-  ingresos: yup
-    .string()
-    .typeError('Campo no válido')
-    .required('El campo es requerido')
-    .matches(/^[0-9]{1,}/g, 'Campo no válido')
-    .test('min_value', 'Ingrese un número mayor a 1', (value) => greatherThan(value, 0)),
+const VARIABLE_KIND = Object.freeze({
+  DATE_RANGE: '3',
+  DECIMAL: '2',
+  INTEGER: '1',
 });
 
 /**
@@ -53,26 +35,128 @@ const FORM_SCHEMA = yup.object({
  * será enviado a esta pantalla donde se le pedirá
  * llenar todas las variables que el cargo requiera.
  */
-const ConfiguracionDeCargoScreen = ({ navigation }: ConfiguracionDeCargoScreenProps) => {
-  const formik = useFormik<FormValues>({
-    initialValues: {
-      ingresos: '',
+const ConfiguracionDeCargoScreen = ({
+  navigation,
+  route: { params: { tipoDeCargo } },
+}: ConfiguracionDeCargoScreenProps) => {
+  const cart = useAppSelector((state) => state.pagosDiversos.cart);
+  const dispatch = useDispatch();
+  const variables = useMemo(() => tipoDeCargo.variables ?? [], [tipoDeCargo]);
+
+  // Si el tipo de cargo ya está configurado en el store (cart), traemos los valores anteriores
+  const variablesPrevValues = useMemo(() => {
+    const item = cart.find((x) => x.tipoDeCargo.id === tipoDeCargo.id);
+
+    if (item) {
+      return item.variables.reduce((obj, variable) => {
+        // eslint-disable-next-line no-param-reassign
+        obj[variable.nombre_de_variable] = variable.value;
+        return obj;
+      }, {} as Record<string, string>);
+    }
+
+    return {};
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cart]);
+
+  const initialValues = useMemo(() => {
+    const output = {
       cantidad: '1',
-    },
-    validationSchema: FORM_SCHEMA,
+    } as Record<string, string>;
+
+    variables.forEach((variable) => {
+      output[variable.nombre_de_variable] = variablesPrevValues[
+        variable.nombre_de_variable
+      ] ?? null;
+    });
+
+    return output;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [variables]);
+
+  const schema = useMemo(() => {
+    const dynamicSchema = variables.reduce((obj, variable) => {
+      const isNumeric = [
+        VARIABLE_KIND.INTEGER,
+        VARIABLE_KIND.DECIMAL,
+      ].includes(variable.tipo_de_variable.clave);
+
+      if (isNumeric) {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        // eslint-disable-next-line
+        obj[variable.nombre_de_variable] = yup
+          .number()
+          .required('El campo es requerido')
+          .typeError('Campo no válido')
+          .test('optional_min', `El valor mínimo es ${tipoDeCargo.importe_minimo}`, (value) => {
+            if (typeof tipoDeCargo.importe_maximo !== 'number') return true;
+
+            return value >= tipoDeCargo.importe_minimo;
+          })
+          .test('optional_max', `El valor máximo es ${tipoDeCargo.importe_maximo}`, (value) => {
+            if (typeof tipoDeCargo.importe_maximo !== 'number') return true;
+
+            return value <= tipoDeCargo.importe_maximo;
+          })
+          .test('decimal_not_allowed', 'Ingrese un valor entero', (value) => {
+            if (variable.tipo_de_variable.clave !== VARIABLE_KIND.INTEGER) return true;
+
+            return !value.toString().includes('.');
+          });
+      }
+
+      return obj;
+    }, {});
+
+    return yup.object({
+      ...dynamicSchema,
+      cantidad: yup
+        .number()
+        .required('El campo es requerido')
+        .typeError('Campo no válido')
+        .min(1, 'El valor debe ser mayor a 0')
+        .max(50, 'El valor máximo es 50'),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [variables]);
+
+  const formik = useFormik({
+    initialValues,
+    validationSchema: schema,
     onSubmit(values) {
-      const normalizedValues = {
-        cantidad: transformToNumber(values.cantidad),
-        ingresos: transformToNumber(values.ingresos),
-      };
+      const newCart = [...cart];
+      const variablesWithValues = variables.map((x) => (
+        {
+          ...x,
+          value: values[x.nombre_de_variable],
+        }
+      ));
+      const cantidad = parseInt(values.cantidad, 10);
 
-      console.log(normalizedValues);
+      // Revisar si la configuración del cargo ya está disponible en el cart
+      // y de ser el caso actualizar en lugar de añadir.
+      const cartItemIndex = cart.findIndex((x) => x.tipoDeCargo.id === tipoDeCargo.id);
 
-      navigation.navigate('busquedaDeCargos');
+      if (cartItemIndex !== -1) {
+        newCart[cartItemIndex].variables = variablesWithValues;
+        newCart[cartItemIndex].cantidad = cantidad;
+      } else {
+        newCart.push({
+          tipoDeCargo,
+          variables: variablesWithValues,
+          cantidad,
+        });
+      }
+
+      dispatch(setCart(newCart));
+      navigation.goBack();
     },
   });
 
-  const goBack = () => {};
+  const goBack = () => {
+    navigation.goBack();
+  };
 
   return (
     <>
@@ -82,14 +166,20 @@ const ConfiguracionDeCargoScreen = ({ navigation }: ConfiguracionDeCargoScreenPr
 
       <View style={styles.content}>
         <Card>
-          <Input
-            style={styles.formItem}
-            label="Ingresos obtenidos"
-            keyboardType="numeric"
-            value={formik.values.ingresos}
-            onChangeText={(value) => formik.setFieldValue('ingresos', value)}
-            error={formik.errors.ingresos}
-          />
+          {
+            variables.map((variable) => (
+              <Input
+                key={variable.nombre_de_variable}
+                style={styles.formItem}
+                label={variable.descripcion_de_variable}
+                keyboardType={[VARIABLE_KIND.DECIMAL, VARIABLE_KIND.INTEGER].includes(variable.tipo_de_variable.clave) ? 'numeric' : 'default'}
+                value={formik.values[variable.nombre_de_variable]}
+                onChangeText={(value) => formik.setFieldValue(variable.nombre_de_variable, value)}
+                error={formik.errors[variable.nombre_de_variable]}
+                placeholder="Ingresar valor"
+              />
+            ))
+          }
 
           <Input
             label="Cantidad"
@@ -97,8 +187,6 @@ const ConfiguracionDeCargoScreen = ({ navigation }: ConfiguracionDeCargoScreenPr
             disabled
             keyboardType="numeric"
             value={formik.values.cantidad}
-            onChangeText={(value) => formik.setFieldValue('cantidad', value)}
-            error={formik.errors.cantidad}
           />
         </Card>
 

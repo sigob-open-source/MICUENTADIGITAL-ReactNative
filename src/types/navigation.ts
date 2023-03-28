@@ -1,3 +1,5 @@
+import { TipoDeCargo } from '../services/recaudacion/tipos-de-cargos.types';
+
 type RootStackParamList = {
   walkthrout: undefined;
   infoServidorPublico: undefined;
@@ -45,7 +47,9 @@ type RootStackParamList = {
   busquedaPadron: undefined;
   confirmarPadron: undefined;
   busquedaDeCargos: undefined;
-  configuracionDeCargo: undefined;
+  configuracionDeCargo: {
+    tipoDeCargo: TipoDeCargo;
+  };
   resumenDeCargos: undefined;
   resumenDePago: undefined;
 };

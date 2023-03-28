@@ -7,13 +7,23 @@ import { PadronProps } from '../../services/catalogos/padrones.types';
 import { CiudadanoCajaProps } from '../../services/cuentaunicasir/ciudadano-types';
 import { EmpresaCajaProps } from '../../services/cuentaunicasir/empresa-types';
 import { ContribuyenteCajaProps } from '../../services/empresas/contribuyentes-caja-public-types';
+import { CargoWithChildren } from '../../services/recaudacion/generar-cargos.types';
+import { TipoDeCargo, VariableProps } from '../../services/recaudacion/tipos-de-cargos.types';
 import { LadaProps } from '../../services/usuarios/lada.types';
 
 // Types & Interfaces
+type VariableWithValue = VariableProps & { value: string };
+interface CartItem {
+  tipoDeCargo: TipoDeCargo;
+  variables: VariableWithValue[];
+  cantidad: number;
+}
 export interface PagosDiversosStateProps {
   tipoDePadron: PadronProps | null;
   padron: null | CiudadanoCajaProps | EmpresaCajaProps | ContribuyenteCajaProps;
   ladas: null | LadaProps[];
+  cart: CartItem[];
+  cargos: CargoWithChildren[];
 }
 
 const pagosDiversosSlide = createSlice<
@@ -26,6 +36,8 @@ string
     tipoDePadron: null,
     padron: null,
     ladas: null,
+    cart: [],
+    cargos: [],
   },
   reducers: {
     setTipoDePadron: (state, action: PayloadAction<PadronProps | null>) => {
@@ -37,8 +49,20 @@ string
     setLadas: (state, action: PayloadAction<LadaProps[]>) => {
       state.ladas = action.payload;
     },
+    setCart: (state, action: PayloadAction<CartItem[]>) => {
+      state.cart = action.payload;
+    },
+    setCargos: (state, action: PayloadAction<CargoWithChildren[]>) => {
+      state.cargos = action.payload;
+    },
   },
 });
 
-export const { setTipoDePadron, setPadron, setLadas } = pagosDiversosSlide.actions;
+export const {
+  setTipoDePadron,
+  setPadron,
+  setLadas,
+  setCart,
+  setCargos,
+} = pagosDiversosSlide.actions;
 export default pagosDiversosSlide.reducer;
