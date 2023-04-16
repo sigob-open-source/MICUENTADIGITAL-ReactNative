@@ -1,4 +1,5 @@
 import { TipoDeCargo } from '../services/recaudacion/tipos-de-cargos.types';
+import type { ITramite } from '../services/tramites/plantillas-de-tramites-de-atencion-ciudadana.types';
 
 type RootStackParamList = {
   walkthrout: undefined;
@@ -19,7 +20,9 @@ type RootStackParamList = {
   zonoficacion: undefined;
   cobildo: undefined;
   convocatorias: undefined;
-  webTramites: undefined;
+  webTramites: {
+    item: ITramite;
+  };
   webAdeudos: undefined;
   webFacturacion: undefined;
   estrados: undefined;
@@ -42,6 +45,8 @@ type RootStackParamList = {
   detallesPadron: undefined;
   netpayCustom: undefined;
   pagoRealizado: undefined;
+  registroScreen: undefined;
+  codigoScreen: undefined;
   /* Pagos diversos */
   seleccionarTipoDePadron: undefined;
   busquedaPadron: undefined;

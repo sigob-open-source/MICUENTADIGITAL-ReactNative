@@ -36,7 +36,7 @@ import {
 } from '../services/padrones';
 
 import { getReferencia } from '../services/recaudacion';
-import { useNotification } from '../components/DropDowAlertProvider';
+import { useNotification } from '../components/DropDownAlertProvider';
 import Card from '../components/CardPagos';
 
 const PagoPadron = ({ route }) => {

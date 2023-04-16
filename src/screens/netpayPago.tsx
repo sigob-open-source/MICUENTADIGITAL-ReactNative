@@ -9,7 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 import { useDropdownAlert } from '../utils/notifications';
 
 import Header from '../components/Header';
-import { useNotification } from '../components/DropDowAlertProvider';
+import { useNotification } from '../components/DropDownAlertProvider';
 
 import {
   generarReciboPorNetPay,

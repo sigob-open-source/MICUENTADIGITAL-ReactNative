@@ -18,21 +18,20 @@ import Pagos from './src/screens/Pagos';
 import PagoPadron from './src/screens/PagoPadron';
 import Tramites from './src/screens/tramites';
 import NetpayPago from './src/screens/netpayPago';
-import DropdownalertProvider from './src/components/DropDowAlertProvider';
+import DropDownAlertProvider from './src/components/DropDownAlertProvider';
 import DetallesPadron from './src/screens/DetallesPadron';
 import NetpayCustom from './src/screens/NetpayCustom';
 import PagoRealizado from './src/screens/PagoRealizado';
 import PDFviewer from './src/screens/PDFviewer';
-import WebviewCartografia from './src/screens/WebviewCartografia';
-import WebviewZonificacion from './src/screens/WebviewZonificacion';
-import WebviewEstrados from './src/screens/WebviewEstrados';
-import WebviewFacturacion from './src/screens/WebviewFacturacion';
-import WebviewTramites from './src/screens/WebviewTramites';
-import WebviewAdeudos from './src/screens/WebviewAdeudos';
-import WebviewConvocatorias from './src/screens/WebviewConvocatorias';
-import WebviewCobildo from './src/screens/WebviewCabildo';
+import WebViewCartografiaScreen from './src/screens/WebViewCartografia';
+import WebViewZonificacion from './src/screens/WebViewZonificacion';
+import WebViewEstradosScreen from './src/screens/WebViewEstrados';
+import WebViewFacturacionScreen from './src/screens/WebViewFacturacion';
+import WebViewTramitesScreen from './src/screens/WebViewTramites';
+import WebviewAdeudos from './src/screens/WebViewAdeudos';
+import WebViewConvocatoriasScreen from './src/screens/WebViewConvocatorias';
+import WebViewCobildo from './src/screens/WebViewCabildo';
 import LoginScreen from './src/screens/Login';
-import Login from './src/screens/Login';
 import InicioFactura from './src/screens/InicioDeFacturacion';
 import InformacionRecibo from './src/screens/InformacionDelRecibo';
 import InformacionFiscal from './src/screens/InformacionFiscal';
@@ -114,27 +113,27 @@ const AppContainer = () => (
       <Stack.Screen
         name="cartografia"
         options={{ animation: 'none' }}
-        component={WebviewCartografia}
+        component={WebViewCartografiaScreen}
       />
       <Stack.Screen
         name="zonoficacion"
         options={{ animation: 'none' }}
-        component={WebviewZonificacion}
+        component={WebViewZonificacion}
       />
       <Stack.Screen
         name="cobildo"
         options={{ animation: 'none' }}
-        component={WebviewCobildo}
+        component={WebViewCobildo}
       />
       <Stack.Screen
         name="convocatorias"
         options={{ animation: 'none' }}
-        component={WebviewConvocatorias}
+        component={WebViewConvocatoriasScreen}
       />
       <Stack.Screen
         name="webTramites"
         options={{ animation: 'none' }}
-        component={WebviewTramites}
+        component={WebViewTramitesScreen}
       />
       <Stack.Screen
         name="webAdeudos"
@@ -144,12 +143,12 @@ const AppContainer = () => (
       <Stack.Screen
         name="webFacturacion"
         options={{ animation: 'none' }}
-        component={WebviewFacturacion}
+        component={WebViewFacturacionScreen}
       />
       <Stack.Screen
         name="estrados"
         options={{ animation: 'none' }}
-        component={WebviewEstrados}
+        component={WebViewEstradosScreen}
       />
 
       <Stack.Screen
@@ -193,8 +192,8 @@ const AppContainer = () => (
 
 export default () => (
   <Provider store={store}>
-    <DropdownalertProvider>
+    <DropDownAlertProvider>
       <AppContainer />
-    </DropdownalertProvider>
+    </DropDownAlertProvider>
   </Provider>
 );

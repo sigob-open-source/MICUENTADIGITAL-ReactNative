@@ -1,22 +1,17 @@
+// External dependencies
 import React from 'react';
-import { View } from 'react-native';
-import { WebView } from 'react-native-webview';
 
-import Header from '../components/Header';
+// External dependencies
+import WebViewPage from '../components/WebViewPage';
 
-const WebviewConvocatorias = (props) => (
-  <View style={{ flex: 1 }}>
-    <Header item="Convocatorias" />
+// Constants
+const URI = 'https://www.juarez.gob.mx/noticias/convocatorias/';
 
-    <View style={{
-      flex: 1,
-    }}
-    >
-      <WebView
-        source={{ uri: 'https://www.juarez.gob.mx/noticias/convocatorias/' }}
-      />
-    </View>
-  </View>
+const WebViewConvocatoriasScreen = () => (
+  <WebViewPage
+    title="Convocatorias"
+    uri={URI}
+  />
 );
 
-export default WebviewConvocatorias;
+export default WebViewConvocatoriasScreen;

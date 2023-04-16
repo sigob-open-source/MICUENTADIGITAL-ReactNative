@@ -11,7 +11,7 @@ import {
 import React, { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import Header from '../components/Header';
-import { useNotification } from '../components/DropDowAlertProvider';
+import { useNotification } from '../components/DropDownAlertProvider';
 import { getRecibo } from '../services/padrones';
 
 import IMAGEHELP from '../../assets/imagenes/asistencia-contribuyente.png';

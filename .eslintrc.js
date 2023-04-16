@@ -22,6 +22,8 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    'no-restricted-exports': 'off',
+    'react/require-default-props': 'off',
     'no-undefined': 'error',
     'react/no-unstable-nested-components': [
       'error',

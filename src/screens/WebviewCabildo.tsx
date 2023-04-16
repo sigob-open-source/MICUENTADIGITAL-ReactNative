@@ -1,22 +1,17 @@
+// External dependencies
 import React from 'react';
-import { View } from 'react-native';
-import { WebView } from 'react-native-webview';
 
-import Header from '../components/Header';
+// Internal dependencies
+import WebViewPage from '../components/WebViewPage';
 
-const WebviewCabildo = (props) => (
-  <View style={{ flex: 1 }}>
-    <Header item="Cabildo" />
+// Constants
+const URI = 'https://www.juarez.gob.mx/cabildo/';
 
-    <View style={{
-      flex: 1,
-    }}
-    >
-      <WebView
-        source={{ uri: 'https://www.juarez.gob.mx/cabildo/' }}
-      />
-    </View>
-  </View>
+const WebViewCabildoScreen = () => (
+  <WebViewPage
+    title="Cabildo"
+    uri={URI}
+  />
 );
 
-export default WebviewCabildo;
+export default WebViewCabildoScreen;

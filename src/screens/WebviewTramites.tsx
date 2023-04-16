@@ -1,21 +1,22 @@
+// External dependencies
 import React from 'react';
-import { View } from 'react-native';
-import { WebView } from 'react-native-webview';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import Header from '../components/Header';
+// Internal dependenices
+import { RootStackParamList } from '../types/navigation';
+import WebViewPage from '../components/WebViewPage';
 
-const WebviewTramites = ({ route: { params: { item } } }) => (
-  <View style={{ flex: 1 }}>
-    <Header item="Trámites" />
-    <View style={{
-      flex: 1,
-    }}
-    >
-      <WebView
-        source={{ uri: `https://juarezconectado.juarez.gob.mx/tramites/tramite/${item.id}?webView=1` }}
-      />
-    </View>
-  </View>
+// Types & Interfaces
+type IWebViewTramitesProps = NativeStackScreenProps<RootStackParamList, 'webTramites'>;
+
+// Misc
+const getUri = (tramiteId: number | string) => `https://juarezconectado.juarez.gob.mx/tramites/tramite/${tramiteId}?webView=1`;
+
+const WebViewTramitesScreen = ({ route: { params: { item } } }: IWebViewTramitesProps) => (
+  <WebViewPage
+    title="Trámites"
+    uri={getUri(item.id)}
+  />
 );
 
-export default WebviewTramites;
+export default WebViewTramitesScreen;

@@ -1,21 +1,14 @@
+// External dependencies
 import React from 'react';
-import { View } from 'react-native';
-import { WebView } from 'react-native-webview';
 
-import Header from '../components/Header';
+// Internal dependencies
+import WebViewPage from '../components/WebViewPage';
 
-const WebviewAduedos = (props) => (
-  <View style={{ flex: 1 }}>
-    <Header item="Pagos" />
-    <View style={{
-      flex: 1,
-    }}
-    >
-      <WebView
-        source={{ uri: 'https://juarezconectado.migob.digital/pagos' }}
-      />
-    </View>
-  </View>
+// Constants
+const URI = 'https://juarezconectado.migob.digital/pagos';
+
+const WebViewAdeudosScreen = () => (
+  <WebViewPage uri={URI} title="Pagos" />
 );
 
-export default WebviewAduedos;
+export default WebViewAdeudosScreen;

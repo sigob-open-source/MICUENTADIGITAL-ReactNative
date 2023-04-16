@@ -1,6 +1,6 @@
+// External dependenices
 import React, {
   createContext,
-  ReactElement,
   useContext,
   useRef,
   useState,
@@ -8,17 +8,16 @@ import React, {
   useMemo,
 } from 'react';
 import DropdownAlert from 'react-native-dropdownalert';
+
+// Internal dependenices
 import { AlertNotification } from '../types/alert';
 
+// Types & Interfaces
 type TNotification = AlertNotification | null;
 
 interface IDropdownAlertContextProps {
   notification: TNotification;
   setNotification: (message: TNotification)=> void;
-}
-
-interface IDropdownAlertProviderProps {
-  children: ReactElement;
 }
 
 const DropdownAlertContext = createContext<IDropdownAlertContextProps>({
@@ -28,23 +27,23 @@ const DropdownAlertContext = createContext<IDropdownAlertContextProps>({
 
 const useNotification = () => {
   const { notification, setNotification } = useContext(DropdownAlertContext);
+
   const notify = (props: AlertNotification) => {
     if (!notification) {
       setNotification(props);
     }
   };
+
   return notify;
 };
 
-const DropdownalertProvider = ({ children }: IDropdownAlertProviderProps) => {
+const DropDownAlertProvider = ({ children }: React.PropsWithChildren<unknown>) => {
   const [notification, setNotification] = useState<TNotification>(null);
 
   const dropdownalert = useRef<DropdownAlert>(null);
 
   useEffect(() => {
     if (notification) {
-      //console.log('log de Notificacion', notification);
-
       dropdownalert.current?.alertWithType?.(
         notification.type,
         notification.title,
@@ -73,4 +72,4 @@ const DropdownalertProvider = ({ children }: IDropdownAlertProviderProps) => {
 };
 
 export { useNotification };
-export default DropdownalertProvider;
+export default DropDownAlertProvider;

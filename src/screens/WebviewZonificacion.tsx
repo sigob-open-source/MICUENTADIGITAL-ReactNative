@@ -1,22 +1,17 @@
+// External dependencies
 import React from 'react';
-import { View } from 'react-native';
-import { WebView } from 'react-native-webview';
 
-import Header from '../components/Header';
+// Internal dependencies
+import WebViewPage from '../components/WebViewPage/WebViewPage';
 
-const WebviewZonificacion = () => (
-  <View style={{ flex: 1 }}>
-    <Header item="Zonificación de Predio" />
+// Constants
+const URI = 'https://gummfneibjlfaj4e.maps.arcgis.com/apps/webappviewer/index.html?id=6b35eaba2c1341949786e8300c91948a';
 
-    <View style={{
-      flex: 1,
-    }}
-    >
-      <WebView
-        source={{ uri: 'https://gummfneibjlfaj4e.maps.arcgis.com/apps/webappviewer/index.html?id=6b35eaba2c1341949786e8300c91948a' }}
-      />
-    </View>
-  </View>
+const WebViewZonificacionScreen = () => (
+  <WebViewPage
+    title="Zonificación de Predio"
+    uri={URI}
+  />
 );
 
-export default WebviewZonificacion;
+export default WebViewZonificacionScreen;
