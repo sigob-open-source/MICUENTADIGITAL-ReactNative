@@ -85,7 +85,7 @@ const PagoPadron = ({ route }) => {
       numeroDePadron = 1;
       (response !== null) ? setNameSearch(response?.nombre_completo) : null;
     } else if (padron?.descripcion === 'Empresa') {
-      response = await getEmpresa(searchText);
+      response = await getEmpresa({ q: searchText });
       numeroDePadron = 2;
       (response !== null) ? setNameSearch(response?.razon_social) : null;
       // setNameSearch(response.nombre_comercial);
@@ -426,9 +426,9 @@ const PagoPadron = ({ route }) => {
             )
 
               : (
-                <TouchableWithoutFeedback>
+                <TouchableWithoutFeedback onPress={() => { setTotalAmount(0); handleSearch(); }}>
                   <View style={styles.buttonPrintDisabled}>
-                    <Text style={styles.textButton}>Realizar Pago</Text>
+                    <Text style={styles.textButton}>Realizar Buscasqueda</Text>
                   </View>
                 </TouchableWithoutFeedback>
               )
@@ -536,7 +536,7 @@ const styles = StyleSheet.create({
   textButton: {
     color: 'white',
     fontFamily: fonts.bold,
-    fontSize: 20,
+    fontSize: 16,
     textAlign: 'center',
     margin: 10,
   },
@@ -550,7 +550,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
   },
   buttonPrintDisabled: {
-    backgroundColor: colors.alternativo,
+    backgroundColor: '#582E45',
     width: Dimensions.get('window').width * 0.85,
     height: 50,
     borderRadius: 10,

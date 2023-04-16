@@ -21,11 +21,35 @@ const PADRON_DESCRIPTIONS_MAP = Object.freeze({
 //     },
 //   );
 // };
+const baseURI = '/cuentaunicasir/auth/';
+
+const postSolicitarCodigoDeAcceso = async (values = null) => {
+  console.log('si envio los datos', values);
+  try {
+    const response = await API.post('cuentaunicasir/auth/solicitar-codigo-de-acceso/', values);
+    console.log(response.data);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+  return false;
+};
+
+export const postLogin = async (values = null) => {
+  try {
+    const response = await API.post(`${baseURI}obtener-acceso/`, {
+      codigo: values,
+      entidad: 1,
+      catalogo_canal_de_pago: 3,
+    });
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+  return false;
+};
 
 export const postGenererReferenciasNetpay = async (tipoDePadron, padron, cargos, padrones) => {
-  console.log('====================================');
-  console.log(padrones);
-  console.log('====================================');
   try {
     const importe = cargos.reduce((acum, curr) => acum + curr.importe, 0);
     const values = {
@@ -343,4 +367,5 @@ export {
   getAdeudoPadron,
   getRecibos,
   getRecibo,
+  postSolicitarCodigoDeAcceso,
 };

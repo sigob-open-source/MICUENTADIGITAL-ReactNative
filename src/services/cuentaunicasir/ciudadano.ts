@@ -10,6 +10,7 @@ type GetCiudadanoCajaParams = {
   q?: string;
   entidad: number;
 };
+
 const getCiudadanoCaja = async (params: GetCiudadanoCajaParams) => {
   let ciudadano: CiudadanoCajaProps | null = null;
 
@@ -35,6 +36,17 @@ const getCiudadanoCaja = async (params: GetCiudadanoCajaParams) => {
   }
 
   return ciudadano;
+};
+
+export const postCiudadano = async (values) => {
+  try {
+    const response = await API.post('cuentaunicasir/ciudadano-public', { ...values, entidad: 1 });
+    message.info('Ciudadano registrado correctamente', 3);
+    return response.data;
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
 };
 
 type UpdateCiudadanoPayload = {

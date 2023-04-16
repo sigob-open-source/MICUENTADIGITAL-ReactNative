@@ -1,134 +1,195 @@
+/* eslint-disable @typescript-eslint/no-non-null-assertion */
+// External dependencies
+import React, { useState } from 'react';
 import {
-  StyleSheet,
-  Text,
   View,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  SafeAreaView,
+  Text,
+  TouchableWithoutFeedback,
+  StyleSheet,
+  Alert,
 } from 'react-native';
-import React from 'react';
+import * as yup from 'yup';
+import { useFormik } from 'formik';
+import Icon from 'react-native-vector-icons/FontAwesome5';
 import { useNavigation } from '@react-navigation/native';
-import { useNotification } from '../components/DropDowAlertProvider';
 
-const InicioRegistroCiudadano = () => {
-  const notify = useNotification();
+// Internal dependencies
+import HeaderV2 from '../components/HeaderV2';
+import Card from '../components/Card';
+import Input from '../components/Input';
+import Button from '../components/Button';
+import LadaModalPicker from '../components/LadaPicker';
+import ladas from '../dataset/ladas.json';
+import { postSolicitarCodigoDeAcceso } from '../services/padrones';
+
+// Types & Interfaces
+interface FormValues {
+  countryCode: string;
+  phoneNumber: string;
+}
+
+// Constants
+const FORM_SCHEMA = yup.object({
+  countryCode: yup
+    .string()
+    .typeError('Campo no valido'),
+  phoneNumber: yup
+    .string()
+    .typeError('Campo no valido')
+    .required('El campo es requerido')
+    .matches(/[0-9]{10}/, 'Ingrese un número válido'),
+});
+
+const SendCodeScreen = () => {
+  const [showCodePicker, setShowCodePicker] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+
   const navigation = useNavigation();
 
+  const formik = useFormik<FormValues>({
+    initialValues: {
+      countryCode: '',
+      phoneNumber: '',
+    },
+    validationSchema: FORM_SCHEMA,
+    validateOnChange: true,
+    onSubmit: async (values) => {
+      setLoading(true);
+      const ladaId = ladas.find((x) => x.lada === values.countryCode)!.id;
+      const numeroDeTelefono = parseInt(values.phoneNumber, 10);
+
+      console.log({ ladaId, numeroDeTelefono });
+
+      // make api call
+      const response = await postSolicitarCodigo(numeroDeTelefono, ladaId);
+
+      if (response) {
+        navigation.navigate('codigoScreen');
+      } else {
+        Alert.alert('Error', 'Ha ocurrido un error');
+      }
+      setTimeout(() => {
+        setLoading(false);
+      }, 1000);
+    },
+  });
+
+  const postSolicitarCodigo = async (numeroDeTelefono, ladaId) => {
+    const datavalues = {
+      lada: ladaId,
+      numero_de_celular: numeroDeTelefono,
+    };
+
+    const success = await postSolicitarCodigoDeAcceso(datavalues);
+    if (success) {
+      return success;
+    }
+  };
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-      <ScrollView style={styles.container} contentContainerStyle={{ flexGrow: 1 }}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <View style={styles.menuContainer}>
-            <Text style={styles.title}>Datos Personales</Text>
+    <>
+      <HeaderV2
+        title="Iniciar sesión"
+      />
 
-            <View style={styles.textInputContainer}>
-              <TextInput
-                placeholderTextColor="#C4C4C4"
-                placeholder="CURP*"
-                fontSize={11}
-              />
-            </View>
+      <View style={styles.container}>
+        <Card style={{ padding: 15 }}>
+          <TouchableWithoutFeedback
+            onPress={() => setShowCodePicker(true)}
+          >
+            <View style={{ marginVertical: 8 }}>
+              <Text style={styles.countryCodeLabel}>
+                Lada:
+              </Text>
+              <View
+                style={[
+                  styles.countryCodeContainer,
+                ]}
+              >
+                <Text
+                  style={[
+                    styles.countryCode,
+                    { color: formik.values.countryCode ? '#010101' : '#cccccc' },
+                  ]}
+                  numberOfLines={1}
+                >
+                  {
+                        formik.values.countryCode || 'Ingresa tu clave larga distancia automática'
+                      }
+                </Text>
 
-            <View style={styles.textInputContainer}>
-              <TextInput
-                placeholderTextColor="#C4C4C4"
-                placeholder="Nombre(s)*"
-                fontSize={11}
-              />
-            </View>
-
-            <View style={styles.textInputContainer}>
-              <TextInput
-                placeholderTextColor="#C4C4C4"
-                placeholder="Apellido Paterno*"
-                fontSize={11}
-              />
-            </View>
-
-            <View style={styles.textInputContainer}>
-              <TextInput
-                placeholderTextColor="#C4C4C4"
-                placeholder="Apellido Materno*"
-                fontSize={11}
-              />
-            </View>
-
-            <View style={styles.textInputContainer}>
-              <TextInput
-                placeholderTextColor="#C4C4C4"
-                placeholder="Género"
-                fontSize={11}
-              />
-            </View>
-
-            <TouchableOpacity>
-              <View style={styles.button}>
-                <Text style={styles.textButton}>Continuar con el Registro</Text>
+                <Icon name="angle-down" size={25} color="#010101" />
               </View>
-            </TouchableOpacity>
+            </View>
+          </TouchableWithoutFeedback>
 
-            <Text style={styles.linkText}>Ya tengo una cuenta</Text>
+          <Input
+            value={formik.values.phoneNumber}
+            onChangeText={(value) => formik.setFieldValue('phoneNumber', value)}
+            label="Número de teléfono"
+            keyboardType="phone-pad"
+            placeholder="Ingresa tu número de teléfono"
+            placeholderTextColor="#cccccc"
+            error={formik.errors.phoneNumber}
+          />
+        </Card>
 
-          </View>
-        </View>
+        <Button
+          loading={loading}
+          style={styles.cta}
+          size="large"
+          text="Iniciar sesión"
+          onPress={formik.handleSubmit}
+        />
 
-      </ScrollView>
-    </SafeAreaView>
+        <Button
+          loading={loading}
+          style={styles.cta}
+          size="large"
+          text="Registrarse"
+          onPress={() => navigation.navigate('registroScreen')}
+        />
+      </View>
+
+      <LadaModalPicker
+        visible={showCodePicker}
+        onClose={() => setShowCodePicker(false)}
+        onSelect={(lada) => formik.setFieldValue('countryCode', lada.lada)}
+      />
+    </>
   );
 };
 
-export default InicioRegistroCiudadano;
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 22,
-    backgroundColor: '#EDF2F5',
-  },
-  menuContainer: {
-    width: 305,
-    height: 400,
+  countryCodeContainer: {
+    height: 37,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#ccc',
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    justifyContent: 'space-between',
+    paddingHorizontal: 8,
+    backgroundColor: '#f0f0f0',
   },
-  title: {
+  countryCodeLabel: {
+    fontSize: 14,
+    color: '#4A4A4A',
+    fontWeight: '600',
+    marginBottom: 4,
+  },
+  countryCode: {
+    color: '#000',
     fontSize: 16,
-    fontWeight: '800',
-    color: '#4E585F',
-    marginBottom: 10,
+    padding: 0,
+    flex: 1,
   },
-  textInputContainer: {
-    marginVertical: 5,
-    width: '80%',
-    height: 40,
-    justifyContent: 'center',
-    borderRadius: 5,
-    backgroundColor: 'white',
-    borderWidth: 1.5,
-    borderColor: '#F1F1F1',
-    fontSize: 2,
+  container: {
+    padding: 20,
   },
-  button: {
-    backgroundColor: '#582E44',
-    width: 230,
-    height: 40,
-    borderRadius: 5,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 10,
-  },
-  textButton: {
-    fontWeight: '500',
-    color: '#ffffff',
-    fontSize: 12,
-  },
-  linkText: {
-    fontSize: 12,
-    marginTop: 15,
-    fontWeight: '400',
-    color: '#4D89FF',
+  cta: {
+    marginTop: 20,
   },
 });
+
+export default SendCodeScreen;

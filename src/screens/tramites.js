@@ -10,12 +10,13 @@ import {
   FlatList,
   ActivityIndicator,
   Alert,
+  __spread,
 } from 'react-native';
 
 import Collapsible from 'react-native-collapsible';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import NetInfo, { useNetInfo } from '@react-native-community/netinfo';
-import { getDependencias, getTramites } from '../services/api';
+import { getTramites } from '../services/api';
 
 import PopUpTramites from '../components/popUpTramites';
 import Header from '../components/Header';
@@ -29,11 +30,8 @@ const Tramites = (props) => {
   const [collapsed2, setCollapsed2] = useState(true);
   const [selectedDependency, setSelectedDependency] = useState(null);// Saber que dependencia ha seleccionado el usuario para filtrar los trámites
   const [data, setData] = useState(null);// Datos de los trámites
-  const [dependencias, setDependencias] = useState(null); // Dependencias obtenidas
   const [filteredData, setFilteredData] = useState([]); // State para filtrar los trámites
-  const [tramitesMunicipales, setTramitesMunicipales] = useState(null);
   const [modalOpen, setModalOpen] = useState(false);
-  const [dependencies, setDependencies] = useState([]);
   const [tiposDeFiltros, setTiposDeFiltros] = useState(['Dependencia/Oficina', 'Búsqueda', 'Más buscados', 'Clasificación', 'Sujeto de interés']);
   const [filtroSeleccionado, setFiltroSeleccionado] = useState('Búsqueda');
   const [Sujeto, setSujeto] = useState(['Empresa', 'Ciudadano']);
@@ -42,6 +40,7 @@ const Tramites = (props) => {
   const [isConnected, setIsConnected] = useState(true);
   const [paginaAHacerleFetch, setPaginaAHacerleFetch] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [page, setPage] = useState(1);
 
   // Checar si el usuario está conectado a internet
   const netInfo = useNetInfo();
@@ -49,10 +48,9 @@ const Tramites = (props) => {
     CheckConnected();
   }, [netInfo]);
 
-  // Obtener dependencias y trámites
+  // Obtener  trámites
   useEffect(() => {
     if (data == null) {
-      obetnerDependencias();
       obtenerTramites();
     }
     // Evitar memory leaks por hacer fetch a API
@@ -60,9 +58,7 @@ const Tramites = (props) => {
       setLoading({});
       setPaginaAHacerleFetch({});
       setData({});
-      setDependencias({});
       setFilteredData({});
-      setTramitesMunicipales({});
     };
   }, []);
 
@@ -78,34 +74,11 @@ const Tramites = (props) => {
   };
 
   // Abre un modal que muestra la ficha del trámite seleccionado
-  const onShowPopup = (
-    fichaProp,
-  ) => {
-    if (isConnected) {
-      if (tramitesMunicipales != null) {
-        setFichaProps(fichaProp);
-        setModalOpen(true);
-      }
-    } else {
-      Alert.alert('Error', 'Debe estar conectado a internet para realizar esta acción.');
-    }
-  };
 
   // Función que se usa para renderizar los trámites obtenidos desde el api, en un FlatList
   const returnTramiteInfo = (item) => (
 
-    <TouchableOpacity onPress={() => onShowPopup(
-      [
-        item.nombre,
-        item.descripcion,
-        item.departamentos,
-        undefined,
-        item.homoclave,
-        item.departamentos[0].unidad_operativa.descripcion,
-        // item.tipo_de_tramite
-      ],
-    )}
-    >
+    <TouchableOpacity onPress={() => props.navigation.push('webTramites', { item })}>
       <View style={styles.tramiteView}>
         <Text numberOfLines={3} ellipsizeMode="tail" style={styles.collapsibleText}>{`${item.id} - ${item.nombre}`}</Text>
       </View>
@@ -128,37 +101,12 @@ const Tramites = (props) => {
         items = [...items, ...tramites.results];
         setData(items);
         setFilteredData(items);
-        setTramitesMunicipales(items[0].nombre);
         currentPage += 1;
         setLoading(false);
-
-        // Terminar la carga si se obtienen todos los trámites de forma éxitosa
-        if (endOfList) {
-          setLoading(false);
-        } else {
-          setTramitesMunicipales('Sin Datos.');
-        }
       }
     } catch (error) {
       Alert.alert('Error', 'Ha habido un error al comunicarse con el servidor. Favor de intentarlo más tarde.');
       setTramitesMunicipales('Sin Datos.');
-      console.log('Oh no: ', error);
-    }
-  };
-
-  // Obtener las dependencias para así poder filtrar los trámites
-  const obetnerDependencias = async () => {
-    try {
-      const dependency = await getDependencias();
-      if (dependency.length > 0 && dependency != undefined) {
-        setDependencies(dependency);
-        setSelectedDependency(dependency[0].descripcion);
-      } else {
-        setSelectedDependency('No hay datos.');
-      }
-    } catch (error) {
-      Alert.alert('Error', 'Ha habido un error al comunicarse con el servidor. Favor de intentarlo más tarde.');
-      setSelectedDependency('No hay datos.');
       console.log('Oh no: ', error);
     }
   };
@@ -178,34 +126,6 @@ const Tramites = (props) => {
     </View>
   );
 
-  useEffect(() => {
-    if (dependencies != null) {
-      switch (filtroSeleccionado) {
-        case 'Dependencia/Oficina':
-          if (dependencias != null) {
-            setSelectedDependency(dependencies[0].descripcion);
-          } else {
-            setSelectedDependency('No hay datos.');
-          }
-
-          break;
-        case 'Búsqueda': break;
-        case 'Más buscados': Alert.alert('Alerta', 'Se está realizando mantenimiento a esta opción'); break;
-        case 'Clasificación': setSelectedDependency('Trámite'); break;
-        case 'Sujeto de interés': Alert.alert('Alerta', 'Se está realizando mantenimiento a esta opción'); break;
-      }
-    }
-  }, [filtroSeleccionado]);
-
-  const changeFiltro = (item) => {
-    if (item == 'Más buscados' || item == 'Sujeto de interés') {
-      Alert.alert('Alerta', 'Se está realizando mantenimiento a esta opción.');
-    } else {
-      setFiltroSeleccionado(item);
-      setFilteredData(data);
-    }
-  };
-
   const renderFiltro = (item) => (
     <View>
       <TouchableOpacity onPress={() => changeFiltro(item)}>
@@ -216,29 +136,8 @@ const Tramites = (props) => {
     </View>
   );
 
-  const renderTramite = (item, index) => {
-    if (filtroSeleccionado === 'Dependencia/Oficina') {
-      if (item.departamentos[0].unidad_operativa.descripcion === selectedDependency) {
-        return (
-          returnTramiteInfo(item)
-        );
-      }
-    } else if (filtroSeleccionado === 'Clasificación') {
-      if (item.clasificacion === true && selectedDependency === 'Trámite') {
-        return (
-          returnTramiteInfo(item)
-        );
-      } if (item.clasificacion === false && selectedDependency === 'Servicio') {
-        return (
-          returnTramiteInfo(item)
-        );
-      }
-    } else {
-      return (
-        returnTramiteInfo(item)
-      );
-    }
-  };
+  const renderTramite = (item, index) => (
+    returnTramiteInfo(item));
 
   const toggleExpanded = () => {
     if (data != null) {
@@ -261,10 +160,23 @@ const Tramites = (props) => {
     }
   };
 
-  const loadMoreItem = () => {
-    console.log('====================================');
-    console.log('muchos items mas');
-    console.log('====================================');
+  const loadMoreItem = async () => {
+    // if (!data.next) {
+    //   return;
+    // }
+    // setLoading(true);
+    // const tramites = await getTramites(page + 1);
+    // if (tramites.results.length) {
+    //   setPage(page + 1);
+    //   setFilteredData((_data) => ({
+    //     ..._data,
+    //     results: [
+    //       ..._data.results,
+    //       ...tramites.results,
+    //     ],
+    //   }));
+    // }
+    // setLoading(false);
   };
 
   return (
@@ -283,18 +195,7 @@ const Tramites = (props) => {
           style={styles.header}
           item="Trámites"
         />
-
         <View style={{ marginTop: '5%', alignItems: 'center' }}>
-          <TouchableWithoutFeedback onPress={toggleTramiteFiltros}>
-            <View style={styles.collapsibleHeader}>
-              <Text numberOfLines={1} style={styles.headerText}>{filtroSeleccionado}</Text>
-              {
-                collapsed2 ? (
-                  <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-down" color="black" />
-                ) : <MaterialIcons style={{ alignSelf: 'flex-end' }} size={40} name="keyboard-arrow-up" color="black" />
-              }
-            </View>
-          </TouchableWithoutFeedback>
 
           <View style={styles.collapsibleContainer}>
             <Collapsible collapsed={collapsed2}>
@@ -423,7 +324,7 @@ const Tramites = (props) => {
           : (
             <>
               {
-            tramitesMunicipales == 'Sin datos.' ? (
+            !filteredData.length ? (
               <Text style={{ color: 'gray' }}>No se encontraron trámites.</Text>
             )
 

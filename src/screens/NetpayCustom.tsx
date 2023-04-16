@@ -99,7 +99,7 @@ const NetpayCustom = ({ route }) => {
     <View style={styles.container}>
       <Header style={styles.header} item="Netpay" />
 
-      <View style={{ flex: 1, paddingTop: 70 }}>
+      <View style={{ flex: 1 }}>
         <WebView
           source={{ html }}
           onMessage={onMessage}

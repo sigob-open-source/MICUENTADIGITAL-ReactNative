@@ -76,7 +76,6 @@ const Pagos = (props) => {
     return 'van';
   };
   const checkDisebla = (elementName) => {
-    if (elementName === 'Empresa') return true;
     if (elementName === 'Notario') return true;
     if (elementName === 'Alcohol') return true;
   };
@@ -104,14 +103,7 @@ const Pagos = (props) => {
       <View style={styles.container}>
         <Header style={styles.header} item="Pagos" />
         <View style={{ marginTop: '3%' }}>
-          <View style={styles.textInputContainer}>
-            <TextInput
-              color="black"
-              placeholderTextColor="#C4C4C4"
-              style={styles.textInputStyle}
-              placeholder="Buscar..."
-            />
-          </View>
+
           {padrones && (
           <View style={{ flex: 1, justifyContent: 'center' }}>
             <FlatList

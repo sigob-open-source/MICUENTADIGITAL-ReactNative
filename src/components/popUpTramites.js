@@ -382,14 +382,6 @@ const PopUpTramites = (props) => {
               'Su PDF se descargó exitosamente.',
               [
                 {
-                  text: 'Reenviar PDF por correo',
-                  onPress: () => sendEmail(filePath),
-                },
-                {
-                  text: 'Abrir PDF',
-                  onPress: () => abrirPDF(filePath),
-                },
-                {
                   text: 'OK',
                   style: 'cancel',
                 },

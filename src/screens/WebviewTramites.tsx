@@ -4,15 +4,15 @@ import { WebView } from 'react-native-webview';
 
 import Header from '../components/Header';
 
-const WebviewTramites = (props) => (
+const WebviewTramites = ({ route: { params: { item } } }) => (
   <View style={{ flex: 1 }}>
-    <Header item="Facturacion" />
+    <Header item="Trámites" />
     <View style={{
       flex: 1,
     }}
     >
       <WebView
-        source={{ uri: 'https://juarezconectado.migob.digital/tramites' }}
+        source={{ uri: `https://juarezconectado.juarez.gob.mx/tramites/tramite/${item.id}?webView=1` }}
       />
     </View>
   </View>

@@ -19,6 +19,7 @@ import { generarReferenciaDePagoNetpayPublic } from '../../services/recaudacion/
 import useTotal from '../../hooks/useTotal';
 import getExpiryDate from '../../utils/get-expiry-date';
 import PDFViewer from '../../components/PDFViewer';
+import { tokenizeAmount } from '../../services/netpay';
 
 // Types & Interfaces
 type NavigationProps = NativeStackScreenProps<
@@ -85,9 +86,8 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
 
   const paymentMethodHandler = async (cta: 'orden' | 'netpay') => {
     const setLoading = cta === 'orden' ? setLoadingOrdenDePago : setLoadingPagoEnLinea;
-
     setLoading(true);
-
+    console.log('caminos de la vida');
     if (referenciaDePago === null) {
       // const descripcion = conceptosDePago.length === 1
       // && conceptosDePago[0].description.length <= 250
@@ -124,6 +124,45 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
       }
     }
 
+    if (cta === 'netpay') {
+      // const descripcion = conceptosDePago.length === 1
+      // && conceptosDePago[0].description.length <= 250
+      //   ? conceptosDePago[0].descripcion : tipoDePadron.descripcion;
+
+      const descripcion = conceptosDePago.length === 1
+        && conceptosDePago[0].description.length <= 250
+        ? conceptosDePago[0].description
+        : tipoDePadron.descripcion;
+
+      const responseNetpay = await tokenizeAmount(roundedTotal);
+
+      const response = await generarReferenciaDePagoNetpayPublic(
+        {
+          amount: roundedTotal,
+          currency: 'MXN',
+          description: descripcion,
+          expiryDate: getExpiryDate(tipoDePadron.id),
+          paymentMethod: 'cash',
+          billing: {
+            canal_de_pago: 5,
+            cargos: conceptosDePago.map((e) => e.id),
+            padron_id: padron.id,
+            tipo_de_padron: tipoDePadron.id,
+            importe: roundedTotal,
+            fecha: moment().format('DD-MM-YYYY'),
+            merchantReferenceCode: null,
+            ciudadano: null,
+          },
+        },
+        { entidad: 1 },
+      );
+
+      if (response) {
+        console.log(response.folio_netpay);
+        navigation.push('netpayCustom', { responseNetpay, response });
+      }
+    }
+
     if (cta === 'orden') {
       setPdfViewerIsOpen(true);
     }
@@ -144,7 +183,7 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
           <Button
             loading={loadingPagoEnLinea}
             disabled={loadingOrdenDePago}
-            text="Pagar en linea"
+            text="Pagar en línea"
             iconName="arrow-circle-right"
             style={styles.item}
             onPress={() => paymentMethodHandler('netpay')}

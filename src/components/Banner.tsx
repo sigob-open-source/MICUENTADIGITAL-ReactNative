@@ -48,7 +48,7 @@ const Banner = () => (
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => Linking.openURL('https://juarezconectado.migob.digital/')}>
+          <TouchableOpacity onPress={() => Linking.openURL('https://juarezconectado.juarez.gob.mx/')}>
             <View style={styles.webButton}>
               <Text style={styles.aButton}> Ir al portal web</Text>
             </View>

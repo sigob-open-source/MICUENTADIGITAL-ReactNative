@@ -36,7 +36,7 @@ import Login from './src/screens/Login';
 import InicioFactura from './src/screens/InicioDeFacturacion';
 import InformacionRecibo from './src/screens/InformacionDelRecibo';
 import InformacionFiscal from './src/screens/InformacionFiscal';
-import RegistroCiudadano from './src/screens/InicioRegistroCiudadano';
+import InicioRegistroCiudadano from './src/screens/InicioRegistroCiudadano';
 import Walkthrout from './src/screens/Walkthrough';
 import TipoDeRegistro from './src/screens/TipoDeRegistro';
 import InformacionDeQueja from './src/screens/InformacionDeQueja';
@@ -51,6 +51,9 @@ import ConfiguracionDeCargoScreen from './src/screens/PagosDiversos/Configuracio
 import ResumenDeCargosScreen from './src/screens/PagosDiversos/ResumenDeCargos';
 import ResumenDePagoScreen from './src/screens/PagosDiversos/ResumenDePago';
 import SeleccionarTipoDePadronScreen from './src/screens/PagosDiversos/SelecionarTipoDePadron';
+// Registro de ciudadanos Screens
+import RegistroCiudadano from './src/screens/RegistroCiudadano';
+import CodigoScreen from './src/screens/CodigoAcceso';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -79,7 +82,9 @@ const AppContainer = () => (
       <Stack.Screen name="loginScreen" component={LoginScreen} />
       <Stack.Screen name="informacionRecibo" component={InformacionRecibo} />
       <Stack.Screen name="informacionFiscal" component={InformacionFiscal} />
-      <Stack.Screen name="registroCiudadano" component={RegistroCiudadano} />
+      <Stack.Screen name="registroCiudadano" component={InicioRegistroCiudadano} />
+      <Stack.Screen name="registroScreen" component={RegistroCiudadano} />
+      <Stack.Screen name="codigoScreen" component={CodigoScreen} />
       <Stack.Screen name="inicioFactura" component={InicioFactura} />
       <Stack.Screen name="menuInicio" component={MenuInicio} />
       <Stack.Screen name="pagoPadron" component={PagoPadron} />

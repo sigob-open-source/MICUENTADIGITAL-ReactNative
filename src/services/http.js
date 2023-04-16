@@ -10,8 +10,10 @@ import { navigateWithReset } from '../utils/navigation';
 export const API_SCHEMA = 'https';
 export const API_HOST = 'api.micuenta.digital';
 // export const API_LOCALHOST_GRP = '10.0.2.2:8000';
+// prod jrz
+// export const API_HOST_GRP = 'apiexterna.juarez.gob.mx';
 export const API_HOST_GRP = 'apiingresos.migob.mx';
-// export const API_HOST_GRP = 'apiingresosnayarit.migob.mx';
+// export const API_HOST_GRP = 'apiingresosnayarit.migob.mx';//
 // export const API_HOST_GRP = 'apigrp.migob.mx';
 export const API_PATH = '/';
 const headers = {
@@ -61,6 +63,10 @@ const refreshToken = async (token) => {
 const onResponseFail = async (error) => {
   const statusCode = error?.response?.status;
   const data = error?.response?.data;
+
+  if (statusCode === 502 || error.code === 'ERR_NETWORK') {
+    return axios.request(error.config);
+  }
 
   // If token fails try to refresh it
   if (

@@ -67,12 +67,14 @@ const getDependencias = async () => {
 
 const getTramites = async (page) => {
   try {
-    const response = await http.get(`tramites/plantillas-tramites-atencion-ciudadana/?page=${page}`, {
-      signal: controller.signal,
-    });
-    return response?.data ?? [];
+    const response = await http.get(`tramites/plantillas-tramites-atencion-ciudadana/?page=${page}`);
+    return response?.data;
   } catch (error) {
-    controller.abort();
+    console.log(page, error.message);
+
+    return {
+      results: [],
+    };
   }
 };
 

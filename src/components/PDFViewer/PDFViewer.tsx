@@ -5,9 +5,12 @@ import {
   StyleSheet,
   View,
   TouchableOpacity,
+  PermissionsAndroid,
   Text,
+  Alert,
 } from 'react-native';
 import Pdf from 'react-native-pdf';
+import RNFetchBlob from 'rn-fetch-blob';
 
 interface Props {
   visible: boolean;
@@ -32,6 +35,70 @@ const ModalPdfViewer: React.FC<Props> = ({ visible, base64, onClose }) => {
 
   const handleDownload = async () => {
     // Handle download logic here
+    const granted = await PermissionsAndroid.request(
+      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+      {
+        title: 'Permisos requeridos',
+        message:
+            'Se requieren permisos para guardar archivos en el dispositivo. ',
+        buttonNeutral: 'Preguntame más tarde',
+        buttonNegative: 'Cancelar',
+        buttonPositive: 'OK',
+      },
+    );
+
+    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+      const path = `${RNFetchBlob.fs.dirs.DownloadDir}/ordendepago.pdf`;
+      await RNFetchBlob.fs.writeFile(path, base64, 'base64');
+      console.log('Archivo descargado');
+
+      RNFetchBlob.fs.stat(path)
+        .then((stats) => {
+          if (stats.size > 0) {
+            Alert.alert(
+              'PDF descargado',
+              'El PDF se ha descargado correctamente.',
+              [
+                {
+                  text: 'Abrir archivo',
+                  onPress: () => {
+                    RNFetchBlob.android.actionViewIntent(path, 'application/pdf');
+                  },
+                },
+                {
+                  text: 'OK',
+                  style: 'cancel',
+                },
+              ],
+            );
+          } else {
+            console.log('El archivo descargado no tiene contenido.');
+            Alert.alert(
+              'ERROR',
+              'Hubo un problema con la descarga. Vuelva a intentarlo.',
+              [
+                {
+                  text: 'OK',
+                  style: 'cancel',
+                },
+              ],
+            );
+          }
+        })
+        .catch((error) => {
+          console.log('Error al obtener información del archivo:', error);
+          Alert.alert(
+            'ERROR',
+            'Hubo un problema con la descarga. Vuelva a intentarlo.',
+            [
+              {
+                text: 'OK',
+                style: 'cancel',
+              },
+            ],
+          );
+        });
+    }
   };
 
   return (

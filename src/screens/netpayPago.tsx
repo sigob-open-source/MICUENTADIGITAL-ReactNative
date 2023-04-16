@@ -137,7 +137,10 @@ const NetpayPago = ({ route: { params: { responseNetpay, folioNetpay } } }) => {
       >
         <WebView
           originWhitelist={['*']}
-          source={{ html }}
+          source={{
+            uri:
+            'https://solicitudes.migob.mx/pago-webview?cargos=121174771&total=720&tipo_de_padron=1&object_id_padron=531390&merchantReferenceCode=23010001421&webView=1',
+          }}
           onMessage={onMessage}
         />
       </View>
