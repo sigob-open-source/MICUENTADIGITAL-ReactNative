@@ -19,7 +19,7 @@ import Header, { IconButton } from '../../components/HeaderV2';
 import { RootStackParamList } from '../../types/navigation';
 import { getPadrones } from '../../services/catalogos/padrones';
 import { PadronProps } from '../../services/catalogos/padrones.types';
-import { setTipoDePadron } from '../../store-v2/reducers/pagos-diversos';
+import { clear, setTipoDePadron } from '../../store-v2/reducers/pagos-diversos';
 
 // Types & Interfaces
 type NavigationProps = NativeStackScreenProps<RootStackParamList, 'seleccionarTipoDePadron'>;
@@ -42,6 +42,9 @@ const SeleccionarTipoDePadronScreen = ({ navigation }: SeleccionarTipoDePadronSc
     getPadrones()
       .then(setPadrones)
       .finally(() => setLoading(false));
+
+    dispatch(clear(null));
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const refresh = async () => {

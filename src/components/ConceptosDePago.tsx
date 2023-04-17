@@ -15,7 +15,7 @@ import useTotal from '../hooks/useTotal';
 interface ConceptoDePago {
   id: number;
   description: string;
-  total: string;
+  total: string | number;
 }
 
 interface ConceptosDePagoProps {

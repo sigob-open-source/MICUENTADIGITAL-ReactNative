@@ -1,150 +1,333 @@
-import {
-  StyleSheet,
-  View,
-  Alert,
-} from 'react-native';
-import React from 'react';
-import { WebView } from 'react-native-webview';
-import { useNavigation } from '@react-navigation/native';
-import { useDropdownAlert } from '../utils/notifications';
+// External dependencies
+import React, {
+  useEffect,
+  useMemo,
+  useState,
+  useRef,
+} from 'react';
 
-import Header from '../components/Header';
+// Internal dependencies
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { WebViewMessageEvent } from 'react-native-webview';
+import { RootStackParamList } from '../types/navigation';
+import { useAppSelector } from '../store-v2/hooks';
+import { CargoProps } from '../services/recaudacion/generar-cargos.types';
+import useTotal from '../hooks/useTotal';
+import WebViewPage from '../components/WebViewPage';
+import Logger from '../lib/logger';
+import useDebouncedFunction from '../hooks/useDebouncedFunction';
 import { useNotification } from '../components/DropDownAlertProvider';
 
-import {
-  generarReciboPorNetPay,
-} from '../services/padrones';
+// Types & Interfaces
+type NetPayPagoScreen = NativeStackScreenProps<RootStackParamList, 'netpaypago'>;
 
-const NetpayPago = ({ route: { params: { responseNetpay, folioNetpay } } }) => {
+interface FormLoadedMessage {
+  message: 'checkout-form-loaded'
+}
+
+interface FormClosedMessage {
+  message: 'checkout-form-closed',
+}
+
+interface FormGenericErrorMessage {
+  message: 'checkout-form-declined',
+}
+
+interface FormPaymentSuccessMessage {
+  message: 'checkout-form-success',
+  data?: {
+    affiliation: string;
+    auth_code: string;
+    bank_name: string;
+    card_date: string;
+    card_nature: string;
+    card_number: string;
+    card_type: string;
+    eci: string;
+    mrc: string;
+    order_number: string;
+    promotion: string;
+    reference_number: string;
+    status: string;
+  }
+}
+
+type WebViewMessage = FormLoadedMessage
+| FormClosedMessage
+| FormPaymentSuccessMessage
+| FormGenericErrorMessage;
+
+const DETECT_MODAL = `
+function findElementByTextContent(tagName = '*', text) {
+  var elements = document.getElementsByTagName(tagName);
+  for (var i = 0; i < elements.length; i++) {
+    if (elements[i].textContent == text) {
+      return elements[i];
+    }
+  }
+  return null;
+}
+
+function findElementByAriaLabel(tagName = '*', label) {
+  var elements = document.getElementsByTagName(tagName);
+  for (var i = 0; i < elements.length; i++) {
+    if (elements[i].getAttribute('aria-label') == label) {
+      return elements[i];
+    }
+  }
+  return null;
+}
+
+var formLoaded = false;
+const findModalIntervalID = setInterval(() => {
+  const form = findElementByTextContent('span', 'Información de Pago');
+
+  if (form && !formLoaded) {
+    formLoaded = true;
+    clearInterval(findModalIntervalID);
+    window.ReactNativeWebView.postMessage('{"message": "checkout-form-loaded"}');
+  }
+}, 500);
+
+const getTransactionDetails = () => {
+  const fields = Array
+  .from(document.querySelectorAll('.info-data-success-container label[id]').values());
+
+  if (!fields.length) return;
+
+  return fields
+    .reduce((acct, item) => { acct[item.id.replace('np-', '').replace('-', '_')] = item.textContent;return acct;}, {});
+};
+
+var paymentSucceed = false;
+
+const findCloseButtonIntervalID = setInterval(() => {
+  if (!formLoaded) return;
+
+  const closeButton = findElementByAriaLabel('i', 'Close');
+
+  if (closeButton) {
+    clearInterval(findCloseButtonIntervalID);
+
+    closeButton.addEventListener('click', () => {
+      let message;
+      if (paymentSucceed) {
+        message = JSON.stringify({
+          message: 'checkout-form-success',
+          data: getTransactionDetails(),
+        });
+      } else {
+        message = '{"message": "checkout-form-closed"}';
+      }
+      window.ReactNativeWebView.postMessage(message);
+    });
+  }
+}, 500);
+
+const cardPaymentSuccessIntervalId = setInterval(() => {
+  if (!formLoaded) return;
+
+  const form = document.getElementById('success-card-payment-container');
+  if (getComputedStyle(form).display === 'none') return;
+
+  const finishButton = document.querySelector('a#np-card-finish');
+
+  if (finishButton) {
+    paymentSucceed = true;
+    clearInterval(cardPaymentSuccessIntervalId);
+
+    finishButton.addEventListener('click', () => {
+      const message = JSON.stringify({
+        message: 'checkout-form-success',
+        data: getTransactionDetails(),
+      });
+      window.ReactNativeWebView.postMessage(message);
+    });
+  }
+}, 500);
+
+const cashPaymentSuccessIntervalId = setInterval(() => {
+  if (!formLoaded) return;
+
+  const form = document.getElementById('success-cash-payment-container');
+  if (getComputedStyle(form).display === 'none') return;
+
+  const finishButton = document.querySelector('a#np-cash-finish');
+
+  if (finishButton) {
+    paymentSucceed = true;
+    clearInterval(cashPaymentSuccessIntervalId);
+    
+    finishButton.addEventListener('click', () => {
+      const message = JSON.stringify({
+        message: 'checkout-form-success',
+      });
+      window.ReactNativeWebView.postMessage(message);
+    });
+  }
+}, 500);
+
+const findGenericErrorIntervalId = setInterval(() => {
+  if (!formLoaded) return;
+
+  const form = document.getElementById('generic-error-container');
+  if (getComputedStyle(form).display === 'none') return;
+  
+  const errorElement = document.getElementById('close-generic-error');
+  if (errorElement) {
+    clearInterval(findGenericErrorIntervalId);
+
+    errorElement.addEventListener('click', () => {
+      window.ReactNativeWebView.postMessage('{"message": "checkout-form-declined"}');
+    });
+  }
+}, 500);
+
+const findPaymentErrorIntervalId = setInterval(() => {
+  if (!formLoaded) return;
+
+  const form = document.getElementById('error-payment-container');
+  if (getComputedStyle(form).display === 'none') return;
+  
+  const errorElement = document.getElementById('close-error');
+  if (errorElement) {
+    clearInterval(findPaymentErrorIntervalId);
+
+    errorElement.addEventListener('click', () => {
+      window.ReactNativeWebView.postMessage('{"message": "checkout-form-declined"}');
+    });
+  }
+}, 500);
+
+`;
+
+const NetpayPago = ({
+  navigation,
+  route: {
+    params: { merchantReferenceCode },
+  },
+}: NetPayPagoScreen) => {
+  // Refs
+  const webViewRef = useRef<React.ElementRef<typeof WebViewPage> | null>(null);
+
+  // Component's state
+  const [netpayFormLoaded, setNetpayFormLoaded] = useState<boolean>(false);
+  const pagosDiversos = useAppSelector((state) => state.pagosDiversos);
+
   const notify = useNotification();
 
-  const navigation = useNavigation();
+  const flatCargos = useMemo(() => pagosDiversos.cargos.reduce((acc, item) => {
+    acc.push(item[0], ...item[1].cargos_hijos);
+    return acc;
+  }, [] as CargoProps[]), [pagosDiversos.cargos]);
 
-  const showAlert = (type, responseRecibo) => {
-    if (type == 'success') {
-      Alert.alert(
+  const importes = useMemo(
+    () => flatCargos.map((item) => item.importe),
+    [flatCargos],
+  );
 
-        'Pago Exitoso',
-        'Su pago se encuentra en proceso!',
-        [
-          {
-            text: 'Entendido',
-            style: 'cancel',
-            onPress: () => navigation.navigate('PDFviewer', { responseRecibo }),
-          },
-        ],
-      );
-    }
-    if (type === 'failed') {
-      Alert.alert(
+  const { roundedTotal } = useTotal({ importes });
 
-        'Error al realizar pago',
-        'Favor de intentarlo de nuevo!',
-        [
-          {
-            text: 'Entendido',
-            style: 'cancel',
-            onPress: () => navigation.navigate('pagos'),
-          },
-        ],
-      );
-    }
-  };
+  const URI = useMemo(() => {
+    const cargoIds = flatCargos.map((cargo) => cargo.id).join(',');
 
-  const onMessage = async (data) => {
-    // Intentar parsear el JSON
-    let json;
+    return `https://solicitudes.migob.mx/pago-webview?cargos=${cargoIds}&total=${roundedTotal}&tipo_de_padron=${pagosDiversos.tipoDePadron!.id}&object_id_padron=${pagosDiversos.padron!.id}&merchantReferenceCode=${merchantReferenceCode}&webView=1`;
+  }, [
+    flatCargos,
+    roundedTotal,
+    pagosDiversos.tipoDePadron,
+    pagosDiversos.padron,
+    merchantReferenceCode,
+  ]);
+
+  const onNetPayFormLoaded = useDebouncedFunction(() => {
+    setNetpayFormLoaded(true);
+  }, 700);
+
+  const onNetPayCloseForm = useDebouncedFunction(() => {
+    navigation.goBack();
+  }, 700);
+
+  const onFormSuccess = useDebouncedFunction(() => {
+    notify({
+      type: 'success',
+      title: '¡Éxito!',
+      message: 'Pago existoso',
+    });
+
+    navigation.reset({
+      index: 0,
+      routes: [{
+        name: 'menuInicio',
+      }],
+    });
+  }, 700);
+
+  const onFormError = useDebouncedFunction(() => {
+    notify({
+      type: 'warn',
+      title: 'Error',
+      message: 'No se pudo procesar su pago',
+    });
+
+    navigation.goBack();
+  }, 700);
+
+  const onMessage = (event: WebViewMessageEvent) => {
     try {
-      json = JSON.parse(data.nativeEvent.data);
+      const data = JSON.parse(event.nativeEvent.data) as WebViewMessage;
+
+      switch (data.message) {
+        case 'checkout-form-closed':
+          onNetPayCloseForm();
+          break;
+        case 'checkout-form-loaded':
+          onNetPayFormLoaded();
+          break;
+        case 'checkout-form-success':
+          onFormSuccess();
+          break;
+        case 'checkout-form-declined':
+          onFormError();
+          break;
+        default:
+          break;
+      }
     } catch (error) {
-      console.log(error);
-    }
-    console.log('====================================');
-    console.log('json netpay', json);
-    console.log('====================================');
-
-    if (json?.status === 'success') {
-      const responseRecibo = await generarReciboPorNetPay({
-        folio: folioNetpay,
-        canal_de_pago: 3,
-        response: json,
+      const typedError = error as Error;
+      Logger.error({
+        event: 'web view error',
+        key: 'parse error',
+        error: typedError,
+        source: 'netpayPago.tsx',
+        message: typedError?.message,
       });
-
-      notify({
-        type: 'success',
-        title: 'Éxito',
-        message: 'Consulta exitosa ',
-      });
-      showAlert('success', responseRecibo);
     }
-
-    if (json?.status === 'failed') {
-      notify({
-        type: 'error',
-        title: 'ERROR',
-        message: 'Su transacción fue Rechazada. Intentar con otro método de pago.',
-      });
-      showAlert('failed');
-    }
-
-    // console.log(JSON.stringify(json, null, 2));
   };
 
-  const html = `<!DOCTYPE html>
-  <html>
+  useEffect(() => {
+    let timeout: NodeJS.Timeout;
 
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Getting Started</title>
-  </head>
+    if (!netpayFormLoaded) {
+      timeout = setTimeout(() => {
+        webViewRef.current?.reload();
+        setNetpayFormLoaded(false);
+      }, 5000);
+    }
 
-  <body>
-    <div style="visibility: hidden;">
-      <button style="display: none !important;" id='netpay-checkout' data-street1='Filosofos 100' data-country='Mexico'
-        data-city='Monterrey' data-postal-code='64700' data-state='Nuevo Leon'
-        data-token='${responseNetpay}' data-phone-number='8110000000'
-        data-email='accept@netpay.com.mx' data-merchant-reference-code='${folioNetpay}' data-onsuccess='onPaymentSuccess'
-        data-onerror='onPaymentError' data-product-count='2' data-commerce-name='Netpay Sandbox'>Pagar</button>
-    </div>
-    <script src="https://docs.netpay.mx/cdn/js/latest/checkout.plus.dev.js"></script>
-    <script>
-
-      window.onload = () => {
-        const btn = document.getElementById('netpay-checkout');
-        btn.click();
-      }
-      NetPay.init('pk_netpay_RZWqFZTckZHhIaTBzogznLReu')
-      NetPay.setSandboxMode(true)
-      function onPaymentSuccess(r) {
-        window.ReactNativeWebView.postMessage(JSON.stringify(r))
-      }
-
-      function onPaymentError(r) {
-        window.ReactNativeWebView.postMessage(JSON.stringify(r))
-      }
-    </script>
-  </body>
-
-  </html>`;
+    return () => {
+      clearTimeout(timeout);
+    };
+  }, [netpayFormLoaded]);
 
   return (
-    <View style={{ flex: 1 }}>
-      <Header item="Pago con Netpay" />
-      <View style={{
-        flex: 1,
-      }}
-      >
-        <WebView
-          originWhitelist={['*']}
-          source={{
-            uri:
-            'https://solicitudes.migob.mx/pago-webview?cargos=121174771&total=720&tipo_de_padron=1&object_id_padron=531390&merchantReferenceCode=23010001421&webView=1',
-          }}
-          onMessage={onMessage}
-        />
-      </View>
-    </View>
+    <WebViewPage
+      ref={webViewRef}
+      title="Pago con NetPay"
+      uri={URI}
+      injectedJavaScript={DETECT_MODAL}
+      onMessage={onMessage}
+    />
   );
 };
 

@@ -19,7 +19,6 @@ import { generarReferenciaDePagoNetpayPublic } from '../../services/recaudacion/
 import useTotal from '../../hooks/useTotal';
 import getExpiryDate from '../../utils/get-expiry-date';
 import PDFViewer from '../../components/PDFViewer';
-import { tokenizeAmount } from '../../services/netpay';
 
 // Types & Interfaces
 type NavigationProps = NativeStackScreenProps<
@@ -87,17 +86,13 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
   const paymentMethodHandler = async (cta: 'orden' | 'netpay') => {
     const setLoading = cta === 'orden' ? setLoadingOrdenDePago : setLoadingPagoEnLinea;
     setLoading(true);
-    console.log('caminos de la vida');
+
+    const descripcion = conceptosDePago.length === 1
+      && conceptosDePago[0].description.length <= 250
+      ? conceptosDePago[0].description
+      : tipoDePadron.descripcion;
+
     if (referenciaDePago === null) {
-      // const descripcion = conceptosDePago.length === 1
-      // && conceptosDePago[0].description.length <= 250
-      //   ? conceptosDePago[0].descripcion : tipoDePadron.descripcion;
-
-      const descripcion = conceptosDePago.length === 1
-        && conceptosDePago[0].description.length <= 250
-        ? conceptosDePago[0].description
-        : tipoDePadron.descripcion;
-
       const response = await generarReferenciaDePagoNetpayPublic(
         {
           amount: roundedTotal,
@@ -125,17 +120,6 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
     }
 
     if (cta === 'netpay') {
-      // const descripcion = conceptosDePago.length === 1
-      // && conceptosDePago[0].description.length <= 250
-      //   ? conceptosDePago[0].descripcion : tipoDePadron.descripcion;
-
-      const descripcion = conceptosDePago.length === 1
-        && conceptosDePago[0].description.length <= 250
-        ? conceptosDePago[0].description
-        : tipoDePadron.descripcion;
-
-      const responseNetpay = await tokenizeAmount(roundedTotal);
-
       const response = await generarReferenciaDePagoNetpayPublic(
         {
           amount: roundedTotal,
@@ -158,8 +142,7 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
       );
 
       if (response) {
-        console.log(response.folio_netpay);
-        navigation.push('netpayCustom', { responseNetpay, response });
+        navigation.push('netpaypago', { merchantReferenceCode: response.folio_netpay });
       }
     }
 

@@ -40,6 +40,13 @@ string
     cargos: [],
   },
   reducers: {
+    clear: (state) => {
+      state.tipoDePadron = null;
+      state.padron = null;
+      state.ladas = null;
+      state.cart = [];
+      state.cargos = [];
+    },
     setTipoDePadron: (state, action: PayloadAction<PadronProps | null>) => {
       state.tipoDePadron = action.payload;
     },
@@ -59,6 +66,7 @@ string
 });
 
 export const {
+  clear,
   setTipoDePadron,
   setPadron,
   setLadas,

@@ -15,7 +15,9 @@ type RootStackParamList = {
   registroCiudadano: undefined;
   inicioFactura: undefined;
   otrosPagos: undefined;
-  netpaypago: undefined;
+  netpaypago: {
+    merchantReferenceCode: string;
+  };
   cartografia: undefined;
   zonoficacion: undefined;
   cobildo: undefined;
