@@ -21,6 +21,9 @@ import ladas from '../dataset/ladas.json';
 import LadaModalPicker from '../components/LadaPicker';
 import Button from '../components/Button';
 import { RootStackParamList } from '../types/navigation';
+import { createCiudadano } from '../services/cuentaunicasir/ciudadano';
+import { solicitarCodigoDeAcceso } from '../services/cuentaunicasir/auth';
+import { useNotification } from '../components/DropDownAlertProvider';
 
 // Types & Interfaces
 type TRegistroCiudadanoScreenProps = NativeStackScreenProps<RootStackParamList, 'registroScreen'>;
@@ -76,6 +79,8 @@ const RegistroCiudadanoScreen = ({ navigation }: TRegistroCiudadanoScreenProps) 
   const [showCodePicker, setShowCodePicker] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
+  const notify = useNotification();
+
   const formik = useFormik<FormValues>({
     initialValues: {
       curp: '',
@@ -88,25 +93,87 @@ const RegistroCiudadanoScreen = ({ navigation }: TRegistroCiudadanoScreenProps) 
     },
     validationSchema: FORM_SCHEMA,
     validateOnChange: true,
-    onSubmit: (values) => {
+    onSubmit: async (values, formikHelpers) => {
       setLoading(true);
       const ladaId = ladas.find((x) => x.lada === values.lada)!.id;
       const numeroDeTelefono = parseInt(values.numeroDeTelefono, 10);
 
-      console.log({
-        curp: values.curp,
-        nombre: values.nombre,
-        apellidoPaterno: values.apellidoPaterno,
-        apellidoMaterno: values.apellidoMaterno,
+      const { success, errors } = await createCiudadano({
+        apellido_materno: values.apellidoMaterno,
+        apellido_paterno: values.apellidoPaterno,
+        email: values.correoElectronico,
+        CURP: values.curp,
         lada: ladaId,
-        numeroDeTelefono,
-      });
+        nombre: values.nombre,
+        numero_de_celular: numeroDeTelefono,
+        entidad: [1],
+      }, { entidad: 1 });
 
-      // make api call
-      navigation.navigate('codigoScreen');
-      setTimeout(() => {
+      if (success) {
+        const { success: codeSent } = await solicitarCodigoDeAcceso({
+          lada: ladaId,
+          numero_de_celular: numeroDeTelefono,
+        });
+
         setLoading(false);
-      }, 1000);
+        if (codeSent) {
+          navigation.reset({
+            index: 2,
+            routes: [
+              {
+                name: 'loginScreen',
+              },
+              {
+                name: 'registroCiudadano',
+                params: {
+                  lada: values.lada,
+                  numeroDeTelefono: values.numeroDeTelefono,
+                },
+              },
+              {
+                name: 'codigoScreen',
+              },
+            ],
+          });
+        } else {
+          navigation.reset({
+            index: 1,
+            routes: [
+              {
+                name: 'loginScreen',
+              },
+              {
+                name: 'registroCiudadano',
+                params: {
+                  lada: values.lada,
+                  numeroDeTelefono: values.numeroDeTelefono,
+                },
+              },
+            ],
+          });
+        }
+
+        return;
+      }
+
+      setLoading(false);
+      if (errors && errors.fields) {
+        formikHelpers.setFieldError('curp', errors.fields.CURP);
+        formikHelpers.setFieldError('nombre', errors.fields.nombre);
+        formikHelpers.setFieldError('apellidoPaterno', errors.fields.apellido_paterno);
+        formikHelpers.setFieldError('apellidoMaterno', errors.fields.apellido_materno);
+        formikHelpers.setFieldError('lada', errors.fields.lada);
+        formikHelpers.setFieldError('numeroDeTelefono', errors.fields.numero_de_celular);
+        formikHelpers.setFieldError('correoElectronico', errors.fields.email);
+
+        return;
+      }
+
+      notify({
+        type: 'error',
+        title: 'Error',
+        message: 'Algo salió mal, intente más tarde',
+      });
     },
   });
 

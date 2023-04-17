@@ -43,7 +43,12 @@ const FORM_SCHEMA = yup.object({
     .matches(/[0-9]{10}/, 'Ingrese un número válido'),
 });
 
-const InicioRegistroCiudadanoScreen = ({ navigation }: IInicioRegistroCiudadanoScreenProps) => {
+const InicioRegistroCiudadanoScreen = ({
+  navigation,
+  route: {
+    params,
+  },
+}: IInicioRegistroCiudadanoScreenProps) => {
   // Component's state
   const [showCodePicker, setShowCodePicker] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -53,8 +58,8 @@ const InicioRegistroCiudadanoScreen = ({ navigation }: IInicioRegistroCiudadanoS
 
   const formik = useFormik<FormValues>({
     initialValues: {
-      countryCode: '',
-      phoneNumber: '',
+      countryCode: params?.lada || '',
+      phoneNumber: params?.numeroDeTelefono || '',
     },
     validationSchema: FORM_SCHEMA,
     validateOnChange: true,

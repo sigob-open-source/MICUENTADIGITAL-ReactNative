@@ -12,7 +12,10 @@ type RootStackParamList = {
   loginScreen: undefined;
   informacionRecibo: undefined;
   informacionFiscal: undefined;
-  registroCiudadano: undefined;
+  registroCiudadano?: {
+    lada: string;
+    numeroDeTelefono: string;
+  };
   inicioFactura: undefined;
   otrosPagos: undefined;
   netpaypago: {
