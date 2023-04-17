@@ -1,6 +1,6 @@
 // Internal dependencies
 import Logger from '../../lib/logger';
-import { PaginatedResult, UpdateResult } from '../../types/api-ingresos';
+import { MutationResult, PaginatedResult } from '../../types/api-ingresos';
 import apiErrorParser from '../../utils/error-parser';
 import HTTP_GRP from '../http';
 import { ContribuyenteCajaProps, UpdatedContribuyenteProps } from './contribuyentes-caja-public-types';
@@ -49,8 +49,11 @@ const updateContribuyete = async (
   payload: Partial<UpdateContribuyetePayload>,
   params: UpdateContribuyeteParams,
 ) => {
-  let updated = false;
-  let errorDetail = null;
+  let output: MutationResult<UpdatedContribuyenteProps> = {
+    errors: { message: 'Algo salió mal, intente más tarde.' },
+    result: null,
+    success: false,
+  };
 
   try {
     const response = await HTTP_GRP.patch<UpdatedContribuyenteProps>(
@@ -61,10 +64,15 @@ const updateContribuyete = async (
       },
     );
 
-    updated = response.status === 200;
+    if (response.status === 200 && response.data) {
+      output = {
+        success: true,
+        result: response.data,
+        errors: null,
+      };
+    }
   } catch (error) {
     const typedError = error as Error;
-    errorDetail = apiErrorParser(typedError);
 
     Logger.error({
       event: 'api error',
@@ -72,9 +80,11 @@ const updateContribuyete = async (
       error: typedError,
       source: 'contribuyente-caja-public.ts',
     });
+
+    output.errors = apiErrorParser(typedError);
   }
 
-  return [updated, errorDetail] as UpdateResult;
+  return output;
 };
 
 export {

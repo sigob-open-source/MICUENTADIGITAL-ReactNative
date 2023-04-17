@@ -17,7 +17,7 @@ interface CiudadanoCajaProps {
   alerta?: unknown;
 }
 
-interface CiudadanoUpdatedProps {
+interface CiudadanoMutationResult {
   id: number;
   CURP?: string;
   lada: number;
@@ -32,5 +32,5 @@ interface CiudadanoUpdatedProps {
 
 export type {
   CiudadanoCajaProps,
-  CiudadanoUpdatedProps,
+  CiudadanoMutationResult,
 };

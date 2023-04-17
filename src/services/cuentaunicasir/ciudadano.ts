@@ -1,11 +1,15 @@
 // Internal dependencies
 import { AxiosError } from 'axios';
 import Logger from '../../lib/logger';
-import { PaginatedResult, UpdateResult } from '../../types/api-ingresos';
+import { MutationResult, PaginatedResult } from '../../types/api-ingresos';
 import apiErrorParser from '../../utils/error-parser';
 import HTTP_GRP from '../http';
-import { CiudadanoCajaProps, CiudadanoUpdatedProps } from './ciudadano-types';
+import { CiudadanoCajaProps, CiudadanoMutationResult } from './ciudadano-types';
+import formatQueryParams from '../../utils/formatQueryParams';
 
+/**
+ * Get Ciudadano
+ */
 type GetCiudadanoCajaParams = {
   q?: string;
   entidad: number;
@@ -38,17 +42,67 @@ const getCiudadanoCaja = async (params: GetCiudadanoCajaParams) => {
   return ciudadano;
 };
 
-export const postCiudadano = async (values) => {
-  try {
-    const response = await API.post('cuentaunicasir/ciudadano-public', { ...values, entidad: 1 });
-    message.info('Ciudadano registrado correctamente', 3);
-    return response.data;
-  } catch (error) {
-    console.log(error);
-  }
-  return null;
+/**
+ * Create Ciudadano.
+ */
+type TCreateCiudadanoPayload = {
+  CURP: string;
+  nombre: string;
+  apellido_paterno: string;
+  apellido_materno: string;
+  lada: number;
+  numero_de_celular: number;
+  email: string;
+  entidad: number[];
 };
 
+type TCreateCiudadanoParams = {
+  entidad: number[];
+};
+
+const createCiudadano = async (
+  payload: TCreateCiudadanoPayload,
+  params: TCreateCiudadanoParams,
+) => {
+  let output: MutationResult<CiudadanoMutationResult> = {
+    errors: { message: 'Algo salió mal, intente más tarde.' },
+    result: null,
+    success: false,
+  };
+
+  try {
+    const formattedParams = formatQueryParams(params);
+
+    const response = await HTTP_GRP.post<CiudadanoMutationResult>('cuentaunicasir/ciudadano-public/', payload, {
+      params: formattedParams,
+    });
+
+    if ([200, 201].includes(response.status) && response.data.id) {
+      output = {
+        errors: null,
+        success: true,
+        result: response.data,
+      };
+    }
+  } catch (error) {
+    const typedError = error as Error;
+
+    Logger.error({
+      event: 'api error',
+      message: typedError?.message,
+      error: typedError,
+      source: 'ciudadano.ts',
+    });
+
+    output.errors = apiErrorParser(typedError);
+  }
+
+  return output;
+};
+
+/**
+ * Update Ciudadano
+ */
 type UpdateCiudadanoPayload = {
   email: string;
   lada: number;
@@ -62,18 +116,26 @@ const updateCiudadano = async (
   payload: Partial<UpdateCiudadanoPayload>,
   params: UpdateCiudadanoParams,
 ) => {
-  let updated = false;
-  let errorDetail = null;
+  let output: MutationResult<CiudadanoMutationResult> = {
+    errors: { message: 'Algo salió mal, intente más tarde.' },
+    result: null,
+    success: false,
+  };
 
   try {
-    const response = await HTTP_GRP.patch<CiudadanoUpdatedProps>(`cuentaunicasir/ciudadano-public/${id}/`, payload, {
+    const response = await HTTP_GRP.patch<CiudadanoMutationResult>(`cuentaunicasir/ciudadano-public/${id}/`, payload, {
       params,
     });
 
-    updated = response.status === 200;
+    if (response.status === 200 && response.data.id) {
+      output = {
+        result: response.data,
+        success: true,
+        errors: null,
+      };
+    }
   } catch (error) {
     const typedError = error as Error;
-    errorDetail = apiErrorParser(typedError);
 
     Logger.error({
       event: 'api error',
@@ -82,12 +144,15 @@ const updateCiudadano = async (
       responseData: (error as AxiosError).response?.data,
       source: 'ciudadano.ts',
     });
+
+    output.errors = apiErrorParser(typedError);
   }
 
-  return [updated, errorDetail] as UpdateResult;
+  return output;
 };
 
 export {
   getCiudadanoCaja,
+  createCiudadano,
   updateCiudadano,
 };

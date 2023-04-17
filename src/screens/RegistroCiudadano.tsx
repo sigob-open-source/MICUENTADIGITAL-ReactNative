@@ -11,17 +11,20 @@ import { useFormik } from 'formik';
 import * as yup from 'yup';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Internal dependencies
-import { useNavigation } from '@react-navigation/native';
 import HeaderV2 from '../components/HeaderV2';
 import Card from '../components/Card';
 import Input from '../components/Input';
 import ladas from '../dataset/ladas.json';
 import LadaModalPicker from '../components/LadaPicker';
 import Button from '../components/Button';
+import { RootStackParamList } from '../types/navigation';
 
 // Types & Interfaces
+type TRegistroCiudadanoScreenProps = NativeStackScreenProps<RootStackParamList, 'registroScreen'>;
+
 interface FormValues {
   curp: string;
   nombre: string;
@@ -63,16 +66,15 @@ const FORM_SCHEMA = yup.object({
     .string()
     .typeError('Campo no valido')
     .required('El campo es requerido')
-    .matches(/^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/, 'Ingrese un correo válido'),
+    .matches(/^[\w-.]+@([\w-]+\.)+[\w-]{2,4}$/, 'Ingrese un correo válido'),
 });
 
 const PLACEHOLDER_TEXT_COLOR = '#a0a0a0';
 
-const SignUp = () => {
+const RegistroCiudadanoScreen = ({ navigation }: TRegistroCiudadanoScreenProps) => {
   // State
   const [showCodePicker, setShowCodePicker] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
-  const navigation = useNavigation();
 
   const formik = useFormik<FormValues>({
     initialValues: {
@@ -82,6 +84,7 @@ const SignUp = () => {
       apellidoMaterno: '',
       lada: '',
       numeroDeTelefono: '',
+      correoElectronico: '',
     },
     validationSchema: FORM_SCHEMA,
     validateOnChange: true,
@@ -273,4 +276,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SignUp;
+export default RegistroCiudadanoScreen;

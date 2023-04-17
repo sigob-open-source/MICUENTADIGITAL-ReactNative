@@ -2,7 +2,10 @@ import React from 'react';
 import { DefaultTheme, NavigationContainer, Theme } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Provider } from 'react-redux';
-import store from './src/store-v2';
+import { PersistGate } from 'redux-persist/integration/react';
+
+// Internal dependencies
+import store, { persistor } from './src/store-v2';
 import { RootStackParamList } from './src/types/navigation';
 
 // Screens
@@ -192,8 +195,10 @@ const AppContainer = () => (
 
 export default () => (
   <Provider store={store}>
-    <DropDownAlertProvider>
-      <AppContainer />
-    </DropDownAlertProvider>
+    <PersistGate loading={null} persistor={persistor}>
+      <DropDownAlertProvider>
+        <AppContainer />
+      </DropDownAlertProvider>
+    </PersistGate>
   </Provider>
 );

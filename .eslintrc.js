@@ -22,6 +22,7 @@ module.exports = {
     '@typescript-eslint',
   ],
   rules: {
+    '@typescript-eslint/no-non-null-assertion': 'off',
     'no-restricted-exports': 'off',
     'react/require-default-props': 'off',
     'no-undefined': 'error',

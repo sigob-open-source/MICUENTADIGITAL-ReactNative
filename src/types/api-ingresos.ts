@@ -5,15 +5,28 @@ type PaginatedResult<T> = {
   results: T[]
 };
 
+type DetailResponse = {
+  detail: string;
+};
+
 type NormalizedAPIError = {
   message: string;
   fields?: Record<string, string | undefined>;
 };
 
-type UpdateResult = [false, NormalizedAPIError] | [true, null];
+type MutationResult<TData> = {
+  success: true;
+  result: TData;
+  errors: null;
+} | {
+  success: false;
+  result: null;
+  errors: NormalizedAPIError;
+};
 
 export type {
   PaginatedResult,
   NormalizedAPIError,
-  UpdateResult,
+  MutationResult,
+  DetailResponse,
 };

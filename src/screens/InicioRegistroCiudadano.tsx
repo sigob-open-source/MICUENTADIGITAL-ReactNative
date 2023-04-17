@@ -6,12 +6,11 @@ import {
   Text,
   TouchableWithoutFeedback,
   StyleSheet,
-  Alert,
 } from 'react-native';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
 import Icon from 'react-native-vector-icons/FontAwesome5';
-import { useNavigation } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Internal dependencies
 import HeaderV2 from '../components/HeaderV2';
@@ -20,13 +19,17 @@ import Input from '../components/Input';
 import Button from '../components/Button';
 import LadaModalPicker from '../components/LadaPicker';
 import ladas from '../dataset/ladas.json';
-import { postSolicitarCodigoDeAcceso } from '../services/padrones';
+import { solicitarCodigoDeAcceso } from '../services/cuentaunicasir/auth';
+import { RootStackParamList } from '../types/navigation';
+import { useNotification } from '../components/DropDownAlertProvider';
 
 // Types & Interfaces
 interface FormValues {
   countryCode: string;
   phoneNumber: string;
 }
+
+type IInicioRegistroCiudadanoScreenProps = NativeStackScreenProps<RootStackParamList, 'registroCiudadano'>;
 
 // Constants
 const FORM_SCHEMA = yup.object({
@@ -40,11 +43,13 @@ const FORM_SCHEMA = yup.object({
     .matches(/[0-9]{10}/, 'Ingrese un número válido'),
 });
 
-const SendCodeScreen = () => {
+const InicioRegistroCiudadanoScreen = ({ navigation }: IInicioRegistroCiudadanoScreenProps) => {
+  // Component's state
   const [showCodePicker, setShowCodePicker] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
 
-  const navigation = useNavigation();
+  // Misc
+  const notify = useNotification();
 
   const formik = useFormik<FormValues>({
     initialValues: {
@@ -53,38 +58,34 @@ const SendCodeScreen = () => {
     },
     validationSchema: FORM_SCHEMA,
     validateOnChange: true,
-    onSubmit: async (values) => {
+    onSubmit: async (values, formikHelpers) => {
       setLoading(true);
       const ladaId = ladas.find((x) => x.lada === values.countryCode)!.id;
       const numeroDeTelefono = parseInt(values.phoneNumber, 10);
 
-      console.log({ ladaId, numeroDeTelefono });
+      const { success, errors } = await solicitarCodigoDeAcceso({
+        lada: ladaId,
+        numero_de_celular: numeroDeTelefono,
+      });
 
-      // make api call
-      const response = await postSolicitarCodigo(numeroDeTelefono, ladaId);
-
-      if (response) {
+      setLoading(false);
+      if (success) {
         navigation.navigate('codigoScreen');
-      } else {
-        Alert.alert('Error', 'Ha ocurrido un error');
+        return;
       }
-      setTimeout(() => {
-        setLoading(false);
-      }, 1000);
+
+      if (errors?.fields) {
+        formikHelpers.setFieldError('countryCode', errors.fields.lada);
+        formikHelpers.setFieldError('phoneNumber', errors.fields.numero_de_celular);
+      } else {
+        notify({
+          message: 'Ha ocurrido un error',
+          title: 'Error',
+          type: 'error',
+        });
+      }
     },
   });
-
-  const postSolicitarCodigo = async (numeroDeTelefono, ladaId) => {
-    const datavalues = {
-      lada: ladaId,
-      numero_de_celular: numeroDeTelefono,
-    };
-
-    const success = await postSolicitarCodigoDeAcceso(datavalues);
-    if (success) {
-      return success;
-    }
-  };
 
   return (
     <>
@@ -143,7 +144,7 @@ const SendCodeScreen = () => {
         />
 
         <Button
-          loading={loading}
+          disabled={loading}
           style={styles.cta}
           size="large"
           text="Registrarse"
@@ -192,4 +193,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default SendCodeScreen;
+export default InicioRegistroCiudadanoScreen;

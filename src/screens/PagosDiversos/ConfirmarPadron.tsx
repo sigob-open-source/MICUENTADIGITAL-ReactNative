@@ -83,7 +83,10 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
   ) => {
     const typedPadron = padron as CiudadanoCajaProps;
 
-    const [updated, errorDetail] = await updateCiudadano(typedPadron.id, {
+    const {
+      success: updated,
+      errors: errorDetail,
+    } = await updateCiudadano(typedPadron.id, {
       email,
       lada: ladaId,
       numero_de_celular: telefono,
@@ -119,7 +122,10 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
   ) => {
     const typedPadron = padron as EmpresaCajaProps;
 
-    const [updated, errorDetail] = await updateCiudadano(typedPadron.ciudadano.id, {
+    const {
+      success: updated,
+      errors: errorDetail,
+    } = await updateCiudadano(typedPadron.ciudadano.id, {
       email,
       lada: ladaId,
       numero_de_celular: telefono,
@@ -156,7 +162,10 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
   ) => {
     const typedPadron = padron as CiudadanoCajaProps;
 
-    const [updated, errorDetail] = await updateContribuyete(typedPadron.id, {
+    const {
+      success: updated,
+      errors: errorDetail,
+    } = await updateContribuyete(typedPadron.id, {
       correo_electronico: email,
       lada_celular: ladaId,
       telefono_celular: telefono,

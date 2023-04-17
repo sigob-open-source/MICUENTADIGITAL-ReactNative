@@ -1,5 +1,1 @@
-import { PagosDiversosStateProps } from './reducers/pagos-diversos';
-
-export type RootState = {
-  pagosDiversos: PagosDiversosStateProps
-};
+export type { RootState } from './reducers/index';

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Modal,
@@ -22,11 +22,21 @@ type Props = {
   onClose: () => void;
 };
 
+function normalizeString(input: string) {
+  return input.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+}
+
 const LadaModalPicker: React.FC<Props> = ({ visible, onSelect, onClose }) => {
   const [searchText, setSearchText] = useState<string>('');
 
-  const filteredLadas = ladas.filter((lada) => lada
-    .pais.toLowerCase().includes(searchText.toLowerCase()));
+  const filteredLadas = useMemo(() => {
+    const normalizedSeach = normalizeString(searchText);
+
+    const regexp = new RegExp(normalizedSeach, 'ig');
+
+    return ladas.filter((item) => regexp.test(normalizeString(item.pais))
+      || regexp.test(item.lada));
+  }, [searchText]);
 
   const renderItem = ({ item }: { item: Lada }) => (
     <TouchableOpacity
@@ -63,7 +73,9 @@ const LadaModalPicker: React.FC<Props> = ({ visible, onSelect, onClose }) => {
           placeholder="Buscar por país"
           onChangeText={setSearchText}
         />
+
         <FlatList
+          keyboardShouldPersistTaps="always"
           data={filteredLadas}
           keyExtractor={(item) => item.id.toString()}
           renderItem={renderItem}

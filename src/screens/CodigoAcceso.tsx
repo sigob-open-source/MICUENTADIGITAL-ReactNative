@@ -12,29 +12,39 @@ import {
   View,
   Text,
   Keyboard,
-  Alert,
 } from 'react-native';
-import { string } from 'yup';
-import { useNavigation } from '@react-navigation/native';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Internal dependencies
+import { useDispatch } from 'react-redux';
 import Button from '../components/Button';
 import Card from '../components/Card';
 import HeaderV2 from '../components/HeaderV2';
-import { postLogin } from '../services/padrones';
+import { RootStackParamList } from '../types/navigation';
+import { obtenerAcceso } from '../services/cuentaunicasir/auth';
+import { setAuthInformation } from '../store-v2/reducers/auth';
+import { useNotification } from '../components/DropDownAlertProvider';
 
-export { postLogin } from '../services/padrones';
+// Types & Interfaces
+type ICodigoAccesoScreenProps = NativeStackScreenProps<RootStackParamList, 'codigoScreen'>;
 
 // Constants
 const INPUTS = Array.from({ length: 6 }).map((_, k) => k);
 
-const VerifyCodeScreen = () => {
+const CodigoAccesoScreen = ({ navigation }: ICodigoAccesoScreenProps) => {
+  // Refs
   const inputRefs = useRef<(TextInput | null)[]>([]);
+
+  // Component's state
   const [code, setCode] = useState<string[]>(INPUTS.map(() => ''));
   const [loading, setLoading] = useState<boolean>(false);
   const [errorText, setErrorText] = useState<string | null>(null);
-  const navigation = useNavigation();
 
+  // Misc
+  const dispatch = useDispatch();
+  const notify = useNotification();
+
+  // Handlers
   const validate = () => {
     setErrorText('');
 
@@ -66,10 +76,8 @@ const VerifyCodeScreen = () => {
     index: number,
     e: NativeSyntheticEvent<TextInputKeyPressEventData>,
   ) => {
-    if (e.nativeEvent.key === 'Backspace' && code[index] === '') {
-      if (inputRefs.current[index - 1]) {
-        inputRefs.current[index - 1]?.focus();
-      }
+    if (e.nativeEvent.key === 'Backspace' && code[index] === '' && inputRefs.current[index - 1]) {
+      inputRefs.current[index - 1]?.focus();
     }
   };
 
@@ -84,44 +92,51 @@ const VerifyCodeScreen = () => {
       setLoading(true);
       // this joins all the code digits into a single string
       const codeStr = code.join('');
-      // call endpoint
-      const response = await postLogin(codeStr);
-      console.log('este es la respuesta?', response.ciudadano);
 
-      if (response) {
-        setTimeout(() => {
-          setCode(INPUTS.map(() => ''));
-          Keyboard.dismiss();
-          setLoading(false);
-        }, 1000);
-        Alert.alert(
-          'Inicio de Sesion',
-          'Codigo correcto.',
-        );
+      const { success, errors, result } = await obtenerAcceso({
+        catalogo_canal_de_pago: 4,
+        codigo: codeStr,
+        entidad: 1,
+      });
 
-        navigation.replace('menuInicio');
-      } else {
-        Alert.alert(
-          'A ocurrido un problema',
-          'El código de autenticación no es correcto, inténtelo de nuevo',
-        );
-        setTimeout(() => {
-          setCode(INPUTS.map(() => ''));
-          Keyboard.dismiss();
-          setLoading(false);
-        }, 1000);
+      setLoading(false);
+      if (success) {
+        dispatch(setAuthInformation({
+          access: result.access_token,
+          ciudadano: result.ciudadano,
+        }));
+
+        navigation.reset({
+          index: 0,
+          routes: [{
+            name: 'menuInicio',
+          }],
+        });
+
+        return;
       }
+
+      if (errors.fields?.codigo) {
+        setErrorText('Código no válido');
+      } else {
+        notify({
+          message: 'Ha ocurrido un error, intente más tarde.',
+          title: 'Error',
+          type: 'error',
+        });
+      }
+
+      // Clear invalid code
+      setCode(INPUTS.map(() => ''));
+      Keyboard.dismiss();
     }
   };
 
   useEffect(() => {
     const digitsEntered = code.filter((x) => x.length >= 1).length;
-    console.log({
-      digitsEntered, code, l: INPUTS.length, loading,
-    });
 
     if (!loading && digitsEntered === INPUTS.length) {
-      submit();
+      void submit();
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [loading, code]);
@@ -142,7 +157,7 @@ const VerifyCodeScreen = () => {
             {INPUTS.length}
             {' '}
             dígitos que recibirá
-            por correo electrónico.
+            por correo electrónico o SMS.
           </Text>
 
           <View style={styles.codeContainer}>
@@ -156,11 +171,12 @@ const VerifyCodeScreen = () => {
                 }]}
                 value={code[index]}
                 onChangeText={(value) => handleCodeChange(index, value)}
-                keyboardType="numeric"
+                keyboardType="default"
                 maxLength={1}
                 textAlign="center"
                 onKeyPress={(e) => handleCodeKeyDown(index, e)}
                 placeholder="_"
+                autoCapitalize="none"
               />
             ))}
           </View>
@@ -225,4 +241,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default VerifyCodeScreen;
+export default CodigoAccesoScreen;

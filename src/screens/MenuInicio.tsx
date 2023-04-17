@@ -1,29 +1,48 @@
+// External dependencies
 import React, { useState } from 'react';
 import {
   StyleSheet,
   View,
   FlatList,
   TouchableWithoutFeedback,
-  Alert,
   Text,
   TouchableOpacity,
   Linking,
 } from 'react-native';
-
-import { useNetInfo } from '@react-native-community/netinfo';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { useNavigation } from '@react-navigation/native';
 
+// Internal dependencies
 import Square from '../components/CardPagos';
 import Header from '../components/Header';
 import ConnectionCheck from '../components/internetChecker';
 import Banner from '../components/Banner';
 import colors from '../utils/colors';
+import { useAppSelector } from '../store-v2/hooks';
+import { RootStackParamList } from '../types/navigation';
+import { useNotification } from '../components/DropDownAlertProvider';
 
-// Todo el datalist son los botones del menú de inicio, cada uno con sus propiedades como
-// el icono del botón,color del botón en caso de que esté desactivado, nombre etc.
+// Types & Interfaces
+type IMenuInicioScreenProps = NativeStackScreenProps<RootStackParamList, 'menuInicio'>;
 
-const dataList = [
+interface IItemMenu {
+  isBlank: boolean;
+  color: string;
+  name: string;
+  iconname: string;
+  enableEntypo: boolean;
+  navegacion?: keyof RootStackParamList;
+  necesitaLogin?: boolean;
+  deshabilitado?: boolean;
+  linkurl?: string;
+}
+
+/**
+ * @description Todo el datalist son los botones del menú de inicio, cada uno con sus
+ * propiedades como el icono del botón,color del botón en caso de que esté desactivado,
+ * nombre etc.
+ */
+const dataList: IItemMenu[] = [
   {
     isBlank: false,
     color: '#404040',
@@ -88,7 +107,6 @@ const dataList = [
   //   navegacion: 'solicitudSelect',
   //   deshabilitado: false,
   // },
-
   {
     isBlank: false,
     color: '#404040',
@@ -110,53 +128,86 @@ const dataList = [
     navegacion: 'estrados',
   },
 ];
+
 const numColumns = 3;
 
-const MenuInicio = (props) => {
-  const netInfo = useNetInfo();
-  const navigation = useNavigation();
+const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
+  // Component's state
+
+  // TODO: Why is this needed?
+  // eslint-disable-next-line
   const [hasSwitchedView, setHasSwitchedView] = useState(false);
 
-  // En el diseño de esta pantalla, en algunos casos pueden quedar iconos vacios, pero estos se siguen mostrando
-  // esta parte es para saber si debería haber más botones en las columnas restantes, en caso de que detecte que no debería haber,
-  // cambia la propiedad de isblank a true, dentro del componente del botón, al ser esta propiedad true, el botón se hace invisible e imposible
-  // de hacer clic en el.
-  const formatData = (dataList, numColumns) => {
-    const totalRows = Math.floor(dataList.length / numColumns);
-    let totalLastRow = dataList.length - (totalRows * numColumns);
+  const ciudadano = useAppSelector((state) => state.auth.ciudadano);
+  const notify = useNotification();
 
-    while (totalLastRow !== 0 && totalLastRow !== numColumns) {
-      dataList.push({
-        name: 'nada', iconname: 'question', enableEntypo: false, isBlank: true,
+  /**
+   * En el diseño de esta pantalla, en algunos casos pueden quedar iconos vacios,
+   * pero estos se siguen mostrando esta parte es para saber si debería haber más
+   * botones en las columnas restantes, en caso de que detecte que no debería haber,
+   * cambia la propiedad de isblank a true, dentro del componente del botón, al ser
+   * esta propiedad true, el botón se hace invisible e imposible de hacer clic en el.
+   */
+  const formatData = (items: IItemMenu[], columns: number) => {
+    const totalRows = Math.floor(items.length / columns);
+    let totalLastRow = items.length - (totalRows * columns);
+
+    while (totalLastRow !== 0 && totalLastRow !== columns) {
+      items.push({
+        name: 'nada',
+        iconname: 'question',
+        enableEntypo: false,
+        isBlank: true,
+        color: '#404040',
       });
-      totalLastRow++;
+
+      totalLastRow += 1;
     }
-    return dataList;
+
+    return items;
   };
-  //  Está función sirve para navegar a otras pantallas dependiendo del botón
-  // que presionaste. También al presionar el botón hace que se active
-  // un timer para evitar que se presionar el mismo botón varias veces, previniendo
-  // así que puedas entrar a la misma pantalla multiples veces.
-  const navigateToScreen = (item) => {
+
+  /**
+   * Está función sirve para navegar a otras pantallas dependiendo del botón
+   * que presionaste. También al presionar el botón hace que se active
+   * un timer para evitar que se presionar el mismo botón varias veces, previniendo
+   * así que puedas entrar a la misma pantalla multiples veces.
+   */
+  const navigateToScreen = (item: IItemMenu) => {
+    if (item.name === 'nada') {
+      notify({
+        type: 'info',
+        title: 'Aviso',
+        message: 'Se está realizando mantenimiento a esta función, favor de intentarlo más tarde.',
+      });
+      return;
+    }
+
+    if (item.necesitaLogin && !ciudadano) {
+      notify({
+        type: 'warn',
+        title: 'Aviso',
+        message: 'Necesita iniciar sesión para tener acceso a esta opción',
+      });
+
+      return;
+    }
+
     if (item.linkurl) {
-      Linking.openURL(item.linkurl);
-    } else if (item.navegacion != null) {
-      if (!hasSwitchedView) {
-        setHasSwitchedView(true);
-        props.navigation.push(item.navegacion);
-        setTimeout(() => {
-          setHasSwitchedView(false);
-        }, 1000);
-      }
-    } else if (item.necesitaLogin) { // Aqui es donde se hace el check donde se detecta si se ocupa login o si una opción no está disponible/está en mantenimiento
-      Alert.alert('Aviso', 'Necesita iniciar sesión para tener acceso a esta opción.');
-    } else if (item.name != 'nada') {
-      Alert.alert('Aviso', 'Se está realizando mantenimiento a esta función, favor de intentarlo más tarde.');
+      void Linking.openURL(item.linkurl);
+      return;
+    }
+
+    if (item.navegacion) {
+      setHasSwitchedView(true);
+      navigation.push(item.navegacion);
     }
   };
 
-  // Esta función renderiza los botones dependiendo de sus propiedades, color, nombre, icono etc.
-  const _renderItem = ({ item, index }) => (
+  /**
+   * Esta función renderiza los botones dependiendo de sus propiedades, color, nombre, icono etc.
+   */
+  const renderMenuItem = ({ item }: { item: IItemMenu }) => (
     <TouchableWithoutFeedback disabled={item.deshabilitado} onPress={() => navigateToScreen(item)}>
       <View style={{ flex: 1, alignItems: 'center' }}>
         <Square
@@ -183,10 +234,24 @@ const MenuInicio = (props) => {
 
       <View style={{ flex: 1, marginHorizontal: '2%' }}>
 
+        {
+          Boolean(ciudadano) && (
+            <View style={styles.greetingContainer}>
+              <Text style={styles.greeting}>
+                Bienvenido
+              </Text>
+
+              <Text style={styles.greetingSubject}>
+                {ciudadano!.nombre}
+              </Text>
+            </View>
+          )
+        }
+
         <FlatList
           data={formatData(dataList, numColumns)}
-          renderItem={_renderItem}
-          keyExtractor={(item, index) => index.toString()}
+          renderItem={renderMenuItem}
+          keyExtractor={(_, index) => index.toString()}
           numColumns={numColumns}
           ListFooterComponent={(
             <>
@@ -302,7 +367,6 @@ const styles = StyleSheet.create({
   menuContainer: {
     marginVertical: '6%',
   },
-
   textInputContainer: {
     marginTop: 21,
     width: 336,
@@ -426,6 +490,20 @@ const styles = StyleSheet.create({
     color: '#404040',
     fontWeight: '400',
     fontSize: 14,
+  },
+  greetingContainer: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+  },
+  greeting: {
+    color: '#404040',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  greetingSubject: {
+    color: '#101010',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 });
 
