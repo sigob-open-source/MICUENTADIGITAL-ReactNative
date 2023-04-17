@@ -13,8 +13,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 import BottomPopUp from './BottomPopUp';
 
-const CardSolicitud = props => {
-
+const CardSolicitud = (props) => {
   const [comment, setComment] = useState('');
   const [shouldShow, setShouldShow] = useState(true);
   const [showImage, setShowImage] = useState(false);
@@ -85,7 +84,7 @@ const CardSolicitud = props => {
   return (
     <View>
       <View style={{ ...styles.squareStyle, ...props.style }}>
-        <TouchableOpacity onPress={()=> Alert.alert("Alerta","Opción en Mantenimiento.")/*setModalOpen(true)*/}>
+        <TouchableOpacity onPress={() => Alert.alert('Alerta', 'Opción en Mantenimiento.')/* setModalOpen(true) */}>
           {
             showImage ? (
               <Image
@@ -128,7 +127,7 @@ const CardSolicitud = props => {
               changeTextImage ? (
                 <Text style={styles.changeImageText} />
               )
-                : <Text onPress={()=> setModalOpen(true)} style={styles.changeImageText}>Cambiar Imagen</Text>
+                : <Text onPress={() => setModalOpen(true)} style={styles.changeImageText}>Cambiar Imagen</Text>
                 }
           </View>
         </View>
@@ -167,9 +166,9 @@ const CardSolicitud = props => {
         pain={launchImageLibrary}
         pain2={launchCamera}
         open={modalOpen}
-        close={()=>setModalOpen(false)}
+        close={() => setModalOpen(false)}
         title="Elegir imagen"
-        onTouchOutside={()=>setModalOpen(false)}
+        onTouchOutside={() => setModalOpen(false)}
       />
     </View>
   );

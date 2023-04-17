@@ -1,7 +1,7 @@
 import React from 'react';
 import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
-const Loading = (props,loading,children) => {
+const Loading = (props, loading, children) => {
   if (loading) {
     return (
       <View style={styles.container}>
@@ -13,8 +13,8 @@ const Loading = (props,loading,children) => {
 
 const styles = StyleSheet.create({
   container: {
-    width:700,
-    height:700,
+    width: 700,
+    height: 700,
     alignContent: 'flex-start',
     backgroundColor: 'transparent',
   },

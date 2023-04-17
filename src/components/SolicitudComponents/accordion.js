@@ -1,4 +1,4 @@
-import React, { Component,useState,useEffect } from 'react';
+import React, { Component, useState, useEffect } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -17,8 +17,7 @@ import MotivoPopUp from './selectorMotivoModal';
 
 const WIDTH = Dimensions.get('window').width;
 
-const AccordionView = props => {
-
+const AccordionView = (props) => {
   const [collapsed, setCollapsed] = useState(true);
   const [motivos, setMotivos] = useState(null);
   const [children, setChildren] = useState(null);
@@ -28,30 +27,29 @@ const AccordionView = props => {
   const [gotData, setGotData] = useState(false);
 
   useEffect(() => {
-    let abortController = new AbortController();
+    const abortController = new AbortController();
     dataGet();
     return () => {
       abortController.abort();
-    }
+    };
   }, []);
 
   // Modal para mostrar los motivos a seleccionar en las subcategorías (si es que tienen, si no mandar alerta)
   const onShowPopup = async (children, motivo) => {
-    let abortController = new AbortController();
-    const child = await children
+    const abortController = new AbortController();
+    const child = await children;
     if (children.length > 0) {
       setChildren(child);
       setMotivo(motivo);
-      if (motivos && children != null){
+      if (motivos && children != null) {
         setOpen(true);
       }
-      
     } else {
       Alert.alert('Alerta', 'Esta categoría no tiene motivos disponibles.');
     }
     return () => {
       abortController.abort();
-    }
+    };
   };
 
   // Cierra el modal que muestra los motivos
@@ -63,12 +61,12 @@ const AccordionView = props => {
   const getData = async () => {
     const id = 1;
     const tipos = await getTiposDeSolicitudes(id);
-    setMotivos(tipos)
+    setMotivos(tipos);
   };
 
   // Muestra las subcategorías disponibles
   const toggleExpanded = () => {
-    setCollapsed(collapsed => !collapsed);
+    setCollapsed((collapsed) => !collapsed);
   };
 
   // Manda los datos a ModalSolicitud.js para despues mandarlos de vuelta a Solicitud.js
@@ -80,14 +78,14 @@ const AccordionView = props => {
     );
   };
 
-  const dataGet = () =>{
-    if (!gotData){
+  const dataGet = () => {
+    if (!gotData) {
       getData();
       setGotData(true);
       props.renderCard;
       setLoading(false);
     }
-  }
+  };
 
   const renderItem = () => {
     if (motivos != null) {
@@ -119,45 +117,42 @@ const AccordionView = props => {
     }
   };
 
-    return (
-      <View style={styles.container}>
-        {
-          children != null ?(
+  return (
+    <View style={styles.container}>
+      {
+          children != null ? (
             <MotivoPopUp
-            //ref={(target) => this.popupRef = target}
-            open={open}
-            onTouchOutside={onClosePopup}
-            title="Motivo"
-            listaMotivos={children}
-            motivo={props.motivo}
-            close={close}
-          />
+            // ref={(target) => this.popupRef = target}
+              open={open}
+              onTouchOutside={onClosePopup}
+              title="Motivo"
+              listaMotivos={children}
+              motivo={props.motivo}
+              close={close}
+            />
           ) : null
         }
 
-
-
-        <ScrollView contentContainerStyle={{ marginBottom: 10 }}>
-          <TouchableOpacity onPress={toggleExpanded}>
-            <View style={styles.header}>
-              <MaterialCommunityIcons size={40} name={props.iconName} color="black" />
-              <Text style={styles.headerText}>{props.titleText}</Text>
-            </View>
-          </TouchableOpacity>
-          <Collapsible collapsed={collapsed}>
-            {/* Renderica todos los tipos de solicitudes con sus subcategorías */}
-            {
-              loading ?(
+      <ScrollView contentContainerStyle={{ marginBottom: 10 }}>
+        <TouchableOpacity onPress={toggleExpanded}>
+          <View style={styles.header}>
+            <MaterialCommunityIcons size={40} name={props.iconName} color="black" />
+            <Text style={styles.headerText}>{props.titleText}</Text>
+          </View>
+        </TouchableOpacity>
+        <Collapsible collapsed={collapsed}>
+          {/* Renderica todos los tipos de solicitudes con sus subcategorías */}
+          {
+              loading ? (
                 <Text style={styles.headerText}>Cargando...</Text>
               ) : renderItem()
             }
-            
 
-          </Collapsible>
-        </ScrollView>
-      </View>
-    );
-}
+        </Collapsible>
+      </ScrollView>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   title: {

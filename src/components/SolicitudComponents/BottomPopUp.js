@@ -15,8 +15,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 
 const deviceHeight = Dimensions.get('window').height;
 
-const BottomPopUp = props => {
-
+const BottomPopUp = (props) => {
   const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
@@ -26,7 +25,7 @@ const BottomPopUp = props => {
         {view}
       </TouchableWithoutFeedback>
     );
-  }
+  };
 
   const redirectToSettings = async (selectedOption) => {
     if (selectedOption == 0) {
@@ -65,23 +64,20 @@ const BottomPopUp = props => {
     }/// /////////////////////
   };
 
-  const renderTitle = () => {
-
-    return (
-      <View>
-        <Text style={{
-          color: '#182E44',
-          fontSize: 20,
-          fontWeight: '500',
-          margin: 15,
-          textAlign: 'center',
-        }}
-        >
-          {props.title}
-        </Text>
-      </View>
-    );
-  };
+  const renderTitle = () => (
+    <View>
+      <Text style={{
+        color: '#182E44',
+        fontSize: 20,
+        fontWeight: '500',
+        margin: 15,
+        textAlign: 'center',
+      }}
+      >
+        {props.title}
+      </Text>
+    </View>
+  );
 
   return (
     <Modal
@@ -133,7 +129,7 @@ const BottomPopUp = props => {
       </View>
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   optionCard: {

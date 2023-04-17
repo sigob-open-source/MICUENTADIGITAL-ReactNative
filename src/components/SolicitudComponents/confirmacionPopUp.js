@@ -4,8 +4,7 @@ import {
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-const ConfirmacionPopUp = props => {
-
+const ConfirmacionPopUp = (props) => {
   const [nombreSolicitud, setNombreSolicitud] = useState(null);
   const [comentario, setComentario] = useState(null);
   const [ubicacion, setUbicacion] = useState(null);
@@ -18,7 +17,7 @@ const ConfirmacionPopUp = props => {
         {view}
       </TouchableWithoutFeedback>
     );
-  }
+  };
 
   useEffect(() => {
     setNombreSolicitud(props.nombreSolicitud);
@@ -26,52 +25,52 @@ const ConfirmacionPopUp = props => {
     setUbicacion(props.ubicacion);
   }, [props.open]);
 
-    return (
-      <Modal
-        transparent
-        animationType="fade"
-        visible={props.open}
-        onRequestClose={props.close}
+  return (
+    <Modal
+      transparent
+      animationType="fade"
+      visible={props.open}
+      onRequestClose={props.close}
+    >
+      <View style={{
+        flex: 1,
+        backgroundColor: '#000000AA',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }}
       >
-        <View style={{
-          flex: 1,
-          backgroundColor: '#000000AA',
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        >
 
-          {renderOutsideTouchable(props.onTouchOutside)}
-          
-          <View style={styles.whiteSquareContainer}>
-            <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-              <Text style={styles.titleText}>Detalles de la solicitud</Text>
-              <TouchableOpacity onPress={props.close}>
-                <MaterialCommunityIcons style={{ marginRight: 15 }} size={30} name="arrow-left" color="black" />
-              </TouchableOpacity>
-            </View>
+        {renderOutsideTouchable(props.onTouchOutside)}
 
-            <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
+        <View style={styles.whiteSquareContainer}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+            <Text style={styles.titleText}>Detalles de la solicitud</Text>
+            <TouchableOpacity onPress={props.close}>
+              <MaterialCommunityIcons style={{ marginRight: 15 }} size={30} name="arrow-left" color="black" />
+            </TouchableOpacity>
+          </View>
 
-            <Text style={{
-              fontWeight: '500',
-              marginLeft: 15,
-              fontSize: 22,
-              alignSelf: 'flex-start',
-              marginVertical: 10,
-              color: 'black',
-            }}
-            >
-              ¿Es la información correcta?
-            </Text>
-            <ScrollView>
+          <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
+
+          <Text style={{
+            fontWeight: '500',
+            marginLeft: 15,
+            fontSize: 22,
+            alignSelf: 'flex-start',
+            marginVertical: 10,
+            color: 'black',
+          }}
+          >
+            ¿Es la información correcta?
+          </Text>
+          <ScrollView>
             <Text style={styles.textStyle}>
               Motivo de la solicitud:
               {nombreSolicitud}
             </Text>
             <Text style={styles.textStyle}>
-              Comentario: 
-              {' '+comentario}
+              Comentario:
+              {` ${comentario}`}
             </Text>
             <Text style={styles.textStyle}>
               Ubicación:
@@ -84,27 +83,27 @@ const ConfirmacionPopUp = props => {
 
                   <View style={styles.sendRequestContainer}>
                     <Text style={{
-                      color: 'black',
-                      fontSize: 20,
-                      fontWeight: '500',
-                    }}
-                    >
-                      Confirmar
-                    </Text>
+                        color: 'black',
+                        fontSize: 20,
+                        fontWeight: '500',
+                      }}
+                      >
+                        Confirmar
+                      </Text>
                   </View>
 
                 </View>
               </TouchableOpacity>
-              
-            </View>
-            </ScrollView>
-          </View>
 
+            </View>
+          </ScrollView>
         </View>
 
-      </Modal>
-    );
-}
+      </View>
+
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -130,7 +129,7 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     marginVertical: 5,
-    paddingHorizontal:15,
+    paddingHorizontal: 15,
     fontWeight: '500',
     fontSize: 15,
     alignSelf: 'flex-start',

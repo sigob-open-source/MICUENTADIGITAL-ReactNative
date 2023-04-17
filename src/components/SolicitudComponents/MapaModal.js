@@ -24,11 +24,10 @@ MapBoxGL.requestAndroidLocationPermissions();
 MapBoxGL.setAccessToken('pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ');
 MapBoxGL.geo;
 
-const MapaModal = props => {
-
+const MapaModal = (props) => {
   const [lat, setLat] = useState(0);
   const [long, setLong] = useState(0);
-  const [coords, setCoords] = useState([0,0]);
+  const [coords, setCoords] = useState([0, 0]);
   const [street, setStreet] = useState(null);
   const [canChangeCoords, setCanChangeCoords] = useState(false);
 
@@ -40,7 +39,7 @@ const MapaModal = props => {
     try {
       axios.get(`https://api.mapbox.com/geocoding/v5/mapbox.places/${coords}.json?language=es&type=address&access_token=pk.eyJ1IjoiYWRyaWFuMTYiLCJhIjoiY2wxNm5vbmh2MGRwbDNkbXpwOHJha243ayJ9.Ehsp5mf9G81ttc9alVaTDQ`)
         .then((response) => {
-          const posts = response.data.features[0].place_name;     
+          const posts = response.data.features[0].place_name;
           setStreet(posts);
         });
     } catch (error) {
@@ -49,48 +48,48 @@ const MapaModal = props => {
   };
 
   useEffect(() => {
-    let abortController = new AbortController();
-    if (!props.otherOpen){
+    const abortController = new AbortController();
+    if (!props.otherOpen) {
       apihandler();
     }
     return () => {
       abortController.abort();
-    }
-  },[coords]);
+    };
+  }, [coords]);
 
   useEffect(() => {
-    let abortController = new AbortController();
-    if (!props.otherOpen){
+    const abortController = new AbortController();
+    if (!props.otherOpen) {
       apihandler();
       setCanChangeCoords(true);
     }
     return () => {
       abortController.abort();
-    }
-  },[props.otherOpen]);
+    };
+  }, [props.otherOpen]);
 
   useEffect(() => {
-    let abortController = new AbortController();
+    const abortController = new AbortController();
     GetLocation();
     return () => {
       abortController.abort();
-    }
+    };
   }, []);
 
   const GetLocation = () => {
     Geolocation.getCurrentPosition(
       (position) => {
-        setCoords([position.coords.longitude,position.coords.latitude])
-        setLong([position.coords.longitude])
-        setLat([position.coords.latitude])
+        setCoords([position.coords.longitude, position.coords.latitude]);
+        setLong([position.coords.longitude]);
+        setLat([position.coords.latitude]);
       },
       (error) => console.log(error),
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 },
     );
-  }
+  };
 
   const close = () => {
-    props.close
+    props.close;
   };
 
   const show = async () => {
@@ -116,8 +115,7 @@ const MapaModal = props => {
     if (street != null) {
       props.mapToParent(street, lat, long);
     }
-    
-  }
+  };
 
   const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
@@ -130,22 +128,20 @@ const MapaModal = props => {
       </TouchableWithoutFeedback>
 
     );
-  }
-
-  const renderTitle = () => {
-    return (
-      <View>
-        <Text style={{
-          color: '#8F8F8F',
-          fontSize: 16,
-          margin: 15,
-        }}
-        >
-          {props.title}
-        </Text>
-      </View>
-    );
   };
+
+  const renderTitle = () => (
+    <View>
+      <Text style={{
+        color: '#8F8F8F',
+        fontSize: 16,
+        margin: 15,
+      }}
+      >
+        {props.title}
+      </Text>
+    </View>
+  );
 
   return (
     <Modal
@@ -164,8 +160,8 @@ const MapaModal = props => {
         />
 
         <TouchableWithoutFeedback>
-        <View style={styles.streetName}>
-          {
+          <View style={styles.streetName}>
+            {
             street != undefined ? (
               <Text style={{ color: 'black' }}>{street}</Text>
             ) : null
@@ -174,10 +170,10 @@ const MapaModal = props => {
           </View>
         </TouchableWithoutFeedback>
 
-        <TouchableWithoutFeedback 
-        onPressIn={() =>  _handleSendLocation()} 
-        onPress={ props.close}
-        
+        <TouchableWithoutFeedback
+          onPressIn={() => _handleSendLocation()}
+          onPress={props.close}
+
         >
           <View style={styles.sendRequestGeneralContainer}>
             <View style={styles.sendRequestStyle}>
@@ -201,35 +197,34 @@ const MapaModal = props => {
           borderRadius: 90,
         }}
         >
-        {
+          {
           canChangeCoords ? (
-          <MapboxGL.MapView
-            logoEnabled={false}
-            localizeLabels
-            onPress={(feature) => changeCoordinates(feature)}
-            styleURL={MapBoxGL.StyleURL.Street}
-            zoomLevel={17}
-            style={{ flex: 1 }}
-          >
-
-            <MapBoxGL.Camera
-              centerCoordinate={coords}
+            <MapboxGL.MapView
+              logoEnabled={false}
+              localizeLabels
+              onPress={(feature) => changeCoordinates(feature)}
+              styleURL={MapBoxGL.StyleURL.Street}
               zoomLevel={17}
-              animationMode="flyTo"
-              animationDuration={0}
-            />
-
-            <MapBoxGL.MarkerView
-              anchor={{ x: 0.5, y: 0.9 }}
-              coordinate={coords}
+              style={{ flex: 1 }}
             >
-              <Fontisto style={{ alignSelf: 'flex-end' }} size={50} name="map-marker-alt" color="#79142A" />
-            </MapBoxGL.MarkerView>
 
-          </MapboxGL.MapView>
+              <MapBoxGL.Camera
+                centerCoordinate={coords}
+                zoomLevel={17}
+                animationMode="flyTo"
+                animationDuration={0}
+              />
+
+              <MapBoxGL.MarkerView
+                anchor={{ x: 0.5, y: 0.9 }}
+                coordinate={coords}
+              >
+                <Fontisto style={{ alignSelf: 'flex-end' }} size={50} name="map-marker-alt" color="#79142A" />
+              </MapBoxGL.MarkerView>
+
+            </MapboxGL.MapView>
           ) : null
         }
-
 
         </View>
 
@@ -238,12 +233,12 @@ const MapaModal = props => {
       <Footer
         back={props.close}
         showBack
-         style={styles.footer}
+        style={styles.footer}
       />
 
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   header: {
@@ -263,7 +258,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignSelf: 'center',
     alignItems: 'center',
-    paddingHorizontal:10,
+    paddingHorizontal: 10,
     marginTop: '25%',
     zIndex: 10,
     position: 'absolute',

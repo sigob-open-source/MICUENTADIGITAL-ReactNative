@@ -1,5 +1,11 @@
 import {
-  StyleSheet, Text, View, Image, TouchableWithoutFeedback, TouchableOpacity, TouchableWithoutFeedbackBase,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableWithoutFeedback,
+  TouchableOpacity,
+  TouchableWithoutFeedbackBase,
 } from 'react-native';
 import React from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -121,6 +127,5 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontWeight: '300',
     textAlign: 'center',
-
   },
 });

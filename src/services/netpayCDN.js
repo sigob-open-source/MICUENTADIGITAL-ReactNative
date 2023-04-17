@@ -1,4 +1,3 @@
-
 (function () {
   const I = {}.hasOwnProperty; let p = this.NetPay; const D = function (a, d) { function b() { this.constructor = d; } for (const h in a)I.call(a, h) && (d[h] = a[h]); return b.prototype = a.prototype, d.prototype = new b(), d.__super__ = a.prototype, d; }; p = this.NetPay = function () {
     function a() {} function d(c, g, m, e, f) {

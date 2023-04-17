@@ -6,8 +6,7 @@ import React, { useState } from 'react';
 import Header from '../Header';
 import Footer from '../Footer';
 
-const ComentarioModal = props => {
-
+const ComentarioModal = (props) => {
   const [textLength, setTextLength] = useState(0);
   const [comment, setComment] = useState('');
   const [maxLength, setMaxLength] = useState(250);
@@ -15,18 +14,18 @@ const ComentarioModal = props => {
   const onChangeText = (text) => {
     setTextLength(text.length);
     setComment(text);
-  }
+  };
 
   const _handleSendComment = () => {
     if (textLength > 0) {
       props.modalToParent(comment);
       setTimeout(() => {
         setTextLength(0);
-        }, 300);
+      }, 300);
     }
-  }
+  };
 
-  const renderOutsideTouchable = (onTouch) => { 
+  const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
     if (!onTouch) return view;
 
@@ -37,53 +36,51 @@ const ComentarioModal = props => {
       </TouchableWithoutFeedback>
 
     );
-  }
-
-  const renderTitle = () => {
-    return (
-      <View>
-        <Text style={{
-          color: '#8F8F8F',
-          fontSize: 16,
-          margin: 15,
-        }}
-        >
-          {props.title}
-        </Text>
-      </View>
-    );
   };
 
-    return (
-      <Modal
-        animationType="fade"
-        transparent
-        visible={props.open}
-        onRequestClose={props.close}
+  const renderTitle = () => (
+    <View>
+      <Text style={{
+        color: '#8F8F8F',
+        fontSize: 16,
+        margin: 15,
+      }}
       >
+        {props.title}
+      </Text>
+    </View>
+  );
 
-        <View style={{ flex: 1 }}>
+  return (
+    <Modal
+      animationType="fade"
+      transparent
+      visible={props.open}
+      onRequestClose={props.close}
+    >
 
-          <Header
-            style={styles.header}
-            item="Trámites"
-            imgnotif={require('../../../assets/imagenes/notificationGet_icon.png')}
-            img={require('../../../assets/imagenes/header_logo.png')}
-          />
+      <View style={{ flex: 1 }}>
 
-          {renderOutsideTouchable(props.onTouchOutside)}
-          <View style={{
-            backgroundColor: '#EDF2F5',
-            width: '100%',
-            height: '100%',
-          }}
-          >
-            <View style={{marginTop:'24%'}}>
+        <Header
+          style={styles.header}
+          item="Trámites"
+          imgnotif={require('../../../assets/imagenes/notificationGet_icon.png')}
+          img={require('../../../assets/imagenes/header_logo.png')}
+        />
+
+        {renderOutsideTouchable(props.onTouchOutside)}
+        <View style={{
+          backgroundColor: '#EDF2F5',
+          width: '100%',
+          height: '100%',
+        }}
+        >
+          <View style={{ marginTop: '24%' }}>
             {renderTitle()}
 
             <TextInput
               color="black"
-              onChangeText={(text)=>onChangeText(text)}
+              onChangeText={(text) => onChangeText(text)}
               maxLength={250}
               style={{ paddingHorizontal: '5%' }}
               multiline
@@ -101,32 +98,31 @@ const ComentarioModal = props => {
               {textLength}
               /250
             </Text>
-            
+
             <View style={styles.sendRequestGeneralContainer}>
-            <TouchableOpacity onPressIn={() =>_handleSendComment()} onPress={props.close}>
-              <View style={styles.sendRequestStyle}>
-                
+              <TouchableOpacity onPressIn={() => _handleSendComment()} onPress={props.close}>
+                <View style={styles.sendRequestStyle}>
+
                   <View style={styles.sendRequestContainer}>
                     <Text style={{ color: 'black', fontSize: 20, fontWeight: '500' }}>Subir Comentario</Text>
                   </View>
-                
-              </View>
+
+                </View>
               </TouchableOpacity>
             </View>
           </View>
-          </View>
         </View>
+      </View>
 
-        <Footer
-          back={props.close}
-          showBack
-          style={styles.footer}
-        />
+      <Footer
+        back={props.close}
+        showBack
+        style={styles.footer}
+      />
 
-      </Modal>
-    );
-
-}
+    </Modal>
+  );
+};
 
 const styles = StyleSheet.create({
   header: {

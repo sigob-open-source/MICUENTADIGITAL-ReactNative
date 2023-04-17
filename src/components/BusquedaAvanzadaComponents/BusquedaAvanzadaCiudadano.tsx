@@ -33,7 +33,6 @@ const BusquedaAvanzadaCiudadano = ({ cargos, onSearch }) => {
       ...form,
       [name]: text,
     });
-
   };
 
   const handleSearch = () => {

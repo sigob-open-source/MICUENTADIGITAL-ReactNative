@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import {
-  View, 
-  Text, 
-  StyleSheet, 
-  Modal, 
-  TouchableWithoutFeedback, 
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  TouchableWithoutFeedback,
   TouchableOpacity,
   ScrollView,
   Image,
@@ -14,31 +14,29 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../utils/colors';
 
-const ModalFuncionario = props => {
-
+const ModalFuncionario = (props) => {
   const [genero, setGenero] = useState(null);
   const [estadoCivil, setEstadoCivil] = useState(null);
   const [observaciones, setObservaciones] = useState(null);
   const [puesto, setPuesto] = useState(null);
 
   const setGender = () => {
-
-    if (props.observaciones == null || props.obesrvaciones == ''){
+    if (props.observaciones == null || props.obesrvaciones == '') {
       setObservaciones('Sin observaciones');
-    }else{
+    } else {
       setObservaciones(props.observaciones);
     }
 
-    if (props.puesto == null || puesto == ''){
+    if (props.puesto == null || puesto == '') {
       setPuesto('Desconocido');
     }
 
-    switch(props.genero){
+    switch (props.genero) {
       case 1: setGenero('Masculino'); break;
       case 2: setGenero('Femenino'); break;
     }
 
-    switch(props.estado){
+    switch (props.estado) {
       case 1: setEstadoCivil('Casado'); break;
       case 2: setEstadoCivil('Divorciado'); break;
       case 3: setEstadoCivil('No aplica'); break;
@@ -46,16 +44,15 @@ const ModalFuncionario = props => {
       case 5: setEstadoCivil('Separado'); break;
       case 6: setEstadoCivil('Soltero'); break;
       case 7: setEstadoCivil('Unión Libre'); break;
-      case 8: 
-      if (props.genero == 1){
-        setEstadoCivil('Viudo');
-      }
-      else{
-        setEstadoCivil('Viuda');
-      } 
-      break;
+      case 8:
+        if (props.genero == 1) {
+          setEstadoCivil('Viudo');
+        } else {
+          setEstadoCivil('Viuda');
+        }
+        break;
     }
-  }
+  };
 
   const renderOutsideTouchable = (onTouch) => {
     const view = <View style={{ flex: 1, width: '100%' }} />;
@@ -65,16 +62,16 @@ const ModalFuncionario = props => {
         {view}
       </TouchableWithoutFeedback>
     );
-  }
+  };
 
-  const llamar = async () =>{
-    await Linking.openURL(`tel:+52${props.telefono}`)
-    //await Linking.openURL("tel:+526531361101");
-  }
+  const llamar = async () => {
+    await Linking.openURL(`tel:+52${props.telefono}`);
+    // await Linking.openURL("tel:+526531361101");
+  };
 
-  const mandarCorreo = async () =>{
-    await Linking.openURL(`mailto:${props.correo}`)
-  }
+  const mandarCorreo = async () => {
+    await Linking.openURL(`mailto:${props.correo}`);
+  };
 
   return (
     <Modal
@@ -104,84 +101,110 @@ const ModalFuncionario = props => {
 
           <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
 
-            <ScrollView>
-              {
+          <ScrollView>
+            {
                 props.foto === undefined ? (
                   <Image
-                    style={{width:100, height:100, alignSelf:'center',marginTop:20, borderRadius:400, marginBottom:10}}
-                    resizeMode='cover'
+                    style={{
+                      width: 100, height: 100, alignSelf: 'center', marginTop: 20, borderRadius: 400, marginBottom: 10,
+                    }}
+                    resizeMode="cover"
                     source={require('../../assets/imagenes/blog-ph.jpg')}
                   />
-                ) :
-                  <Image
-                    style={{width:100, height:100, alignSelf:'center',marginTop:20, borderRadius:400, marginBottom:10}}
-                    resizeMode='cover'
-                    source={{uri:props.foto}}
-                  />
+                )
+                  : (
+                    <Image
+                      style={{
+                        width: 100, height: 100, alignSelf: 'center', marginTop: 20, borderRadius: 400, marginBottom: 10,
+                      }}
+                      resizeMode="cover"
+                      source={{ uri: props.foto }}
+                    />
+                  )
               }
 
-              <View>
-                <Text style={styles.textStyle}>
-                  Nombre: { props.nombre+' '+props.apellidoPaterno+' '+props.apellidoMaterno }
-                </Text> 
+            <View>
+              <Text style={styles.textStyle}>
+                Nombre:
+                {' '}
+                { `${props.nombre} ${props.apellidoPaterno} ${props.apellidoMaterno}` }
+              </Text>
 
-                <Text style={styles.textStyle}>
-                  Lada: { props.lada }
-                </Text> 
+              <Text style={styles.textStyle}>
+                Lada:
+                {' '}
+                { props.lada }
+              </Text>
 
-                <Text style={styles.textStyle}>
-                  Número: { props.numero }
-                </Text> 
+              <Text style={styles.textStyle}>
+                Número:
+                {' '}
+                { props.numero }
+              </Text>
 
-                <Text style={styles.textStyle}>
-                  CURP: { props.curp }
-                </Text> 
+              <Text style={styles.textStyle}>
+                CURP:
+                {' '}
+                { props.curp }
+              </Text>
 
-                <Text style={styles.textStyle}>
-                  RFC: { props.rfc }
-                </Text> 
+              <Text style={styles.textStyle}>
+                RFC:
+                {' '}
+                { props.rfc }
+              </Text>
 
-                <Text style={styles.textStyle}>
-                  Observaciones: { observaciones }
-                </Text> 
+              <Text style={styles.textStyle}>
+                Observaciones:
+                {' '}
+                { observaciones }
+              </Text>
 
-                <Text style={styles.textStyle}>
-                  Puesto: { puesto }
-                </Text> 
+              <Text style={styles.textStyle}>
+                Puesto:
+                {' '}
+                { puesto }
+              </Text>
 
-                <Text style={styles.textStyle}>
-                  Género: { genero }
-                </Text> 
+              <Text style={styles.textStyle}>
+                Género:
+                {' '}
+                { genero }
+              </Text>
 
-                <Text style={styles.textStyle}>
-                  Estado del Funcionario: { props.estadoFunc }
-                </Text> 
+              <Text style={styles.textStyle}>
+                Estado del Funcionario:
+                {' '}
+                { props.estadoFunc }
+              </Text>
 
-                <Text style={styles.textStyle}>
-                  Estado Civil: { estadoCivil }
-                </Text> 
-              </View>
-
-            </ScrollView>
-
-            <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
-
-            <View style={styles.buttonsContainer}>
-              <TouchableOpacity onPress={()=>mandarCorreo()}>
-                <View style={styles.buttonStyle}>
-                  <Text style={styles.buttonTextStyle}>Enviar correo</Text>
-                  <MaterialCommunityIcons size={30} name="email" color="white" />
-                </View>
-              </TouchableOpacity>
-
-              <TouchableOpacity onPress={()=>llamar()}>
-                <View style={styles.buttonStyle}>
-                    <Text style={styles.buttonTextStyle}>Llamar</Text>
-                    <MaterialCommunityIcons size={30} name="phone" color="white" />
-                </View>
-              </TouchableOpacity>
-
+              <Text style={styles.textStyle}>
+                Estado Civil:
+                {' '}
+                { estadoCivil }
+              </Text>
             </View>
+
+          </ScrollView>
+
+          <View style={{ width: '100%', backgroundColor: 'black', height: 1 }} />
+
+          <View style={styles.buttonsContainer}>
+            <TouchableOpacity onPress={() => mandarCorreo()}>
+              <View style={styles.buttonStyle}>
+                <Text style={styles.buttonTextStyle}>Enviar correo</Text>
+                <MaterialCommunityIcons size={30} name="email" color="white" />
+              </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity onPress={() => llamar()}>
+              <View style={styles.buttonStyle}>
+                <Text style={styles.buttonTextStyle}>Llamar</Text>
+                <MaterialCommunityIcons size={30} name="phone" color="white" />
+              </View>
+            </TouchableOpacity>
+
+          </View>
 
         </View>
 
@@ -189,7 +212,7 @@ const ModalFuncionario = props => {
 
     </Modal>
   );
-}
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -198,24 +221,24 @@ const styles = StyleSheet.create({
     opacity: 0.5,
   },
   buttonsContainer: {
-    flexDirection:'row',
-    alignItems:'center',
-    justifyContent:'center',
-    alignContent:'center', 
-  },  
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    alignContent: 'center',
+  },
   buttonStyle: {
-    flexDirection:'row',
-    marginHorizontal:10,
-    marginVertical:20,
-    justifyContent:'center',
-    alignItems:'center',
-    width:125,
-    height:40,
+    flexDirection: 'row',
+    marginHorizontal: 10,
+    marginVertical: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: 125,
+    height: 40,
     backgroundColor: colors.secundario,
-    borderRadius:5,
-  },  
+    borderRadius: 5,
+  },
   buttonTextStyle: {
-    color:'white',
+    color: 'white',
     fontWeight: '500',
   },
   whiteSquareContainer: {
@@ -238,7 +261,7 @@ const styles = StyleSheet.create({
     marginVertical: 5,
     fontWeight: '500',
     fontSize: 15,
-    alignSelf:'center',
+    alignSelf: 'center',
     color: 'black',
   },
   textStyle2: {
