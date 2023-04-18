@@ -92,6 +92,8 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
       ? conceptosDePago[0].description
       : tipoDePadron.descripcion;
 
+    const cargoIds = conceptosDePago.map((e) => e.id);
+
     if (referenciaDePago === null) {
       const response = await generarReferenciaDePagoNetpayPublic(
         {
@@ -101,8 +103,8 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
           expiryDate: getExpiryDate(tipoDePadron.id),
           paymentMethod: 'cash',
           billing: {
-            canal_de_pago: 5,
-            cargos: conceptosDePago.map((e) => e.id),
+            canal_de_pago: 4,
+            cargos: cargoIds,
             padron_id: padron.id,
             tipo_de_padron: tipoDePadron.id,
             importe: roundedTotal,
@@ -128,8 +130,8 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
           expiryDate: getExpiryDate(tipoDePadron.id),
           paymentMethod: 'cash',
           billing: {
-            canal_de_pago: 5,
-            cargos: conceptosDePago.map((e) => e.id),
+            canal_de_pago: 4,
+            cargos: cargoIds,
             padron_id: padron.id,
             tipo_de_padron: tipoDePadron.id,
             importe: roundedTotal,
@@ -142,7 +144,13 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
       );
 
       if (response) {
-        navigation.push('netpaypago', { merchantReferenceCode: response.folio_netpay });
+        navigation.push('netpaypago', {
+          merchantReferenceCode: response.folio_netpay,
+          cargoIds,
+          padronId: padron.id,
+          tipoDePadronId: tipoDePadron.id,
+          total: roundedTotal,
+        });
       }
     }
 

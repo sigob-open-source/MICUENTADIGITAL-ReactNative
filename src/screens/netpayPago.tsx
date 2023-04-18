@@ -1,25 +1,25 @@
 // External dependencies
 import React, {
-  useEffect,
   useMemo,
   useState,
   useRef,
 } from 'react';
-
-// Internal dependencies
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { WebViewMessageEvent } from 'react-native-webview';
+import { ActivityIndicator, View } from 'react-native';
+
+// Internal dependencies
 import { RootStackParamList } from '../types/navigation';
-import { useAppSelector } from '../store-v2/hooks';
-import { CargoProps } from '../services/recaudacion/generar-cargos.types';
-import useTotal from '../hooks/useTotal';
 import WebViewPage from '../components/WebViewPage';
-import Logger from '../lib/logger';
 import useDebouncedFunction from '../hooks/useDebouncedFunction';
 import { useNotification } from '../components/DropDownAlertProvider';
+import { INetPayResponse } from '../services/recaudacion/recibo.types';
+import { generarTicket, generateRecibo } from '../services/recaudacion/recibo';
+import Header from '../components/HeaderV2/Header';
+import Logger from '../lib/logger';
 
 // Types & Interfaces
-type NetPayPagoScreen = NativeStackScreenProps<RootStackParamList, 'netpaypago'>;
+type INetPayPagoScreen = NativeStackScreenProps<RootStackParamList, 'netpaypago'>;
 
 interface FormLoadedMessage {
   message: 'checkout-form-loaded'
@@ -52,10 +52,16 @@ interface FormPaymentSuccessMessage {
   }
 }
 
+interface NetPaySuccessMessage {
+  message: 'netpay-response-success',
+  data: INetPayResponse;
+}
+
 type WebViewMessage = FormLoadedMessage
 | FormClosedMessage
 | FormPaymentSuccessMessage
-| FormGenericErrorMessage;
+| FormGenericErrorMessage
+| NetPaySuccessMessage;
 
 const DETECT_MODAL = `
 function findElementByTextContent(tagName = '*', text) {
@@ -124,6 +130,24 @@ const findCloseButtonIntervalID = setInterval(() => {
   }
 }, 500);
 
+const emitNetPayResponse = () => {
+  const prefix = localStorage.getItem('PAYMENT_TYPE');
+  const netpayResponse = localStorage.getItem(prefix + '_response');
+
+  try {
+    const jsonData = JSON.parse(netpayResponse);
+
+    const message = JSON.stringify({
+      message: 'netpay-response-success',
+      data: jsonData,
+    });
+
+    window.ReactNativeWebView.postMessage(message);
+  } catch {
+
+  }
+};
+
 const cardPaymentSuccessIntervalId = setInterval(() => {
   if (!formLoaded) return;
 
@@ -135,6 +159,8 @@ const cardPaymentSuccessIntervalId = setInterval(() => {
   if (finishButton) {
     paymentSucceed = true;
     clearInterval(cardPaymentSuccessIntervalId);
+
+    emitNetPayResponse();
 
     finishButton.addEventListener('click', () => {
       const message = JSON.stringify({
@@ -201,66 +227,116 @@ const findPaymentErrorIntervalId = setInterval(() => {
 
 `;
 
-const NetpayPago = ({
+const NetPayPagoScreen = ({
   navigation,
   route: {
-    params: { merchantReferenceCode },
+    params: {
+      cargoIds,
+      padronId,
+      tipoDePadronId,
+      total,
+      merchantReferenceCode,
+    },
   },
-}: NetPayPagoScreen) => {
+}: INetPayPagoScreen) => {
   // Refs
   const webViewRef = useRef<React.ElementRef<typeof WebViewPage> | null>(null);
 
   // Component's state
-  const [netpayFormLoaded, setNetpayFormLoaded] = useState<boolean>(false);
-  const pagosDiversos = useAppSelector((state) => state.pagosDiversos);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const [_, setNetPayFormLoaded] = useState<boolean>(false);
+  const [netPayResponse, setNetPayResponse] = useState<INetPayResponse | null>(null);
+  const [loadingRecibo, setLoadingRecibo] = useState<boolean>(false);
 
   const notify = useNotification();
 
-  const flatCargos = useMemo(() => pagosDiversos.cargos.reduce((acc, item) => {
-    acc.push(item[0], ...item[1].cargos_hijos);
-    return acc;
-  }, [] as CargoProps[]), [pagosDiversos.cargos]);
-
-  const importes = useMemo(
-    () => flatCargos.map((item) => item.importe),
-    [flatCargos],
-  );
-
-  const { roundedTotal } = useTotal({ importes });
-
   const URI = useMemo(() => {
-    const cargoIds = flatCargos.map((cargo) => cargo.id).join(',');
+    const ids = cargoIds.join(',');
 
-    return `https://solicitudes.migob.mx/pago-webview?cargos=${cargoIds}&total=${roundedTotal}&tipo_de_padron=${pagosDiversos.tipoDePadron!.id}&object_id_padron=${pagosDiversos.padron!.id}&merchantReferenceCode=${merchantReferenceCode}&webView=1`;
+    return `https://solicitudes.migob.mx/pago-webview?cargos=${ids}&total=${total}&tipo_de_padron=${tipoDePadronId}&object_id_padron=${padronId}&merchantReferenceCode=${merchantReferenceCode}&webView=1`;
   }, [
-    flatCargos,
-    roundedTotal,
-    pagosDiversos.tipoDePadron,
-    pagosDiversos.padron,
+    cargoIds,
+    total,
+    tipoDePadronId,
+    padronId,
     merchantReferenceCode,
   ]);
 
+  console.log({ URI });
+
   const onNetPayFormLoaded = useDebouncedFunction(() => {
-    setNetpayFormLoaded(true);
+    setNetPayFormLoaded(true);
   }, 700);
 
   const onNetPayCloseForm = useDebouncedFunction(() => {
     navigation.goBack();
   }, 700);
 
-  const onFormSuccess = useDebouncedFunction(() => {
+  const getReceipt = async () => {
+    if (!netPayResponse) return;
+
+    setLoadingRecibo(true);
+
+    const { success, result } = await generateRecibo({
+      canal_de_pago: 4,
+      folio: merchantReferenceCode,
+      response: netPayResponse,
+    }, { entidad: 1 });
+
+    if (success) {
+      const { success: successTicket, result: resultTicket } = await generarTicket({
+        entidad_id: 1,
+        recibos_id: [result.id],
+        tramite_en_proceso: false,
+      }, { entidad: 1 });
+
+      let base64 = result.data;
+
+      if (successTicket) {
+        base64 = resultTicket.data;
+      }
+
+      notify({
+        type: 'success',
+        title: '¡Éxito!',
+        message: 'Pago exitoso',
+      });
+
+      navigation.reset({
+        index: 1,
+        routes: [
+          {
+            name: 'menuInicio',
+          },
+          {
+            name: 'pdfViewer',
+            params: {
+              reciboB64: `data:application/pdf;base64,${base64}`,
+            },
+          },
+        ],
+      });
+      return;
+    }
+
     notify({
-      type: 'success',
-      title: '¡Éxito!',
-      message: 'Pago existoso',
+      type: 'error',
+      title: 'Error',
+      message: 'No logramos guardar su pago, favor de reportar en ventanilla',
     });
 
     navigation.reset({
       index: 0,
-      routes: [{
-        name: 'menuInicio',
-      }],
+      routes: [
+        {
+          name: 'menuInicio',
+        },
+      ],
     });
+  };
+
+  const onFormSuccess = useDebouncedFunction(() => {
+    void getReceipt();
   }, 700);
 
   const onFormError = useDebouncedFunction(() => {
@@ -290,11 +366,17 @@ const NetpayPago = ({
         case 'checkout-form-declined':
           onFormError();
           break;
+        case 'netpay-response-success':
+          if (data.data) {
+            setNetPayResponse(data.data);
+          }
+          break;
         default:
           break;
       }
     } catch (error) {
       const typedError = error as Error;
+
       Logger.error({
         event: 'web view error',
         key: 'parse error',
@@ -305,20 +387,22 @@ const NetpayPago = ({
     }
   };
 
-  useEffect(() => {
-    let timeout: NodeJS.Timeout;
+  if (loadingRecibo) {
+    return (
+      <>
+        <Header
+          title="Pago con NetPay"
+        />
 
-    if (!netpayFormLoaded) {
-      timeout = setTimeout(() => {
-        webViewRef.current?.reload();
-        setNetpayFormLoaded(false);
-      }, 5000);
-    }
-
-    return () => {
-      clearTimeout(timeout);
-    };
-  }, [netpayFormLoaded]);
+        <View style={{ flex: 1, justifyContent: 'center', alignContent: 'center' }}>
+          <ActivityIndicator
+            size="large"
+            color="#010101"
+          />
+        </View>
+      </>
+    );
+  }
 
   return (
     <WebViewPage
@@ -331,4 +415,4 @@ const NetpayPago = ({
   );
 };
 
-export default NetpayPago;
+export default NetPayPagoScreen;

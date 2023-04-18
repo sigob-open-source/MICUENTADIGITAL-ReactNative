@@ -20,12 +20,12 @@ import OficinasAtencion from './src/screens/OficinasAtencion';
 import Pagos from './src/screens/Pagos';
 import PagoPadron from './src/screens/PagoPadron';
 import Tramites from './src/screens/tramites';
-import NetpayPago from './src/screens/netpayPago';
+import NetPayPagoScreen from './src/screens/netpayPago';
 import DropDownAlertProvider from './src/components/DropDownAlertProvider';
 import DetallesPadron from './src/screens/DetallesPadron';
 import NetpayCustom from './src/screens/NetpayCustom';
 import PagoRealizado from './src/screens/PagoRealizado';
-import PDFviewer from './src/screens/PDFviewer';
+import PDFViewerScreen from './src/screens/PDFviewer';
 import WebViewCartografiaScreen from './src/screens/WebViewCartografia';
 import WebViewZonificacion from './src/screens/WebViewZonificacion';
 import WebViewEstradosScreen from './src/screens/WebViewEstrados';
@@ -78,7 +78,6 @@ const AppContainer = () => (
         component={InfoServidorPublico}
       />
       <Stack.Screen name="tipoDeRegistro" component={TipoDeRegistro} />
-      <Stack.Screen name="PDFviewer" component={PDFviewer} />
       <Stack.Screen name="informacionQueja" component={InformacionDeQueja} />
       <Stack.Screen name="archivosDeQuejas" component={ArchivosDeQuejas} />
       <Stack.Screen name="loginScreen" component={LoginScreen} />
@@ -102,7 +101,7 @@ const AppContainer = () => (
       <Stack.Screen
         name="pdfViewer"
         options={{ animation: 'none' }}
-        component={PDFviewer}
+        component={PDFViewerScreen}
       />
       <Stack.Screen name="detallesPadron" component={DetallesPadron} />
       <Stack.Screen name="pagoRealizado" component={PagoRealizado} />
@@ -110,7 +109,7 @@ const AppContainer = () => (
       <Stack.Screen
         name="netpaypago"
         options={{ animation: 'none' }}
-        component={NetpayPago}
+        component={NetPayPagoScreen}
       />
       <Stack.Screen name="netpayCustom" component={NetpayCustom} />
       <Stack.Screen

@@ -1,17 +1,26 @@
+// External dependencies
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 import {
-  StyleSheet, Text, View, Dimensions,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
   TouchableOpacity,
 } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
-
 import Pdf from 'react-native-pdf';
+import { RootStackParamList } from '../types/navigation';
 
-// const source = { uri: 'http://samples.leanpub.com/thereactnativebook-sample.pdf', cache: true };
+// Types & Interfaces
+type PDFViewerScreenProps = NativeStackScreenProps<RootStackParamList, 'pdfViewer'>;
 
-const PDFviewer = ({ route: { params: { responseRecibo } } }) => {
-  const navigation = useNavigation();
-  const source = { uri: responseRecibo.base64 };
+const PDFViewerScreen = ({
+  navigation,
+  route: {
+    params: { reciboB64 },
+  },
+}: PDFViewerScreenProps) => {
+  const source = { uri: reciboB64 };
 
   return (
     <View style={styles.container}>
@@ -25,17 +34,21 @@ const PDFviewer = ({ route: { params: { responseRecibo } } }) => {
             <Text style={{ color: '#FFFFFF' }}>Descargar</Text>
           </View>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => navigation.navigate('pagos')}>
+        <TouchableOpacity onPress={() => navigation.reset({
+          index: 0,
+          routes: [{
+            name: 'menuInicio',
+          }],
+        })}
+        >
           <View style={styles.button}>
-            <Text style={{ color: '#FFFFFF' }}>Volver a pagos</Text>
+            <Text style={{ color: '#FFFFFF' }}>Regresar</Text>
           </View>
         </TouchableOpacity>
       </View>
     </View>
   );
 };
-
-export default PDFviewer;
 
 const styles = StyleSheet.create({
   container: {
@@ -68,3 +81,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 });
+
+export default PDFViewerScreen;

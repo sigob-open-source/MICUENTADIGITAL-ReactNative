@@ -5,8 +5,9 @@ type RootStackParamList = {
   walkthrout: undefined;
   infoServidorPublico: undefined;
   tipoDeRegistro: undefined;
-  PDFviewer: undefined;
-  pdfViewer: undefined;
+  pdfViewer: {
+    reciboB64: string;
+  };
   informacionQueja: undefined;
   archivosDeQuejas: undefined;
   loginScreen: undefined;
@@ -19,6 +20,10 @@ type RootStackParamList = {
   inicioFactura: undefined;
   otrosPagos: undefined;
   netpaypago: {
+    tipoDePadronId: number;
+    padronId: number;
+    cargoIds: number[];
+    total: string | number;
     merchantReferenceCode: string;
   };
   cartografia: undefined;

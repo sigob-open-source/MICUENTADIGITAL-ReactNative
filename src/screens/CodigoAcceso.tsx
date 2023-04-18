@@ -94,7 +94,7 @@ const CodigoAccesoScreen = ({ navigation }: ICodigoAccesoScreenProps) => {
       const codeStr = code.join('');
 
       const { success, errors, result } = await obtenerAcceso({
-        catalogo_canal_de_pago: 4,
+        catalogo_canal_de_pago: 3,
         codigo: codeStr,
         entidad: 1,
       });

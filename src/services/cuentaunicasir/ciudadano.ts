@@ -85,8 +85,6 @@ const createCiudadano = async (
       };
     }
   } catch (error) {
-    console.log(error?.response?.status, error?.response?.data);
-
     const typedError = error as Error;
 
     Logger.error({

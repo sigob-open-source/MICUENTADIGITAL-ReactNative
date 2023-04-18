@@ -1,7 +1,6 @@
 import { useCallback, useRef } from 'react';
 
-function useDebouncedFunction<T extends (
-  ...args: unknown[]) => unknown>(
+function useDebouncedFunction<T>(
   callback: T,
   delay: number,
 ): T {
@@ -13,6 +12,7 @@ function useDebouncedFunction<T extends (
         clearTimeout(timeoutRef.current);
       }
       timeoutRef.current = setTimeout(() => {
+        // @ts-ignore
         callback(...args);
       }, delay);
     },

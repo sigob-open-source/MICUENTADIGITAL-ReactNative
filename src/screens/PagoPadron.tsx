@@ -13,10 +13,10 @@ import {
 
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
+import moment from 'moment';
 import fonts from '../utils/fonts';
 import colors from '../utils/colors';
 import round from '../utils/round';
-
 import { tokenizeAmount } from '../services/netpay';
 
 import Button from '../components/Button';
@@ -38,6 +38,8 @@ import {
 import { getReferencia } from '../services/recaudacion';
 import { useNotification } from '../components/DropDownAlertProvider';
 import Card from '../components/CardPagos';
+import { generarReferenciaDePagoNetpayPublic } from '../services/recaudacion/pago';
+import getExpiryDate from '../utils/get-expiry-date';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
@@ -120,17 +122,47 @@ const PagoPadron = ({ route }) => {
   const dopayment = async () => {
     setLoading(true);
     console.log('entramos a la funcion');
-    const [sumall] = round(resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0));
 
-    const responseNetpay = await tokenizeAmount(sumall.toFixed(2));
+    const descripcion = (resultCargos.length === 1
+      && resultCargos[0].description.length <= 250
+      ? resultCargos[0].description
+      : padron.descripcion) as string;
 
-    const referenciaNetpay = await postGenererReferenciasNetpay(padron.id, padronSearched, resultCargos, padrones);
+    const [sumAll] = round(resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0));
+
+    const cargoIds = resultCargos.map((c) => c.id);
+
+    const referenciaNetpay = await generarReferenciaDePagoNetpayPublic(
+      {
+        amount: sumAll!,
+        currency: 'MXN',
+        description: descripcion,
+        expiryDate: getExpiryDate(padron.id),
+        paymentMethod: 'cash',
+        billing: {
+          canal_de_pago: 4,
+          cargos: cargoIds,
+          padron_id: padronSearched.id,
+          tipo_de_padron: padron.id,
+          importe: sumAll,
+          fecha: moment().format('DD-MM-YYYY'),
+          merchantReferenceCode: null,
+          ciudadano: null,
+        },
+      },
+      { entidad: 1 },
+    );
 
     const folioNetpay = referenciaNetpay?.folio_netpay;
 
     if (referenciaNetpay) {
-      console.log('referencia', referenciaNetpay);
-      navigation.push('netpaypago', { responseNetpay, folioNetpay });
+      navigation.push('netpaypago', {
+        merchantReferenceCode: folioNetpay,
+        cargoIds,
+        padronId: padronSearched.id,
+        tipoDePadronId: padron.id,
+        total: sumAll,
+      });
       setLoading(false);
     }
   };
