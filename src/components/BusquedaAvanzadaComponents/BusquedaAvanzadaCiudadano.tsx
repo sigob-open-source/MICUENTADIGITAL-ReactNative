@@ -198,7 +198,6 @@ const styles = StyleSheet.create({
     color: 'black',
     fontFamily: fonts.light,
     marginLeft: 17,
-
   },
   inputView: {
     marginVertical: 10,

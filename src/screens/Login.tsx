@@ -1,15 +1,53 @@
 import {
-  StyleSheet, Text, View, Image, TouchableOpacity,
+  StyleSheet,
+  Text,
+  View,
+  Image,
+  TouchableOpacity,
 } from 'react-native';
-import React from 'react';
-
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect } from 'react';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import IMAGEN from '../../assets/imagenes/jrzfondo.png';
 import IconLogo from '../../assets/imagenes/logo.png';
+import { RootStackParamList } from '../types/navigation';
+import { useAppSelector } from '../store-v2/hooks';
 
-const Login = () => {
-  const navigation = useNavigation();
+type LoginScreenProps = NativeStackScreenProps<
+RootStackParamList,
+'loginScreen'
+>;
+
+const Login = ({ navigation }: LoginScreenProps) => {
+  const isLoggedIn = useAppSelector((state) => Boolean(state.auth.ciudadano));
+
+  const next = () => {
+    if (isLoggedIn) {
+      navigation.reset({
+        index: 0,
+        routes: [
+          { name: 'menuInicio' },
+        ],
+      });
+
+      return;
+    }
+
+    navigation.reset({
+      index: 1,
+      routes: [
+        { name: 'loginScreen' },
+        { name: 'menuInicio' },
+      ],
+    });
+  };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      next();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn]);
 
   return (
     <View style={styles.container}>
@@ -28,7 +66,7 @@ const Login = () => {
           </View>
         </TouchableOpacity>
 
-        <TouchableOpacity onPress={() => navigation.navigate('menuInicio')}>
+        <TouchableOpacity onPress={next}>
           <View style={styles.buttonSinCredenciales}>
             <Text style={styles.textButtonSin}>Entrar sin Usuario</Text>
           </View>

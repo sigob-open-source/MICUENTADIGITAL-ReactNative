@@ -7,19 +7,33 @@ import {
   TouchableOpacity,
   TouchableWithoutFeedbackBase,
 } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-
 import Swiper from 'react-native-swiper';
-import { useNavigation } from '@react-navigation/native';
+
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import ImagePage1 from '../../assets/imagenes/Private-data.png';
 import ImagePage2 from '../../assets/imagenes/Receipt-pana.png';
 import ImagePage3 from '../../assets/imagenes/User-flow-pana.png';
+import { useAppSelector } from '../store-v2/hooks';
+import { RootStackParamList } from '../types/navigation';
 
-const Walkthrough = () => {
-  const navigation = useNavigation();
+type WalkthroughScreenProps = NativeStackScreenProps<RootStackParamList, 'walkthrout'>;
+
+const Walkthrough = ({ navigation }: WalkthroughScreenProps) => {
+  const isLoggedIn = useAppSelector((state) => Boolean(state.auth.ciudadano));
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      navigation.reset({
+        index: 0,
+        routes: [{ name: 'menuInicio' }],
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isLoggedIn]);
 
   const WalkthroughList = [
     {

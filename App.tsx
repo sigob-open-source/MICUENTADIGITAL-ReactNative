@@ -26,14 +26,14 @@ import DetallesPadron from './src/screens/DetallesPadron';
 import NetpayCustom from './src/screens/NetpayCustom';
 import PagoRealizado from './src/screens/PagoRealizado';
 import PDFViewerScreen from './src/screens/PDFviewer';
-import WebViewCartografiaScreen from './src/screens/WebviewCartografia';
-import WebViewZonificacion from './src/screens/WebviewZonificacion';
-import WebViewEstradosScreen from './src/screens/WebviewEstrados';
-import WebViewFacturacionScreen from './src/screens/WebviewFacturacion';
-import WebViewTramitesScreen from './src/screens/WebviewTramites';
-import WebviewAdeudos from './src/screens/WebviewAdeudos';
-import WebViewConvocatoriasScreen from './src/screens/WebviewConvocatorias';
-import WebViewCobildo from './src/screens/WebviewCabildo';
+import WebViewCartografiaScreen from './src/screens/WebViewCartografia';
+import WebViewZonificacion from './src/screens/WebViewZonificacion';
+import WebViewEstradosScreen from './src/screens/WebViewEstrados';
+import WebViewFacturacionScreen from './src/screens/WebViewFacturacion';
+import WebViewTramitesScreen from './src/screens/WebViewTramites';
+import WebviewAdeudos from './src/screens/WebViewAdeudos';
+import WebViewConvocatoriasScreen from './src/screens/WebViewConvocatorias';
+import WebViewCabildo from './src/screens/WebViewCabildo';
 import LoginScreen from './src/screens/Login';
 import InicioFactura from './src/screens/InicioDeFacturacion';
 import InformacionRecibo from './src/screens/InformacionDelRecibo';
@@ -125,7 +125,7 @@ const AppContainer = () => (
       <Stack.Screen
         name="cobildo"
         options={{ animation: 'none' }}
-        component={WebViewCobildo}
+        component={WebViewCabildo}
       />
       <Stack.Screen
         name="convocatorias"

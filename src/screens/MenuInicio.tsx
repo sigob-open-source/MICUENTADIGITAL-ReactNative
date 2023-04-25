@@ -1,5 +1,5 @@
 // External dependencies
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
   StyleSheet,
   View,
@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { useDispatch } from 'react-redux';
 
 // Internal dependencies
 import Square from '../components/CardPagos';
@@ -21,6 +22,8 @@ import colors from '../utils/colors';
 import { useAppSelector } from '../store-v2/hooks';
 import { RootStackParamList } from '../types/navigation';
 import { useNotification } from '../components/DropDownAlertProvider';
+import Button from '../components/Button';
+import { clearAuth } from '../store-v2/reducers/auth';
 
 // Types & Interfaces
 type IMenuInicioScreenProps = NativeStackScreenProps<RootStackParamList, 'menuInicio'>;
@@ -141,6 +144,8 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
   const ciudadano = useAppSelector((state) => state.auth.ciudadano);
   const notify = useNotification();
 
+  const dispatch = useDispatch();
+
   /**
    * En el diseño de esta pantalla, en algunos casos pueden quedar iconos vacios,
    * pero estos se siguen mostrando esta parte es para saber si debería haber más
@@ -204,6 +209,23 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
     }
   };
 
+  const logOut = () => {
+    dispatch(clearAuth({}));
+
+    navigation.reset({
+      index: 0,
+      routes: [
+        { name: 'loginScreen' },
+      ],
+    });
+  };
+
+  const ciudadanoDisplayName = useMemo(() => {
+    if (!ciudadano) return null;
+
+    return [ciudadano.nombre, ciudadano.apellido_paterno].filter((x) => Boolean(x)).join(' ');
+  }, [ciudadano]);
+
   /**
    * Esta función renderiza los botones dependiendo de sus propiedades, color, nombre, icono etc.
    */
@@ -242,7 +264,7 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
               </Text>
 
               <Text style={styles.greetingSubject}>
-                {ciudadano!.nombre}
+                {ciudadanoDisplayName}
               </Text>
             </View>
           )
@@ -322,7 +344,19 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
                 </View>
               </View> */}
 
-              <View />
+              {
+                Boolean(ciudadano) && (
+                  <Button
+                    onPress={logOut}
+                    style={styles.logOutButton}
+                    iconStyle={styles.logOutIcon}
+                    textStyle={styles.logOutText}
+                    iconName="sign-out-alt"
+                    text="Cerrar Sesión"
+                    size="large"
+                  />
+                )
+              }
             </>
           )}
         />
@@ -360,7 +394,6 @@ const styles = StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-
     flexDirection: 'row',
     flexWrap: 'wrap',
   },
@@ -504,6 +537,21 @@ const styles = StyleSheet.create({
     color: '#101010',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  logOutButton: {
+    marginTop: 8,
+    flexDirection: 'row-reverse',
+    backgroundColor: 'white',
+    borderColor: '#a3a3a3',
+    borderWidth: 1,
+    marginHorizontal: 5,
+  },
+  logOutText: {
+    color: '#60595D',
+  },
+  logOutIcon: {
+    margin: 0,
+    marginRight: 8,
   },
 });
 
