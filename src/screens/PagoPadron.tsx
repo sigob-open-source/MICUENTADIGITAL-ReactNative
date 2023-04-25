@@ -460,7 +460,7 @@ const PagoPadron = ({ route }) => {
               : (
                 <TouchableWithoutFeedback onPress={() => { setTotalAmount(0); handleSearch(); }}>
                   <View style={styles.buttonPrintDisabled}>
-                    <Text style={styles.textButton}>Realizar Buscasqueda</Text>
+                    <Text style={styles.textButton}>Realizar Búsqueda</Text>
                   </View>
                 </TouchableWithoutFeedback>
               )
