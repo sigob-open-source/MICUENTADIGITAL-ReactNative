@@ -87,7 +87,7 @@ const RegistroCiudadanoScreen = ({ navigation }: TRegistroCiudadanoScreenProps) 
       nombre: '',
       apellidoPaterno: '',
       apellidoMaterno: '',
-      lada: '',
+      lada: '52',
       numeroDeTelefono: '',
       correoElectronico: '',
     },

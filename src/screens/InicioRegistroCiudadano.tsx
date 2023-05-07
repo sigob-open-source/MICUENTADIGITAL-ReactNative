@@ -58,7 +58,7 @@ const InicioRegistroCiudadanoScreen = ({
 
   const formik = useFormik<FormValues>({
     initialValues: {
-      countryCode: params?.lada || '',
+      countryCode: params?.lada || '52',
       phoneNumber: params?.numeroDeTelefono || '',
     },
     validationSchema: FORM_SCHEMA,

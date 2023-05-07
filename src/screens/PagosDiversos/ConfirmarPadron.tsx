@@ -195,7 +195,7 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
 
   const formik = useFormik<FormValues>({
     initialValues: {
-      countryCode: '',
+      countryCode: '52',
       email: '',
       phoneNumber: '',
     },
