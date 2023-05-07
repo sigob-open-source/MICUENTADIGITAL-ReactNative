@@ -187,7 +187,7 @@ const RegistroCiudadanoScreen = ({ navigation }: TRegistroCiudadanoScreenProps) 
       <KeyboardAwareScrollView contentContainerStyle={{ padding: 20 }}>
         <Card style={{ padding: 15 }}>
           <Input
-            label="CURP"
+            label="*CURP"
             placeholder="Ingrese su CURP"
             value={formik.values.curp}
             onChangeText={(value) => formik.setFieldValue('curp', value)}
@@ -198,7 +198,7 @@ const RegistroCiudadanoScreen = ({ navigation }: TRegistroCiudadanoScreenProps) 
 
           <Input
             style={{ marginTop: 15 }}
-            label="Nombre"
+            label="*Nombre"
             placeholder="Ingrese su nombre"
             value={formik.values.nombre}
             onChangeText={(value) => formik.setFieldValue('nombre', value)}
@@ -209,7 +209,7 @@ const RegistroCiudadanoScreen = ({ navigation }: TRegistroCiudadanoScreenProps) 
 
           <Input
             style={{ marginTop: 15 }}
-            label="Apellido paterno"
+            label="*Apellido paterno"
             placeholder="Ingrese su apellido paterno"
             value={formik.values.apellidoPaterno}
             onChangeText={(value) => formik.setFieldValue('apellidoPaterno', value)}
@@ -220,7 +220,7 @@ const RegistroCiudadanoScreen = ({ navigation }: TRegistroCiudadanoScreenProps) 
 
           <Input
             style={{ marginTop: 15 }}
-            label="Apellido materno"
+            label="* Apellido materno"
             placeholder="Ingrese su apellido materno"
             value={formik.values.apellidoMaterno}
             onChangeText={(value) => formik.setFieldValue('apellidoMaterno', value)}
@@ -233,7 +233,7 @@ const RegistroCiudadanoScreen = ({ navigation }: TRegistroCiudadanoScreenProps) 
             style={{ marginTop: 15 }}
             value={formik.values.correoElectronico}
             onChangeText={(value) => formik.setFieldValue('correoElectronico', value)}
-            label="Correo Electrónico"
+            label="* Correo Electrónico"
             placeholder="Ingresa tu Correo Electrónico"
             placeholderTextColor={PLACEHOLDER_TEXT_COLOR}
             error={formik.errors.correoElectronico}
@@ -244,7 +244,7 @@ const RegistroCiudadanoScreen = ({ navigation }: TRegistroCiudadanoScreenProps) 
           >
             <View style={{ marginVertical: 8 }}>
               <Text style={styles.countryCodeLabel}>
-                Lada:
+                *Lada:
               </Text>
               <View
                 style={[
@@ -276,7 +276,7 @@ const RegistroCiudadanoScreen = ({ navigation }: TRegistroCiudadanoScreenProps) 
           <Input
             value={formik.values.numeroDeTelefono}
             onChangeText={(value) => formik.setFieldValue('numeroDeTelefono', value)}
-            label="Número de teléfono"
+            label="*Número de teléfono"
             keyboardType="phone-pad"
             placeholder="Ingresa tu número de teléfono"
             placeholderTextColor={PLACEHOLDER_TEXT_COLOR}

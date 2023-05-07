@@ -278,7 +278,7 @@ const NetPayPagoScreen = ({
     setLoadingRecibo(true);
 
     const { success, result } = await generateRecibo({
-      canal_de_pago: 4,
+      canal_de_pago: 3,
       folio: merchantReferenceCode,
       response: netPayResponse,
     }, { entidad: 1 });

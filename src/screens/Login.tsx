@@ -62,7 +62,7 @@ const Login = ({ navigation }: LoginScreenProps) => {
       <View style={styles.buttonContainer}>
         <TouchableOpacity onPress={() => navigation.navigate('registroCiudadano')}>
           <View style={styles.buttonCredenciales}>
-            <Text style={styles.textButtonSin}>Iniciar sesión con Cuenta Unica</Text>
+            <Text style={styles.textButtonSin}>Iniciar sesión con cuenta única</Text>
           </View>
         </TouchableOpacity>
 

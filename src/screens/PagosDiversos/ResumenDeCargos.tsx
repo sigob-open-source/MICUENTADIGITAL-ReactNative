@@ -53,7 +53,7 @@ const ResumenDeCargosScreen = ({ navigation }: ResumenDeCargosScreenProps) => {
 
     // Generar cargos
     const cargosPayloads = cart.map((item) => ({
-      canal_de_pago: 4,
+      canal_de_pago: 3,
       entidad: 1,
       padron: tipoDePadron.id,
       padron_id: padron.id,

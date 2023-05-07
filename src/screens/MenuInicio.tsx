@@ -64,15 +64,15 @@ const dataList: IItemMenu[] = [
     navegacion: 'cartografia',
     necesitaLogin: false,
   },
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Zonificación de Predio',
-    iconname: 'map-marked-alt',
-    enableEntypo: true,
-    navegacion: 'zonoficacion',
-    necesitaLogin: false,
-  },
+  // {
+  //   isBlank: false,
+  //   color: '#404040',
+  //   name: 'Zonificación de Predio',
+  //   iconname: 'map-marked-alt',
+  //   enableEntypo: true,
+  //   navegacion: 'zonoficacion',
+  //   necesitaLogin: false,
+  // },
   // {
   //   isBlank: false,
   //   color: '#404040',
@@ -155,19 +155,19 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
    */
   const formatData = (items: IItemMenu[], columns: number) => {
     const totalRows = Math.floor(items.length / columns);
-    let totalLastRow = items.length - (totalRows * columns);
+    const totalLastRow = items.length - (totalRows * columns);
 
-    while (totalLastRow !== 0 && totalLastRow !== columns) {
-      items.push({
-        name: 'nada',
-        iconname: 'question',
-        enableEntypo: false,
-        isBlank: true,
-        color: '#404040',
-      });
+    // while (totalLastRow !== 0 && totalLastRow !== columns) {
+    //   items.push({
+    //     name: 'nada',
+    //     iconname: 'question',
+    //     enableEntypo: false,
+    //     isBlank: true,
+    //     color: '#404040',
+    //   });
 
-      totalLastRow += 1;
-    }
+    //   totalLastRow += 1;
+    // }
 
     return items;
   };

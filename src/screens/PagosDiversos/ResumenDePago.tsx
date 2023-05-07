@@ -103,7 +103,7 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
           expiryDate: getExpiryDate(tipoDePadron.id),
           paymentMethod: 'cash',
           billing: {
-            canal_de_pago: 4,
+            canal_de_pago: 3,
             cargos: cargoIds,
             padron_id: padron.id,
             tipo_de_padron: tipoDePadron.id,
@@ -130,7 +130,7 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
           expiryDate: getExpiryDate(tipoDePadron.id),
           paymentMethod: 'cash',
           billing: {
-            canal_de_pago: 4,
+            canal_de_pago: 3,
             cargos: cargoIds,
             padron_id: padron.id,
             tipo_de_padron: tipoDePadron.id,

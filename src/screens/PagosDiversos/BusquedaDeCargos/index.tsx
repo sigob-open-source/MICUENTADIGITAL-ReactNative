@@ -30,7 +30,7 @@ type BusquedaDeCargosScreenProps = NavigationProps;
 // Constants
 const COMMON_PARAMS = Object.freeze({
   entidad: 1,
-  canales_de_pago: 4,
+  canales_de_pago: 3,
   tipo_de_aplicacion: [2, 4, 5, 6],
   es_accesorio: false,
   clasificador_de_tipo_de_cargo_en_portal: 2,

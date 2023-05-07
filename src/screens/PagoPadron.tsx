@@ -45,7 +45,7 @@ const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
   const [padronSearched, setPadronSearched] = useState();
   const [searchText, setSearchText] = useState('de');
-  const [resultCargos, setResultCargos] = useState();
+  const [resultCargos, setResultCargos] = useState([]);
   const [nameSearch, setNameSearch] = useState();
   const [newData, setNewData] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
@@ -108,7 +108,7 @@ const PagoPadron = ({ route }) => {
     } else {
       setPadronSearched(response);
       response = await getAdeudoPadron(response, numeroDePadron);
-      setResultCargos(response?.cargos);
+      setResultCargos(response?.cargos || []);
       setNewData(true);
       const [rounded] = round(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
       setTotalAmount(rounded);
@@ -121,11 +121,10 @@ const PagoPadron = ({ route }) => {
   // Funcion llamada al dar al boton realizar pago
   const dopayment = async () => {
     setLoading(true);
-    console.log('entramos a la funcion');
 
     const descripcion = (resultCargos.length === 1
-      && resultCargos[0].description.length <= 250
-      ? resultCargos[0].description
+      && resultCargos[0].descripcion.length <= 250
+      ? resultCargos[0].descripcion
       : padron.descripcion) as string;
 
     const [sumAll] = round(resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0));
@@ -140,7 +139,7 @@ const PagoPadron = ({ route }) => {
         expiryDate: getExpiryDate(padron.id),
         paymentMethod: 'cash',
         billing: {
-          canal_de_pago: 4,
+          canal_de_pago: 3,
           cargos: cargoIds,
           padron_id: padronSearched.id,
           tipo_de_padron: padron.id,
