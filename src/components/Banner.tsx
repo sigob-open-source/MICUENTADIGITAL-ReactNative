@@ -3,7 +3,6 @@ import {
 } from 'react-native';
 import React from 'react';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import IMAGEN from '../../assets/imagenes/publiJrz.jpeg';
 
 const Banner = () => (
   <View style={styles.aboutUs}>
@@ -50,7 +49,7 @@ const Banner = () => (
 
           <TouchableOpacity onPress={() => Linking.openURL('https://juarezconectado.juarez.gob.mx/')}>
             <View style={styles.webButton}>
-              <Text style={styles.aButton}> Ir al portal web</Text>
+              <Text style={styles.aButton}>Juárez Conectado</Text>
             </View>
           </TouchableOpacity>
         </View>

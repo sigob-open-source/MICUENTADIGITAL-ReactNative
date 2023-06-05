@@ -19,7 +19,7 @@ import DirectorioFunc from './src/screens/DirectorioFuncionarios';
 import OficinasAtencion from './src/screens/OficinasAtencion';
 import Pagos from './src/screens/Pagos';
 import PagoPadron from './src/screens/PagoPadron';
-import Tramites from './src/screens/tramites';
+import Tramites from './src/screens/tramitess';
 import NetPayPagoScreen from './src/screens/netpayPago';
 import DropDownAlertProvider from './src/components/DropDownAlertProvider';
 import DetallesPadron from './src/screens/DetallesPadron';

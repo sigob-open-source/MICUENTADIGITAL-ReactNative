@@ -24,6 +24,8 @@ import { RootStackParamList } from '../types/navigation';
 import { useNotification } from '../components/DropDownAlertProvider';
 import Button from '../components/Button';
 import { clearAuth } from '../store-v2/reducers/auth';
+import Card from '../components/Card';
+import { CLEAR_AUTH } from '../store/reducers/auth';
 
 // Types & Interfaces
 type IMenuInicioScreenProps = NativeStackScreenProps<RootStackParamList, 'menuInicio'>;
@@ -97,7 +99,7 @@ const dataList: IItemMenu[] = [
     name: 'Facturación',
     iconname: 'id-card-alt',
     enableEntypo: true,
-    navegacion: 'webFacturacion',
+    navegacion: 'inicioFactura',
     necesitaLogin: false,
     deshabilitado: false,
   },
@@ -110,27 +112,29 @@ const dataList: IItemMenu[] = [
   //   navegacion: 'solicitudSelect',
   //   deshabilitado: false,
   // },
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Cabildo',
-    iconname: 'users',
-    enableEntypo: true,
-    necesitaLogin: false,
-    deshabilitado: false,
-    navegacion: 'cobildo',
-  },
-  {
-    isBlank: false,
-    color: '#404040',
-    name: 'Estrados',
-    iconname: 'balance-scale-right',
-    enableEntypo: true,
-    necesitaLogin: false,
-    deshabilitado: false,
-    navegacion: 'estrados',
-  },
+  // {
+  //   isBlank: false,
+  //   color: '#404040',
+  //   name: 'Cabildo',
+  //   iconname: 'users',
+  //   enableEntypo: true,
+  //   necesitaLogin: false,
+  //   deshabilitado: false,
+  //   navegacion: 'cobildo',
+  // },
+  // {
+  //   isBlank: false,
+  //   color: '#404040',
+  //   name: 'Estrados',
+  //   iconname: 'balance-scale-right',
+  //   enableEntypo: true,
+  //   necesitaLogin: false,
+  //   deshabilitado: false,
+  //   navegacion: 'estrados',
+  // },
 ];
+
+const item = { descripcion: 'Infracciones', estados_globales: 1, id: 19 };
 
 const numColumns = 3;
 
@@ -270,6 +274,27 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
           )
         }
 
+        <TouchableOpacity onPress={() => navigation.navigate('pagoPadron', { padron: item })}>
+          <Card
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              borderBottomWidth: 3,
+              borderBottomColor: '#009C6F',
+            }}
+          >
+            <Text style={styles.greeting2}>Pago de Infracciones</Text>
+            <FontAwesome5
+              name="car"
+              size={30}
+              solid
+              color="#142B47"
+            />
+          </Card>
+        </TouchableOpacity>
+
+        <View style={styles.separator} />
+
         <FlatList
           data={formatData(dataList, numColumns)}
           renderItem={renderMenuItem}
@@ -277,8 +302,6 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
           numColumns={numColumns}
           ListFooterComponent={(
             <>
-              <View style={styles.separator} />
-
               <View style={styles.pagosStyle}>
                 <View style={styles.tituloCardContainer}>
                   <Text style={styles.pagoTxt}>Pagos</Text>
@@ -304,10 +327,50 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
                       <Text style={styles.pagoSubCategoryText}>Agregar cobro</Text>
                     </View>
                   </TouchableOpacity>
-
                 </View>
-
               </View>
+
+              <View style={styles.separator} />
+
+              <TouchableOpacity onPress={() => navigation.navigate('cobildo')}>
+                <Card
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    borderBottomWidth: 3,
+                    borderBottomColor: '#009C6F',
+                  }}
+                >
+                  <Text style={styles.greeting2}>Noticias</Text>
+                  <FontAwesome5
+                    name="newspaper"
+                    size={30}
+                    solid
+                    color="#142B47"
+                  />
+                </Card>
+              </TouchableOpacity>
+
+              <View style={styles.separator} />
+
+              <TouchableOpacity onPress={() => navigation.navigate('estrados')}>
+                <Card
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    borderBottomWidth: 3,
+                    borderBottomColor: '#009C6F',
+                  }}
+                >
+                  <Text style={styles.greeting2}>Estrados</Text>
+                  <FontAwesome5
+                    name="table"
+                    size={30}
+                    solid
+                    color="#142B47"
+                  />
+                </Card>
+              </TouchableOpacity>
 
               {/* <TouchableOpacity onPress={() => navigation.navigate('webAdeudos')}>
                 <View style={styles.pagosStyle}>
@@ -322,7 +385,6 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
                   </View>
                 </View>
               </TouchableOpacity> */}
-
               <View style={styles.separator} />
               <Banner />
               <View style={styles.separator} />
@@ -360,6 +422,7 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
             </>
           )}
         />
+
       </View>
     </View>
   );
@@ -495,8 +558,8 @@ const styles = StyleSheet.create({
     elevation: 3,
     marginHorizontal: 4,
     marginVertical: 5,
-    borderTopWidth: 5,
-    borderTopColor: '#86E2C0',
+    borderBottomWidth: 5,
+    borderBottomColor: '#009C6F',
   },
   tituloCardContainer: {
     flexDirection: 'row',
@@ -510,7 +573,6 @@ const styles = StyleSheet.create({
     color: '#404040',
     fontWeight: '800',
     fontSize: 14,
-    flex: 1,
   },
   iconstyel: {
     height: '100%',
@@ -521,7 +583,7 @@ const styles = StyleSheet.create({
   },
   pagoSubCategoryText: {
     color: '#404040',
-    fontWeight: '400',
+    fontWeight: '600',
     fontSize: 14,
   },
   greetingContainer: {
@@ -532,6 +594,12 @@ const styles = StyleSheet.create({
     color: '#404040',
     fontSize: 16,
     fontWeight: 'bold',
+  },
+  greeting2: {
+    color: '#142B47',
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginRight: 10,
   },
   greetingSubject: {
     color: '#101010',

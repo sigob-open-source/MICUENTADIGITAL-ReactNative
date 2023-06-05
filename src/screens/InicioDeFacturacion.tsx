@@ -8,59 +8,91 @@ import {
   ScrollView,
   SafeAreaView,
 } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
+import * as yup from 'yup';
+import { useFormik } from 'formik';
 import Header from '../components/Header';
 import { useNotification } from '../components/DropDownAlertProvider';
 import { getRecibo } from '../services/padrones';
+import { getReciboExterno } from '../services/recaudacion/recibo';
+import Input from '../components/Input';
+import Button from '../components/Button';
 
-import IMAGEHELP from '../../assets/imagenes/asistencia-contribuyente.png';
+interface FormValues {
+  transaccion: string;
+  folio_de_recibo: string;
+  folio_de_facturacion: string;
+  referencia_de_impresion: string;
+}
+
+const SCHEMA = yup.object({
+  transaccion: yup.string().typeError('Campo no válido'),
+  folio_de_recibo: yup.string().typeError('Campo no válido'),
+  folio_de_facturacion: yup.string().typeError('Campo no válido'),
+  referencia_de_impresion: yup.string().typeError('Campo no válido').required('Campo requerido'),
+});
 
 const InicioDeFacturacion = () => {
   const [searchText, setSearchText] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const [recibo, setRecibo] = useState(null);
 
   const notify = useNotification();
   const navigation = useNavigation();
 
-  const showAlert = (massage, tipo, titulo) => notify({
-    type: tipo,
-    title: titulo,
-    message: massage,
-  });
+  const form = useFormik<FormValues>({
+    initialValues: {
+      transaccion: '',
+      folio_de_facturacion: '',
+      folio_de_recibo: '',
+      referencia_de_impresion: '',
+    },
+    validationSchema: SCHEMA,
+    validateOnChange: true,
+    onSubmit: async (values) => {
+      console.log(values);
+      setLoading(true);
+      const response = await getReciboExterno({
+        entidad: 1,
+        referencia_de_seguridad: values.referencia_de_impresion,
+        folio: values.folio_de_recibo,
+        folio_de_facturacion: values.folio_de_facturacion,
+        id: values.transaccion,
+      });
 
-  const BuscarRecibo = () => {
-    if (searchText) {
-      showAlert();
-    }
-  };
-
-  const handleSearchRecibo = async () => {
-    setIsLoading(true);
-    if (searchText) {
-      const [_recibo] = await getRecibo({ q: searchText });
-      navigation.navigate('informacionRecibo');
-      if (_recibo) {
-        setRecibo(_recibo);
+      if (response) {
+        if (response?.pdf_de_rfc) {
+          notify({
+            message: 'Este Ticket ya fue facturado! Revise su correo',
+            title: 'Ticket ya facturado!',
+            type: 'info',
+          });
+          setLoading(false);
+        } else {
+          setLoading(false);
+          navigation.navigate('informacionRecibo', { response });
+        }
       } else {
-        showAlert('Se encontró un recibo con ese Folio.', 'info', 'Datos Vereficados');
+        setLoading(false);
+        notify({
+          message: 'NO se encontró el recibo.',
+          title: 'Alerta',
+          type: 'warn',
+        });
       }
-    } else {
-      showAlert('Favor de introducir el Folio del Recibo', 'info', 'Verifique sus datos');
-    }
-    setIsLoading(false);
-  };
+    },
+  });
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Header item="Recibo de Pago" />
+      <Header item="Buscar Ticket" />
 
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.containerModal}>
 
           <View style={styles.modaling}>
-            <Text style={styles.title}>Folio de Recibo</Text>
+            <Text style={styles.title}>Folio de recibo</Text>
             <View style={{
               height: 1,
               width: '100%',
@@ -70,20 +102,47 @@ const InicioDeFacturacion = () => {
             />
 
             <View style={styles.textInputContainer}>
-              <TextInput
-                color="black"
-                placeholderTextColor="#C4C4C4"
-                placeholder="Buscar Folio de Recibo"
-                fontSize={11}
-                onChangeText={(text) => setSearchText(text)}
+              <Input
+                placeholder="Transacción"
+                value={form.values.transaccion}
+                onChangeText={(value) => form.setFieldValue('transaccion', value)}
+                error={form.errors.transaccion}
               />
             </View>
 
-            <TouchableOpacity onPress={handleSearchRecibo}>
-              <View style={styles.button}>
-                <Text style={styles.textButton}>Consultar Recibo</Text>
-              </View>
-            </TouchableOpacity>
+            <View style={styles.textInputContainer}>
+              <Input
+                placeholder="Folio recibo"
+                value={form.values.folio_de_recibo}
+                onChangeText={(value) => form.setFieldValue('folio_de_recibo', value)}
+                error={form.errors.folio_de_recibo}
+              />
+            </View>
+
+            <View style={styles.textInputContainer}>
+              <Input
+                placeholder="Folio de facturación"
+                value={form.values.folio_de_facturacion}
+                onChangeText={(value) => form.setFieldValue('folio_de_facturacion', value)}
+                error={form.errors.folio_de_facturacion}
+              />
+            </View>
+
+            <View style={styles.textInputContainer}>
+              <Input
+                placeholder="Referencia de impresión"
+                value={form.values.referencia_de_impresion}
+                onChangeText={(value) => form.setFieldValue('referencia_de_impresion', value)}
+                error={form.errors.referencia_de_impresion}
+              />
+            </View>
+
+            <Button
+              loading={loading}
+              text="Consultar recibo"
+              style={styles.button}
+              onPress={form.handleSubmit}
+            />
 
             <View style={{
               height: 1,
@@ -92,10 +151,6 @@ const InicioDeFacturacion = () => {
               marginVertical: 10,
             }}
             />
-
-            <View style={styles.imageContainer}>
-              <Image style={styles.image} source={IMAGEHELP} />
-            </View>
 
           </View>
         </View>
@@ -135,13 +190,6 @@ const styles = StyleSheet.create({
   textInputContainer: {
     marginVertical: 5,
     width: '100%',
-    height: 40,
-    justifyContent: 'center',
-    borderRadius: 5,
-    backgroundColor: 'white',
-    borderWidth: 1.5,
-    borderColor: '#F1F1F1',
-    fontSize: 2,
   },
   button: {
     backgroundColor: '#582E44',

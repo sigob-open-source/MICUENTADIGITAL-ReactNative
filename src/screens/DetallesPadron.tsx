@@ -177,7 +177,7 @@ const DetallesPadron = ({ route }) => {
         <>
           <Row>
             <DataLabel>Periodo Fiscal</DataLabel>
-            <DataLabel>2022</DataLabel>
+            <DataLabel>2023</DataLabel>
           </Row>
           <Row>
             <DataLabel>Descripción</DataLabel>

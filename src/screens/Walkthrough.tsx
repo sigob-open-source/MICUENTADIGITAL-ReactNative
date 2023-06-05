@@ -15,7 +15,7 @@ import Swiper from 'react-native-swiper';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import ImagePage1 from '../../assets/imagenes/Private-data.png';
-import ImagePage2 from '../../assets/imagenes/Receipt-pana.png';
+import ImagePage2 from '../../assets/imagenes/MULTA.png';
 import ImagePage3 from '../../assets/imagenes/User-flow-pana.png';
 import { useAppSelector } from '../store-v2/hooks';
 import { RootStackParamList } from '../types/navigation';

@@ -32,7 +32,6 @@ const Pagos = (props) => {
     try {
       const response = await http.get('catalogos/padrones/');
       const excludedDescriptions = [
-        'Predio',
         'Alcohol',
         'Notario',
         'Contribuyente',
@@ -43,11 +42,12 @@ const Pagos = (props) => {
         'Contrato de policia',
         'Expediente de licencia de funcionamiento',
       ];
+      console.log(response.data);
       const padrones = response.data.filter(
         (padron) => padron
           && typeof padron === 'object'
           && !excludedDescriptions.includes(padron.descripcion)
-          && (padron.descripcion === 'Ciudadano' || padron.descripcion === 'Empresa'),
+          && (padron.descripcion === 'Ciudadano' || padron.descripcion === 'Empresa' || padron.descripcion === 'Infracciones' || padron.descripcion === 'Predio'),
       );
       setPadrones(padrones);
     } catch (error) {
@@ -58,6 +58,7 @@ const Pagos = (props) => {
   const checkIcon = (elementName) => {
     if (elementName === 'Ciudadano') return 'user';
     if (elementName === 'Empresa') return 'briefcase';
+    if (elementName === 'Infracciones') return 'car-alt';
     if (elementName === 'Predio') return 'building';
     if (elementName === 'Vehicular') return 'car-alt';
     if (elementName === 'Todo') return 'align-justify';

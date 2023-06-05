@@ -85,6 +85,66 @@ interface IBase64File {
   data: string;
 }
 
+interface GetReciboExternoResponse {
+  id: number;
+  importe_total: number;
+  redondeo: number;
+  observaciones?: string;
+  folio: string;
+  folio_de_facturacion: string;
+  xml_archivo?: unknown;
+  pdf_de_rfc?: unknown;
+  fecha_de_cancelacion_o_devolucion?: string;
+  observacion_de_la_cancelacion?: string;
+  es_copia: boolean;
+  content_type_padron: number;
+  object_id_padron: number;
+  usuario_que_cancelo?: unknown;
+  recibo_cancelado?: unknown;
+  concepto_de_acreditacion?: unknown;
+  corte: ReciboExternoCorte;
+  canal_de_pago: ReciboExternoCanalDePago;
+  moneda: number;
+  cuenta_unica: number;
+  referencia_de_pago?: unknown;
+  abonos: ReciboExternoAbono[];
+  metodos_de_pago: number[];
+  fecha_de_creacion: string;
+  estados_globales: number;
+}
+
+interface ReciboExternoAbono {
+  id: number;
+  cargo: Cargo;
+  estados_globales: number;
+}
+
+interface Cargo {
+  id: number;
+  total_real: number;
+}
+
+interface ReciboExternoCanalDePago {
+  id: number;
+  clave: string;
+  catalogo_de_canal_de_pago: number;
+  descripcion: string;
+  tipo_de_pago?: unknown;
+  estados_globales: number;
+}
+
+interface ReciboExternoCorte {
+  id: number;
+  apertura: string;
+  cierre?: unknown;
+  el_corte_requiere_retiro_de_caja: boolean;
+  usuario_cajero: number;
+  terminal_bancaria?: unknown;
+  unidad_de_recaudacion: number;
+  terminal_de_netpay?: unknown;
+  estados_globales: number;
+}
+
 export type {
   IBase64File,
   ITransactionDto,
@@ -93,4 +153,5 @@ export type {
   IAddress,
   IBilling,
   INetPayResponse,
+  GetReciboExternoResponse,
 };

@@ -14,7 +14,7 @@ import { useNavigation } from '@react-navigation/native';
 
 import IMAGEheader from '../../assets/imagenes/reciboimg.png';
 
-const InformacionDelRecibo = () => {
+const InformacionDelRecibo = ({ route: { params: { response } } }) => {
   const navigation = useNavigation();
 
   return (
@@ -35,12 +35,12 @@ const InformacionDelRecibo = () => {
         />
         <View style={styles.infoContainer}>
           <View style={styles.subContainer}>
-            <Text style={styles.subtitle}>Folio del Recibo:</Text>
-            <Text style={styles.subsubtitle}>G2-0000007-2022</Text>
+            <Text style={styles.subtitle}>Folio del Ticket:</Text>
+            <Text style={styles.subsubtitle}>{response.folio}</Text>
           </View>
           <View style={styles.subContainer}>
             <Text style={styles.subtitle}>Folio de Facturacion:</Text>
-            <Text style={styles.subsubtitle}>FA-0000059-2022</Text>
+            <Text style={styles.subsubtitle}>{response.folio_de_facturacion}</Text>
           </View>
         </View>
 
@@ -55,11 +55,14 @@ const InformacionDelRecibo = () => {
         <View style={styles.infoContainer}>
           <View style={styles.subContainer}>
             <Text style={styles.subtitle}>Fecha:</Text>
-            <Text style={styles.subsubtitle}>20-09-2022</Text>
+            <Text style={styles.subsubtitle}>{response.fecha_de_creacion}</Text>
           </View>
           <View style={styles.subContainer}>
             <Text style={styles.subtitle}>Importe Total:</Text>
-            <Text style={styles.subsubtitle}>$192.00</Text>
+            <Text style={styles.subsubtitle}>
+              $
+              {response?.importe_total}
+            </Text>
           </View>
         </View>
 
@@ -70,7 +73,7 @@ const InformacionDelRecibo = () => {
           marginVertical: 3,
         }}
         />
-        <TouchableOpacity onPress={() => navigation.navigate('informacionFiscal')}>
+        <TouchableOpacity onPress={() => navigation.navigate('informacionFiscal', { response })}>
           <View style={styles.cardButton}>
             <Text style={styles.textButton}>Ingresar Informacion Fiscal</Text>
           </View>

@@ -65,17 +65,18 @@ const getDependencias = async () => {
   }
 };
 
-const getTramites = async (page) => {
+const getTramites = async (_params = {}) => {
   try {
-    const response = await http.get(`tramites/plantillas-tramites-atencion-ciudadana/?page=${page}`);
-    return response?.data;
-  } catch (error) {
-    console.log(page, error.message);
-
-    return {
-      results: [],
+    const params = {
+      ..._params,
+      estado_de_ficha: 3,
     };
+    const res = await http.get('/tramites/plantillas-de-tramites-indexada/', { params });
+    return res.data;
+  } catch (error) {
+    console.log(error);
   }
+  return { results: [], count: 0 };
 };
 
 const getFuncionarios = async () => {

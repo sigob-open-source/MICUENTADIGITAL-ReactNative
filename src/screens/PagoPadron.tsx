@@ -14,10 +14,12 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
+import ReactNativeNetPay from 'react-native-netpay';
 import fonts from '../utils/fonts';
 import colors from '../utils/colors';
 import round from '../utils/round';
-import { tokenizeAmount } from '../services/netpay';
+import { generarTicket, generateRecibo } from '../services/recaudacion/recibo';
+import { tokenizeAmount, createCharge } from '../services/netpay';
 
 import Button from '../components/Button';
 
@@ -32,7 +34,7 @@ import {
   getEmpresa,
   getCiudadano,
   getAdeudoPadron,
-  postGenererReferenciasNetpay,
+  getInfracciones,
 } from '../services/padrones';
 
 import { getReferencia } from '../services/recaudacion';
@@ -96,6 +98,11 @@ const PagoPadron = ({ route }) => {
       numeroDePadron = 3;
       (response !== null) ? setNameSearch(response?.descripcion) : null;
       // setNameSearch(response?.cuenta_unica_de_predial);
+    } else if (padron?.descripcion === 'Infracciones') {
+      response = await getInfracciones({ q: searchText });
+      numeroDePadron = 19;
+      (response !== null) ? setNameSearch(response?.descripcion) : null;
+      // setNameSearch(response?.cuenta_unica_de_predial);
     } else if (padron?.descripcion === 'Vehicular') {
       response = await getVehiculo(searchText);
       numeroDePadron = 4;
@@ -119,8 +126,12 @@ const PagoPadron = ({ route }) => {
   };
 
   // Funcion llamada al dar al boton realizar pago
+  ReactNativeNetPay.init('pk_netpay_RZWqFZTckZHhIaTBzogznLReu', { testMode: true });
+
   const dopayment = async () => {
     setLoading(true);
+
+    const cardToken = await ReactNativeNetPay.openCheckout(false);
 
     const descripcion = (resultCargos.length === 1
       && resultCargos[0].descripcion.length <= 250
@@ -153,16 +164,54 @@ const PagoPadron = ({ route }) => {
     );
 
     const folioNetpay = referenciaNetpay?.folio_netpay;
+    const responsecard = await createCharge(sumAll, cardToken, folioNetpay);
 
-    if (referenciaNetpay) {
-      navigation.push('netpaypago', {
-        merchantReferenceCode: folioNetpay,
-        cargoIds,
-        padronId: padronSearched.id,
-        tipoDePadronId: padron.id,
-        total: sumAll,
+    const { success, result } = await generateRecibo({
+      es_netpay_custom: true,
+      canal_de_pago: 3,
+      folio: folioNetpay,
+      response: responsecard,
+    }, { entidad: 1 });
+
+    if (success) {
+      const { success: successTicket, result: resultTicket } = await generarTicket({
+        entidad_id: 1,
+        recibos_id: [result.id],
+        tramite_en_proceso: false,
+      }, { entidad: 1 });
+
+      let base64 = result.data;
+
+      if (successTicket) {
+        base64 = resultTicket.data;
+      }
+
+      notify({
+        type: 'success',
+        title: '¡Éxito!',
+        message: 'Pago exitoso',
       });
-      setLoading(false);
+
+      navigation.reset({
+        index: 1,
+        routes: [
+          {
+            name: 'menuInicio',
+          },
+          {
+            name: 'pdfViewer',
+            params: {
+              reciboB64: `data:application/pdf;base64,${base64}`,
+            },
+          },
+        ],
+      });
+    } else {
+      notify({
+        type: 'error',
+        title: 'Error',
+        message: 'No logramos guardar su pago, favor de reportar en ventanilla',
+      });
     }
   };
 
@@ -370,11 +419,19 @@ const PagoPadron = ({ route }) => {
           {padron?.descripcion === 'Predio' ? 'Buscar por Clave catastral:\nEjemplo: xx-xxx-xxx-xxx-xxxx' : ''}
           {padron?.descripcion === 'Ciudadano' ? 'Buscar por: Clave, RFC o CURP' : ''}
           {padron?.descripcion === 'Contribuyente' ? 'Buscar por: Clave, RFC o CURP' : ''}
+          {padron?.descripcion === 'Infracciones' ? 'Número o Folio de Infracción' : ''}
         </Text>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
           <View style={styles.textInputContainer}>
-            <TextInput color="black" placeholderTextColor="#C4C4C4" onChangeText={(text) => setSearchText(text)} style={styles.textInputStyle} placeholder="Buscar..." />
+            <TextInput
+              autoCapitalize="characters"
+              color="black"
+              placeholderTextColor="#C4C4C4"
+              onChangeText={(text) => setSearchText(text)}
+              style={styles.textInputStyle}
+              placeholder="Buscar..."
+            />
           </View>
 
           <TouchableWithoutFeedback onPress={() => { setTotalAmount(0); handleSearch(); }}>

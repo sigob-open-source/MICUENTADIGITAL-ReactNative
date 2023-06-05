@@ -84,9 +84,9 @@ const InicioRegistroCiudadanoScreen = ({
         formikHelpers.setFieldError('phoneNumber', errors.fields.numero_de_celular);
       } else {
         notify({
-          message: 'Ha ocurrido un error',
-          title: 'Error',
-          type: 'error',
+          message: 'No se encontró el número, favor de registrarse',
+          title: 'Número no registrado',
+          type: 'info',
         });
       }
     },

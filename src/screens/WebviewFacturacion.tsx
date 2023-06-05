@@ -7,10 +7,10 @@ import WebViewPage from '../components/WebViewPage';
 // Constants
 const URI = 'https://www.juarez.gob.mx/facturacion/';
 
-const WebViewFacturacionScreen = () => (
+const WebViewFacturacionScreen = ({ route: { params: { reciboURL } } }) => (
   <WebViewPage
     title="Facturación"
-    uri={URI}
+    uri={reciboURL}
   />
 );
 

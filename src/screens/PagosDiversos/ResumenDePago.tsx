@@ -6,10 +6,13 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 // Internal dependencies
 import moment from 'moment';
+import ReactNativeNetPay from 'react-native-netpay';
 import Button from '../../components/Button';
 import ConceptosDePago, {
   ConceptoDePago,
 } from '../../components/ConceptosDePago';
+import { generarTicket, generateRecibo } from '../../services/recaudacion/recibo';
+
 import Header from '../../components/HeaderV2';
 import InformacionDePadron from '../../components/InformacionDePadron';
 import { RootStackParamList } from '../../types/navigation';
@@ -19,6 +22,8 @@ import { generarReferenciaDePagoNetpayPublic } from '../../services/recaudacion/
 import useTotal from '../../hooks/useTotal';
 import getExpiryDate from '../../utils/get-expiry-date';
 import PDFViewer from '../../components/PDFViewer';
+import { useNotification } from '../../components/DropDownAlertProvider';
+import { createCharge } from '../../services/netpay';
 
 // Types & Interfaces
 type NavigationProps = NativeStackScreenProps<
@@ -51,8 +56,12 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
   const tipoDePadron = pagosDiversosRepo.tipoDePadron!;
   const padron = pagosDiversosRepo.padron!;
   const { cargos } = pagosDiversosRepo;
+  const notify = useNotification();
 
   const conceptosDePago = useMemo(() => {
+    // Funcion llamada al dar al boton realizar pago
+    ReactNativeNetPay.init('pk_netpay_RZWqFZTckZHhIaTBzogznLReu', { testMode: true });
+
     const output: ConceptoDePago[] = [];
 
     for (let i = 0; i < cargos.length; i += 1) {
@@ -122,6 +131,8 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
     }
 
     if (cta === 'netpay') {
+      const cardToken = await ReactNativeNetPay.openCheckout(false);
+
       const response = await generarReferenciaDePagoNetpayPublic(
         {
           amount: roundedTotal,
@@ -144,13 +155,55 @@ const ResumenDePagoScreen = ({ navigation }: ResumenDePagoScreenProps) => {
       );
 
       if (response) {
-        navigation.push('netpaypago', {
-          merchantReferenceCode: response.folio_netpay,
-          cargoIds,
-          padronId: padron.id,
-          tipoDePadronId: tipoDePadron.id,
-          total: roundedTotal,
-        });
+        const responsecard = await createCharge(roundedTotal, cardToken, response.folio_netpay);
+
+        const { success, result } = await generateRecibo({
+          es_netpay_custom: true,
+          canal_de_pago: 3,
+          folio: response.folio_netpay,
+          response: responsecard,
+        }, { entidad: 1 });
+
+        if (success) {
+          const { success: successTicket, result: resultTicket } = await generarTicket({
+            entidad_id: 1,
+            recibos_id: [result.id],
+            tramite_en_proceso: false,
+          }, { entidad: 1 });
+
+          let base64 = result.data;
+
+          if (successTicket) {
+            base64 = resultTicket.data;
+          }
+
+          notify({
+            type: 'success',
+            title: '¡Éxito!',
+            message: 'Pago exitoso',
+          });
+
+          navigation.reset({
+            index: 1,
+            routes: [
+              {
+                name: 'menuInicio',
+              },
+              {
+                name: 'pdfViewer',
+                params: {
+                  reciboB64: `data:application/pdf;base64,${base64}`,
+                },
+              },
+            ],
+          });
+        } else {
+          notify({
+            type: 'error',
+            title: 'Error',
+            message: 'No logramos guardar su pago, favor de reportar en ventanilla',
+          });
+        }
       }
     }
 

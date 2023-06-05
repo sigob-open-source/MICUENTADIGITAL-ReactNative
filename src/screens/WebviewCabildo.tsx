@@ -5,11 +5,11 @@ import React from 'react';
 import WebViewPage from '../components/WebViewPage';
 
 // Constants
-const URI = 'https://www.juarez.gob.mx/cabildo/';
+const URI = 'https://juarez.gob.mx/noticias/presidente/';
 
 const WebViewCabildoScreen = () => (
   <WebViewPage
-    title="Cabildo"
+    title="Últimas Noticias"
     uri={URI}
   />
 );

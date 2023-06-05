@@ -144,6 +144,26 @@ const getPredio = async (params) => {
   return null;
 };
 
+const getInfracciones = async (params) => {
+  try {
+    const response = await API.get('recaudacion/infracciones-caja-public/', { params });
+    return validateResut(response.data, 3);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+const getConsultaPredio = async (params) => {
+  try {
+    const response = await API.get('catastro/predio-caja', { params });
+    return validateResut(response.data, 3);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
 const getVehiculo = async (params) => {
   try {
     const response = await API.get('cuentaunicasir/vehiculos-caja-atencion-ciudadana', { params });
@@ -266,6 +286,9 @@ const getMotocicleta = async (params) => {
 
 const getAdeudoPadron = async (padron, numeroPadron) => {
   let result;
+  console.log('====================================');
+  console.log('datos caja public', padron?.id, numeroPadron);
+  console.log('====================================');
   if (padron !== undefined && padron !== null) {
     await API
       .post('recaudacion/consulta-caja-public/entidad/', {
@@ -286,6 +309,9 @@ const getAdeudoPadron = async (padron, numeroPadron) => {
   } else {
     result = null;
   }
+  console.log('====================================');
+  console.log('response de caja public', result.data);
+  console.log('====================================');
   return result;
 };
 
@@ -314,9 +340,9 @@ const getRecibos = async (importe, cargos, padron_id, tipo_de_padron) => {
   return result;
 };
 
-const getRecibo = async (folio) => {
+const getRecibo = async (params) => {
   try {
-    const response = await API.get('/recaudacion/recibos-externo/', { params: { folio } });
+    const response = await API.get('/recaudacion/recibos-externo/', { params: { params } });
     return response.data.map((e) => ({
       ...e,
       fecha_de_creacion: toMoment(e.fecha_de_creacion).format(DATE_FORMAT),
@@ -340,6 +366,45 @@ export const generarReciboPorNetPay = async (values) => {
   }
 };
 
+const getUsosDeCFDI = async () => {
+  try {
+    const response = await API.get('catalogos/uso-del-cfdi-public');
+    return response.data.map((e) => ({
+      label: `${e.uso_del_cfdi} - ${e.descripcion}`,
+      value: e.id,
+    }));
+  } catch (error) {
+    console.log(error);
+    return [];
+  }
+};
+
+const getRegimenesFiscales = async () => {
+  try {
+    const response = await API.get('/empresas/regimen-fiscal/');
+    return response.data.map((e) => ({ value: e.id, label: e.descripcion }));
+  } catch (err) {
+    console.log(err);
+    return [];
+  }
+};
+
+const postFacturar = async (values) => {
+  try {
+    const response = await API.post('recaudacion/facturacion-externa/', values);
+    return response.data;
+  } catch (_error) {
+    console.log(_error);
+    let error = _error.response?.data.detail || _error.response?.data || _error.message;
+    if (typeof error === 'object') {
+      const keys = Object.keys(error);
+      error = keys.length ? error[keys[0]] : 'Error desconocido';
+    }
+    console.log(error.response.data);
+    return { error };
+  }
+};
+
 export const GET_PADRONES_MAP = Object.freeze({
   1: getCiudadano,
   2: getEmpresa,
@@ -356,6 +421,7 @@ export const GET_PADRONES_MAP = Object.freeze({
   14: getAgencia,
   15: getContribuyente,
   16: getMotocicleta,
+  17: getInfracciones,
 });
 
 export {
@@ -368,4 +434,9 @@ export {
   getRecibos,
   getRecibo,
   postSolicitarCodigoDeAcceso,
+  getInfracciones,
+  getUsosDeCFDI,
+  getRegimenesFiscales,
+  postFacturar,
+  getConsultaPredio,
 };
