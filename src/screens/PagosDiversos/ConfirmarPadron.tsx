@@ -67,6 +67,7 @@ const FORM_SCHEMA = yup.object({
  * del padrón que buscó para después proceder a añadir
  * cargos.
  */
+
 const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
   const [showCodePicker, setShowCodePicker] = useState<boolean>(false);
   const [loading, setLoading] = useState<boolean>(false);
@@ -74,6 +75,8 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
   const pagosDiversosRepo = useAppSelector((state) => state.pagosDiversos);
   const tipoDePadron = pagosDiversosRepo.tipoDePadron!;
   const padron = pagosDiversosRepo.padron!;
+
+  const datosPadron = padron as CiudadanoCajaProps;
 
   const updateCiudadanoHandler = async (
     formikHelpers: FormikHelpers<FormValues>,
@@ -308,6 +311,7 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
                 placeholderTextColor="#cccccc"
                 error={formik.errors.email}
               />
+
               <TouchableWithoutFeedback
                 onPress={() => setShowCodePicker(true)}
               >

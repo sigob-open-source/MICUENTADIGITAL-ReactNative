@@ -120,12 +120,13 @@ const InformacionDePadron = ({ tipoDePadron, padron }: InformacionDePadronProps)
     return fields;
   }, [tipoDePadron, padron]);
 
+  console.log(padron);
+
   return (
     <Card>
       <Text style={styles.cardTitle}>
         Información de padrón
       </Text>
-
       <Separator topGap={8} />
 
       {

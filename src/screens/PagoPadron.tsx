@@ -42,6 +42,7 @@ import { useNotification } from '../components/DropDownAlertProvider';
 import Card from '../components/CardPagos';
 import { generarReferenciaDePagoNetpayPublic } from '../services/recaudacion/pago';
 import getExpiryDate from '../utils/get-expiry-date';
+import Cargo from './PagosDiversos/BusquedaDeCargos/Cargo';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
@@ -261,6 +262,7 @@ const PagoPadron = ({ route }) => {
     }
     setLoading(false);
   };
+  console.log(padronSearched);
 
   // Calcula los totales y descuentas
   const reduceArrCargos = (cargo) => {
@@ -410,6 +412,21 @@ const PagoPadron = ({ route }) => {
     };
   };
 
+  const itsData = () => {
+    let informationData = '';
+
+    if (nameSearch === undefined) {
+      if (padron?.descripcion === 'Infracciones') {
+        informationData = padronSearched?.folio;
+      } else {
+        informationData = ' No se encontraron datos';
+      }
+    } else {
+      informationData = nameSearch;
+    }
+    return informationData;
+  };
+
   return (
     <View style={styles.container}>
       <Header item={padron?.descripcion === 'Predio' ? 'Pago de Predial' : padron?.descripcion} imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
@@ -451,7 +468,7 @@ const PagoPadron = ({ route }) => {
           (newData === true && resultCargos?.[0])
             ? (
               <Adeudo
-                nombre={nameSearch}
+                nombre={itsData()}
                 padron={route.params?.padron?.descripcion}
                 cargo={totalAmount}
                 children={resultCargos?.map((cargo, index) => (
@@ -475,7 +492,7 @@ const PagoPadron = ({ route }) => {
         {newData === true && resultCargos?.[0] === undefined ? (
           <Adeudo
             nombre={
-              nameSearch
+              itsData()
             }
             padron={padron?.descripcion}
             cargo={null}

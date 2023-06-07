@@ -97,7 +97,6 @@ const Tramites = () => {
           text="Buscar"
           iconName="search"
           onPress={onSearch}
-          disabled={loading}
         />
       </Card>
 
