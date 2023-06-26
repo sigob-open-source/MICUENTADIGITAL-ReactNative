@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   StyleSheet,
   View,
@@ -16,10 +16,9 @@ import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
 import ReactNativeNetPay from 'react-native-netpay';
 import fonts from '../utils/fonts';
-import colors from '../utils/colors';
 import round from '../utils/round';
 import { generarTicket, generateRecibo } from '../services/recaudacion/recibo';
-import { tokenizeAmount, createCharge } from '../services/netpay';
+import { createCharge } from '../services/netpay';
 
 import Button from '../components/Button';
 
@@ -35,14 +34,17 @@ import {
   getCiudadano,
   getAdeudoPadron,
   getInfracciones,
+  getExpedienteDeComercio,
+  getExpedienteDeMercado,
+  getPoliciaEspecial,
+  getExpedienteDeLicencia,
+  getExpedienteDeAnuncio,
 } from '../services/padrones';
 
-import { getReferencia } from '../services/recaudacion';
 import { useNotification } from '../components/DropDownAlertProvider';
-import Card from '../components/CardPagos';
 import { generarReferenciaDePagoNetpayPublic } from '../services/recaudacion/pago';
 import getExpiryDate from '../utils/get-expiry-date';
-import Cargo from './PagosDiversos/BusquedaDeCargos/Cargo';
+import sortCargos from '../utils/sorterCargos';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
@@ -93,22 +95,38 @@ const PagoPadron = ({ route }) => {
       response = await getEmpresa({ q: searchText });
       numeroDePadron = 2;
       (response !== null) ? setNameSearch(response?.razon_social) : null;
-      // setNameSearch(response.nombre_comercial);
     } else if (padron?.descripcion === 'Predio') {
       response = await getPredio({ q: searchText });
       numeroDePadron = 3;
       (response !== null) ? setNameSearch(response?.descripcion) : null;
-      // setNameSearch(response?.cuenta_unica_de_predial);
     } else if (padron?.descripcion === 'Infracciones') {
       response = await getInfracciones({ q: searchText });
       numeroDePadron = 19;
       (response !== null) ? setNameSearch(response?.descripcion) : null;
-      // setNameSearch(response?.cuenta_unica_de_predial);
+    } else if (padron?.descripcion === 'Expediente De Anuncio') {
+      response = await getExpedienteDeAnuncio({ q: searchText });
+      numeroDePadron = 24;
+      (response !== null) ? setNameSearch(response?.descripcion) : null;
+    } else if (padron?.descripcion === 'Licencia De Funcionamiento') {
+      response = await getExpedienteDeLicencia({ q: searchText });
+      numeroDePadron = 22;
+      (response !== null) ? setNameSearch(response?.descripcion) : null;
+    } else if (padron?.descripcion === 'Mercado') {
+      response = await getExpedienteDeMercado({ q: searchText });
+      numeroDePadron = 21;
+      (response !== null) ? setNameSearch(response?.descripcion) : null;
+    } else if (padron?.descripcion === 'Policia especial') {
+      response = await getPoliciaEspecial({ q: searchText });
+      numeroDePadron = 18;
+      (response !== null) ? setNameSearch(response?.descripcion) : null;
+    } else if (padron?.descripcion === 'Comercio Informal') {
+      response = await getExpedienteDeComercio({ q: searchText });
+      numeroDePadron = 20;
+      (response !== null) ? setNameSearch(response?.descripcion) : null;
     } else if (padron?.descripcion === 'Vehicular') {
       response = await getVehiculo(searchText);
       numeroDePadron = 4;
       (response !== null) ? setNameSearch(response?.numero_de_placa) : null;
-      // setNameSearch(response?.numero_de_placa);
     }
     if (response === null || response === undefined) {
       setIsLoading(false);
@@ -120,18 +138,18 @@ const PagoPadron = ({ route }) => {
       setNewData(true);
       const [rounded] = round(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
       setTotalAmount(rounded);
-      // console.log(totalAmount);
+      console.log('total amount', rounded);
     }
     setModalKey(modalKey + 1);
     setIsLoading(false);
   };
 
-  // Funcion llamada al dar al boton realizar pago
+  // Funcion llamada al dar al boton realizar pago prod
+  // ReactNativeNetPay.init('pk_netpay_DBmockYZopdDnTdhYhGJCDXfe', { testMode: false });
   ReactNativeNetPay.init('pk_netpay_RZWqFZTckZHhIaTBzogznLReu', { testMode: true });
 
   const dopayment = async () => {
     setLoading(true);
-
     const cardToken = await ReactNativeNetPay.openCheckout(false);
 
     const descripcion = (resultCargos.length === 1
@@ -139,13 +157,11 @@ const PagoPadron = ({ route }) => {
       ? resultCargos[0].descripcion
       : padron.descripcion) as string;
 
-    const [sumAll] = round(resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0));
-
     const cargoIds = resultCargos.map((c) => c.id);
 
     const referenciaNetpay = await generarReferenciaDePagoNetpayPublic(
       {
-        amount: sumAll!,
+        amount: totalAmount,
         currency: 'MXN',
         description: descripcion,
         expiryDate: getExpiryDate(padron.id),
@@ -155,7 +171,7 @@ const PagoPadron = ({ route }) => {
           cargos: cargoIds,
           padron_id: padronSearched.id,
           tipo_de_padron: padron.id,
-          importe: sumAll,
+          importe: totalAmount,
           fecha: moment().format('DD-MM-YYYY'),
           merchantReferenceCode: null,
           ciudadano: null,
@@ -165,7 +181,16 @@ const PagoPadron = ({ route }) => {
     );
 
     const folioNetpay = referenciaNetpay?.folio_netpay;
-    const responsecard = await createCharge(sumAll, cardToken, folioNetpay);
+
+    const responsecard = await createCharge(
+      totalAmount,
+      cardToken,
+      folioNetpay,
+      padronSearched.nombre,
+      padronSearched.apellido_paterno,
+      padronSearched.email,
+      padronSearched.numero_de_celular,
+    );
 
     const { success, result } = await generateRecibo({
       es_netpay_custom: true,
@@ -193,6 +218,8 @@ const PagoPadron = ({ route }) => {
         message: 'Pago exitoso',
       });
 
+      setLoading(false);
+
       navigation.reset({
         index: 1,
         routes: [
@@ -208,12 +235,15 @@ const PagoPadron = ({ route }) => {
         ],
       });
     } else {
+      setLoading(false);
+
       notify({
         type: 'error',
         title: 'Error',
         message: 'No logramos guardar su pago, favor de reportar en ventanilla',
       });
     }
+    setLoading(false);
   };
 
   const calcular = async () => {
@@ -262,7 +292,6 @@ const PagoPadron = ({ route }) => {
     }
     setLoading(false);
   };
-  console.log(padronSearched);
 
   // Calcula los totales y descuentas
   const reduceArrCargos = (cargo) => {
@@ -427,6 +456,13 @@ const PagoPadron = ({ route }) => {
     return informationData;
   };
 
+  const sortedCargos = useMemo(() => {
+    if (!Array.isArray(resultCargos)) {
+      return [];
+    }
+    return sortCargos(resultCargos);
+  }, [resultCargos]);
+
   return (
     <View style={styles.container}>
       <Header item={padron?.descripcion === 'Predio' ? 'Pago de Predial' : padron?.descripcion} imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
@@ -437,6 +473,11 @@ const PagoPadron = ({ route }) => {
           {padron?.descripcion === 'Ciudadano' ? 'Buscar por: Clave, RFC o CURP' : ''}
           {padron?.descripcion === 'Contribuyente' ? 'Buscar por: Clave, RFC o CURP' : ''}
           {padron?.descripcion === 'Infracciones' ? 'Número o Folio de Infracción' : ''}
+          {padron?.descripcion === 'Expediente De Anuncio' ? 'Clave, RFC o CURP' : ''}
+          {padron?.descripcion === 'Mercado' ? 'Clave, RFC o CURP' : ''}
+          {padron?.descripcion === 'Licencia De Funcionamiento' ? 'Clave, RFC o CURP' : ''}
+          {padron?.descripcion === 'Comercio Informal' ? 'Clave, RFC o CURP' : ''}
+          {padron?.descripcion === 'Policia especial' ? 'Clave, RFC o CURP' : ''}
         </Text>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
@@ -471,7 +512,7 @@ const PagoPadron = ({ route }) => {
                 nombre={itsData()}
                 padron={route.params?.padron?.descripcion}
                 cargo={totalAmount}
-                children={resultCargos?.map((cargo, index) => (
+                children={sortedCargos?.map((cargo, index) => (
                   <CardItem
                     key={index}
                     info={

@@ -12,7 +12,7 @@ import Icon from 'react-native-vector-icons/FontAwesome5';
 import { FormikHelpers, useFormik } from 'formik';
 import * as yup from 'yup';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
+import { useDispatch } from 'react-redux';
 // Internal dependencies
 import Button from '../../components/Button';
 import Card from '../../components/Card';
@@ -76,6 +76,8 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
   const tipoDePadron = pagosDiversosRepo.tipoDePadron!;
   const padron = pagosDiversosRepo.padron!;
 
+  const dispatch = useDispatch();
+
   const datosPadron = padron as CiudadanoCajaProps;
 
   const updateCiudadanoHandler = async (
@@ -103,7 +105,7 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
       copy.email = email;
       copy.lada = ladaId;
       copy.numero_de_celular = telefono;
-      setPadron(copy);
+      dispatch(setPadron(copy));
 
       return true;
     }
@@ -143,7 +145,7 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
       copy.ciudadano.lada = ladaId;
       copy.ciudadano.numero_de_celular = telefono;
 
-      setPadron(copy);
+      dispatch(setPadron(copy));
 
       return true;
     }
@@ -182,7 +184,7 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
       copy.email = email;
       copy.lada = ladaId;
       copy.numero_de_celular = telefono;
-      setPadron(copy);
+      dispatch(setPadron(copy));
 
       return true;
     }
@@ -196,11 +198,72 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
     return false;
   };
 
+  const defaultEmail = useMemo(() => {
+    if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.CIUDADANO) {
+      const typedPadron = padron as CiudadanoCajaProps;
+      return typedPadron.email;
+    }
+
+    if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.CONTRIBUYENTE) {
+      const typedPadron = padron as ContribuyenteCajaProps;
+      return typedPadron.correo_electronico;
+    }
+
+    if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.EMPRESA) {
+      const typedPadron = padron as EmpresaCajaProps;
+      return typedPadron.ciudadano.email;
+    }
+
+    return null;
+  }, [tipoDePadron, padron]);
+
+  const defaultContact = useMemo(() => {
+    if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.CIUDADANO) {
+      const typedPadron = padron as CiudadanoCajaProps;
+      return [typedPadron.lada, typedPadron.numero_de_celular] as [number, number];
+    }
+
+    if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.CONTRIBUYENTE) {
+      const typedPadron = padron as ContribuyenteCajaProps;
+      return [typedPadron.lada_celular, typedPadron.telefono_celular] as [number, number];
+    }
+
+    if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.EMPRESA) {
+      const typedPadron = padron as EmpresaCajaProps;
+      return [
+        typedPadron.ciudadano.lada,
+        typedPadron.ciudadano.numero_de_celular,
+      ] as [number, number];
+    }
+    return [null, null];
+  }, [tipoDePadron, padron]);
+
+  const hasDefaultContact = Boolean(defaultContact[0]) && Boolean(defaultContact[1]);
+
+  const shouldRenderContactInfoForm = !defaultEmail || !hasDefaultContact;
+
+  const buttonText = shouldRenderContactInfoForm ? 'Guardar y Continuar' : 'Continuar';
+
+  const navigateToNextScreen = () => {
+    navigation.navigate('busquedaDeCargos');
+  };
+
+  const submit = () => {
+    if (shouldRenderContactInfoForm) {
+      void formik.submitForm();
+      return;
+    }
+
+    navigateToNextScreen();
+  };
+
+  const getLadaFromId = (id: number) => ladas.find((x) => x.id === id)?.lada;
+
   const formik = useFormik<FormValues>({
     initialValues: {
-      countryCode: '52',
-      email: '',
-      phoneNumber: '',
+      countryCode: getLadaFromId(defaultContact[0] || -1) || '52',
+      email: defaultEmail || '',
+      phoneNumber: String(defaultContact[1] || ''),
     },
     validationSchema: FORM_SCHEMA,
     validateOnChange: true,
@@ -230,46 +293,6 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
       }
     },
   });
-
-  const shouldRenderContactInfoForm = useMemo(() => {
-    if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.CIUDADANO) {
-      const typedPadron = padron as CiudadanoCajaProps;
-      return !typedPadron.email
-        || !typedPadron.numero_de_celular
-        || !typedPadron.lada;
-    }
-
-    if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.CONTRIBUYENTE) {
-      const typedPadron = padron as ContribuyenteCajaProps;
-      return !typedPadron.correo_electronico
-        || !typedPadron.lada_celular
-        || !typedPadron.telefono_celular;
-    }
-
-    if (tipoDePadron.id === PADRONES_PAGOS_DIVERSOS.EMPRESA) {
-      const typedPadron = padron as EmpresaCajaProps;
-      return !typedPadron.ciudadano.email
-        || !typedPadron.ciudadano.lada
-        || !typedPadron.ciudadano.numero_de_celular;
-    }
-
-    return false;
-  }, [tipoDePadron, padron]);
-
-  const buttonText = shouldRenderContactInfoForm ? 'Guardar y Continuar' : 'Continuar';
-
-  const navigateToNextScreen = () => {
-    navigation.navigate('busquedaDeCargos');
-  };
-
-  const submit = () => {
-    if (shouldRenderContactInfoForm) {
-      void formik.submitForm();
-      return;
-    }
-
-    navigateToNextScreen();
-  };
 
   return (
     <>
@@ -302,54 +325,61 @@ const ConfirmarPadronScreen = ({ navigation }: ConfirmarPadronScreenProps) => {
         {
           shouldRenderContactInfoForm && (
             <Card style={{ marginTop: 12 }}>
-              <Input
-                value={formik.values.email}
-                onChangeText={(value) => formik.setFieldValue('email', value)}
-                label="Correo electrónico"
-                keyboardType="email-address"
-                placeholder="Ingresa tu correo electrónico"
-                placeholderTextColor="#cccccc"
-                error={formik.errors.email}
-              />
 
-              <TouchableWithoutFeedback
-                onPress={() => setShowCodePicker(true)}
-              >
-                <View style={{ marginVertical: 8 }}>
-                  <Text style={styles.countryCodeLabel}>
-                    Lada:
-                  </Text>
-                  <View
-                    style={[
-                      styles.countryCodeContainer,
-                    ]}
+              {!defaultEmail && (
+                <Input
+                  value={formik.values.email}
+                  onChangeText={(value) => formik.setFieldValue('email', value)}
+                  label="Correo electrónico"
+                  keyboardType="email-address"
+                  placeholder="Ingresa tu correo electrónico"
+                  placeholderTextColor="#cccccc"
+                  error={formik.errors.email}
+                />
+              )}
+              { !hasDefaultContact && (
+                <>
+                  <TouchableWithoutFeedback
+                    onPress={() => setShowCodePicker(true)}
                   >
-                    <Text
-                      style={[
-                        styles.countryCode,
-                        { color: formik.values.countryCode ? '#010101' : '#cccccc' },
-                      ]}
-                      numberOfLines={1}
-                    >
-                      {
+                    <View style={{ marginVertical: 8 }}>
+                      <Text style={styles.countryCodeLabel}>
+                        Lada:
+                      </Text>
+                      <View
+                        style={[
+                          styles.countryCodeContainer,
+                        ]}
+                      >
+                        <Text
+                          style={[
+                            styles.countryCode,
+                            { color: formik.values.countryCode ? '#010101' : '#cccccc' },
+                          ]}
+                          numberOfLines={1}
+                        >
+                          {
                         formik.values.countryCode || 'Ingresa tu clave larga distancia automática'
                       }
-                    </Text>
+                        </Text>
 
-                    <Icon name="angle-down" size={25} color="#010101" />
-                  </View>
-                </View>
-              </TouchableWithoutFeedback>
+                        <Icon name="angle-down" size={25} color="#010101" />
+                      </View>
+                    </View>
+                  </TouchableWithoutFeedback>
 
-              <Input
-                value={formik.values.phoneNumber}
-                onChangeText={(value) => formik.setFieldValue('phoneNumber', value)}
-                label="Número de teléfono"
-                keyboardType="phone-pad"
-                placeholder="Ingresa tu número de teléfono"
-                placeholderTextColor="#cccccc"
-                error={formik.errors.phoneNumber}
-              />
+                  <Input
+                    value={formik.values.phoneNumber}
+                    onChangeText={(value) => formik.setFieldValue('phoneNumber', value)}
+                    label="Número de teléfono"
+                    keyboardType="phone-pad"
+                    placeholder="Ingresa tu número de teléfono"
+                    placeholderTextColor="#cccccc"
+                    error={formik.errors.phoneNumber}
+                  />
+                </>
+              )}
+
             </Card>
           )
         }

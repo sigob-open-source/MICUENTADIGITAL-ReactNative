@@ -95,7 +95,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 8,
-    backgroundColor: '#f0f0f0',
+    backgroundColor: '#FFFFFF',
   },
   containerFocused: {
     borderColor: '#007AFF',

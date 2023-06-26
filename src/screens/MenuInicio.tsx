@@ -51,7 +51,7 @@ const dataList: IItemMenu[] = [
   {
     isBlank: false,
     color: '#404040',
-    name: 'Trámites',
+    name: ' Consulta de Trámites',
     iconname: 'folder-open',
     enableEntypo: false,
     navegacion: 'tramites',
@@ -324,7 +324,7 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
                   <View style={styles.separator2} />
                   <TouchableOpacity onPress={() => navigation.navigate('seleccionarTipoDePadron')}>
                     <View style={styles.butonPagos}>
-                      <Text style={styles.pagoSubCategoryText}>Agregar cobro</Text>
+                      <Text style={styles.pagoSubCategoryText}>Pago de trámites directos</Text>
                     </View>
                   </TouchableOpacity>
                 </View>

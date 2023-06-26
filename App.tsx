@@ -45,6 +45,7 @@ import InformacionDeQueja from './src/screens/InformacionDeQueja';
 import ArchivosDeQuejas from './src/screens/ArchivosDeQuejas';
 import InfoServidorPublico from './src/screens/InfoServidorPublico';
 import OtrosPagos from './src/screens/OtrosPagos';
+import DescargaFactura from './src/screens/DescargaFactura';
 // Pagos Diversos Screens
 import BuscarPadronScreen from './src/screens/PagosDiversos/BuscarPadron';
 import ConfirmarPadronScreen from './src/screens/PagosDiversos/ConfirmarPadron';
@@ -56,6 +57,7 @@ import SeleccionarTipoDePadronScreen from './src/screens/PagosDiversos/Seleciona
 // Registro de ciudadanos Screens
 import RegistroCiudadano from './src/screens/RegistroCiudadano';
 import CodigoScreen from './src/screens/CodigoAcceso';
+import PaymentScreen from './src/screens/PaymentScreen';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -98,6 +100,8 @@ const AppContainer = () => (
       <Stack.Screen name="solicitudSelect" component={SolicitudSelector} />
       <Stack.Screen name="verSolicitudes" component={VerSolicitudes} />
       <Stack.Screen name="tramites" component={Tramites} />
+      <Stack.Screen name="descargaFactura" component={DescargaFactura} />
+      <Stack.Screen name="paymentScreen" component={PaymentScreen} />
       <Stack.Screen
         name="pdfViewer"
         options={{ animation: 'none' }}

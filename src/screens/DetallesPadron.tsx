@@ -13,6 +13,8 @@ const DetallesPadron = ({ route }) => {
 
   const navigation = useNavigation();
 
+  console.log(route);
+
   useEffect(() => {
     if (route.params.cargo !== undefined) {
       setCargo(reduceArrCargos());

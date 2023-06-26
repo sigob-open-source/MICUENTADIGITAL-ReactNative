@@ -12,88 +12,74 @@ import React, { useState, useEffect } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import * as yup from 'yup';
 import { useFormik } from 'formik';
+import ReactNativeNetPay from 'react-native-netpay';
 import Header from '../components/Header';
 import { useNotification } from '../components/DropDownAlertProvider';
 import { getRecibo } from '../services/padrones';
-import { getReciboExterno } from '../services/recaudacion/recibo';
+import { getReciboExterno, generarTicket, generateRecibo } from '../services/recaudacion/recibo';
 import Input from '../components/Input';
 import Button from '../components/Button';
 
+import { createCharge } from '../services/netpay';
+
 interface FormValues {
-  transaccion: string;
-  folio_de_recibo: string;
-  folio_de_facturacion: string;
-  referencia_de_impresion: string;
+  Email: string;
+  Nombre: string;
+  ApellidoMaterno: string;
+  ApellidoPaterno: string;
 }
 
 const SCHEMA = yup.object({
-  transaccion: yup.string().typeError('Campo no válido'),
-  folio_de_recibo: yup.string().typeError('Campo no válido'),
-  folio_de_facturacion: yup.string().typeError('Campo no válido'),
-  referencia_de_impresion: yup.string().typeError('Campo no válido').required('Campo requerido'),
+  Email: yup.string().typeError('Campo no válido').required('Campo requerido'),
+  Nombre: yup.string().typeError('Campo no válido').required('Campo requerido'),
+  ApellidoMaterno: yup.string().typeError('Campo no válido').required('Campo requerido'),
+  ApellidoPaterno: yup.string().typeError('Campo no válido').required('Campo requerido'),
 });
 
-const InicioDeFacturacion = () => {
-  const [searchText, setSearchText] = useState('');
+const PaymentScreen = () => {
   const [loading, setLoading] = useState<boolean>(false);
-  const [recibo, setRecibo] = useState(null);
 
   const notify = useNotification();
   const navigation = useNavigation();
 
+  ReactNativeNetPay.init('pk_netpay_RZWqFZTckZHhIaTBzogznLReu', { testMode: true });
+
   const form = useFormik<FormValues>({
     initialValues: {
-      transaccion: '',
-      folio_de_facturacion: '',
-      folio_de_recibo: '',
-      referencia_de_impresion: '',
+      Email: '',
+      Nombre: '',
+      ApellidoMaterno: '',
+      ApellidoPaterno: '',
     },
     validationSchema: SCHEMA,
     validateOnChange: true,
     onSubmit: async (values) => {
       console.log(values);
       setLoading(true);
-      const response = await getReciboExterno({
-        entidad: 1,
-        referencia_de_seguridad: values.referencia_de_impresion,
-        folio: values.folio_de_recibo,
-        folio_de_facturacion: values.folio_de_facturacion,
-        id: values.transaccion,
-      });
 
-      if (response) {
-        if (response?.pdf_de_rfc) {
-          notify({
-            message: 'Este Ticket ya fue facturado! Revise su correo',
-            title: 'Ticket ya facturado!',
-            type: 'info',
-          });
-          setLoading(false);
-          navigation.navigate('descargaFactura', { response });
-        } else {
-          setLoading(false);
-          navigation.navigate('informacionRecibo', { response });
-        }
-      } else {
-        setLoading(false);
-        notify({
-          message: 'NO se encontró el recibo.',
-          title: 'Alerta',
-          type: 'warn',
-        });
-      }
+      const cardToken = await ReactNativeNetPay.openCheckout(false);
+
+      const responsecard = await createCharge(
+        respone.total,
+        cardToken,
+        response.referenciaNetpay,
+        values.nombre,
+        values.apellido_paterno,
+        values.ApellidoMaterno,
+        values.email,
+      );
     },
   });
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-      <Header item="Buscar Ticket" />
+      <Header item="DATOS DE PAGO" />
 
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.containerModal}>
 
           <View style={styles.modaling}>
-            <Text style={styles.title}>Folio de recibo</Text>
+            <Text style={styles.title}>Datos de pago</Text>
             <View style={{
               height: 1,
               width: '100%',
@@ -104,43 +90,44 @@ const InicioDeFacturacion = () => {
 
             <View style={styles.textInputContainer}>
               <Input
-                label="Transacción"
-                value={form.values.transaccion}
-                onChangeText={(value) => form.setFieldValue('transaccion', value)}
-                error={form.errors.transaccion}
+                placeholder="Nombre(s)"
+                value={form.values.Nombre}
+                onChangeText={(value) => form.setFieldValue('nombre', value)}
+                error={form.errors.Nombre}
               />
             </View>
 
             <View style={styles.textInputContainer}>
               <Input
-                label="Certificado de ingresos"
-                value={form.values.folio_de_recibo}
-                onChangeText={(value) => form.setFieldValue('folio_de_recibo', value)}
-                error={form.errors.folio_de_recibo}
+                placeholder="Apellido Paterno"
+                value={form.values.ApellidoPaterno}
+                onChangeText={(value) => form.setFieldValue('apellidoPaterno', value)}
+                error={form.errors.ApellidoPaterno}
               />
             </View>
 
             <View style={styles.textInputContainer}>
               <Input
-                label="Folio de facturación"
-                value={form.values.folio_de_facturacion}
-                onChangeText={(value) => form.setFieldValue('folio_de_facturacion', value)}
-                error={form.errors.folio_de_facturacion}
+                placeholder="Apellido Materno"
+                value={form.values.ApellidoMaterno}
+                onChangeText={(value) => form.setFieldValue('apellidoMaterno', value)}
+                error={form.errors.ApellidoMaterno}
               />
             </View>
 
             <View style={styles.textInputContainer}>
               <Input
-                label="Referencia de impresión"
-                value={form.values.referencia_de_impresion}
-                onChangeText={(value) => form.setFieldValue('referencia_de_impresion', value)}
-                error={form.errors.referencia_de_impresion}
+                label="* Correo Electrónico"
+                placeholder="Correo Electrónico"
+                value={form.values.Email}
+                onChangeText={(value) => form.setFieldValue('email', value)}
+                error={form.errors.Email}
               />
             </View>
 
             <Button
               loading={loading}
-              text="Consultar recibo"
+              text="Datos de Tarjeta"
               style={styles.button}
               onPress={form.handleSubmit}
             />
@@ -172,6 +159,7 @@ const styles = StyleSheet.create({
   },
   modaling: {
     backgroundColor: 'white',
+    height: 400,
     width: '85%',
     borderRadius: 10,
     padding: 20,
@@ -219,4 +207,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default InicioDeFacturacion;
+export default PaymentScreen;

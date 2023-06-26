@@ -47,14 +47,13 @@ const Pagos = (props) => {
         (padron) => padron
           && typeof padron === 'object'
           && !excludedDescriptions.includes(padron.descripcion)
-          && (padron.descripcion === 'Ciudadano' || padron.descripcion === 'Empresa' || padron.descripcion === 'Infracciones' || padron.descripcion === 'Predio'),
+          && (padron.descripcion !== 'Todo' && padron.descripcion !== 'Multas'),
       );
       setPadrones(padrones);
     } catch (error) {
       console.error(error);
     }
   };
-
   const checkIcon = (elementName) => {
     if (elementName === 'Ciudadano') return 'user';
     if (elementName === 'Empresa') return 'briefcase';
@@ -74,6 +73,12 @@ const Pagos = (props) => {
     if (elementName === 'Contribuyente') return 'user';
     if (elementName === 'Motocicleta') return 'motorcycle';
     if (elementName === 'Remolque') return 'caravan';
+    if (elementName === 'Multas') return 'paste';
+    if (elementName === 'Mercado') return 'store';
+    if (elementName === 'Policia especial') return 'balance-scale-right';
+    if (elementName === 'Comercio Informal') return 'cash-register';
+    if (elementName === 'Expediente De Anuncio') return 'window-restore';
+    if (elementName === 'Licencia De Funcionamiento') return 'id-badge';
     return 'van';
   };
   const checkDisebla = (elementName) => {

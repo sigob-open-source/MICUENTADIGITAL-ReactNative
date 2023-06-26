@@ -44,6 +44,7 @@ const Tramites = () => {
     const response = await getTramites({
       entidad: 1,
       page: currentPage,
+      desc: true,
     });
     return response.results;
   };
@@ -51,7 +52,7 @@ const Tramites = () => {
   const loadNextPage = async () => {
     setLoading(true);
     const nextPage = currentPage + 1;
-    const query: Record<string, number | string> = { entidad: 1, page: nextPage };
+    const query: Record<string, number | string> = { entidad: 1, page: nextPage, desc: true };
     if (searchText.trim()) {
       query.nombre = searchText.trim();
     }
@@ -71,6 +72,7 @@ const Tramites = () => {
       entidad: 1,
       page: 1,
       nombre: searchText,
+      desc: true,
     });
 
     setTiposDeTramites(response.results);
@@ -99,7 +101,7 @@ const Tramites = () => {
           onPress={onSearch}
         />
       </Card>
-
+      {console.log(tiposDeTramites)}
       <FlatList
         contentContainerStyle={styles.content}
         data={tiposDeTramites}
@@ -111,8 +113,9 @@ const Tramites = () => {
                 <View style={styles.titleContainer}>
                   <Text style={styles.title}> TRÁMITE </Text>
 
-                  <View>
-                    <Icon name="eye" color="#F98888" size={15} />
+                  <View style={{ flexDirection: 'row' }}>
+                    <Text>{item.volumen_de_consultas}</Text>
+                    <Icon style={{ marginRight: 8, marginLeft: 8 }} name="eye" color="#F98888" size={15} />
                   </View>
                 </View>
 

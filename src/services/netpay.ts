@@ -8,9 +8,18 @@ interface ITokenizeAmountResponse {
   amount: number;
 }
 
-const createCharge = async (total: number, token: string, folioNet: string) => {
-  console.log('este es el metodo de pago', total, token, folioNet);
+const createCharge = async (
+  total: number,
+  token: string,
+  folioNet: string,
+  firstName: string,
+  lastName: string,
+  email: string,
+  phone: string,
+) => {
+  console.log('este es el metodo de pago', total, token, folioNet, firstName, lastName, email, phone);
   try {
+    // const response = await axios.post('https://suite.netpay.com.mx/gateway-ecommerce/v3.5/charges', {
     const response = await axios.post('https://gateway-154.netpaydev.com/gateway-ecommerce/v3.5/charges', {
       transactionType: 'Auth',
       amount: total,
@@ -21,15 +30,15 @@ const createCharge = async (total: number, token: string, folioNet: string) => {
       deviceFingerPrint: '1668110282365',
       currency: 'MXN',
       billing: {
-        firstName: 'John',
-        lastName: 'Doe',
-        email: 'jodepedro@netpay.com.mx',
-        phone: '5555555555',
+        firstName: 'KARINA',
+        lastName: 'MONROY',
+        email: 'karina.monroy@hotmail.com',
+        phone: '6531364602',
         merchantReferenceCode: folioNet,
         address: {
-          city: 'San Pedro Garza García',
+          city: 'CD. JUAREZ',
           country: 'MX',
-          postalCode: '66269',
+          postalCode: '32000',
           state: 'NL',
           street1: 'Humberto Junco Voigt, México 2307-2o Sector, Santa Engracia',
         },
@@ -41,6 +50,7 @@ const createCharge = async (total: number, token: string, folioNet: string) => {
       headers: {
         Accept: 'application/json',
         Authorization: 'sk_netpay_EwFmccEWqoENmBBpAxcCyUoJrJBDytAcwOaufRJVpYhAy',
+        // Authorization: 'sk_netpay_PIMmYbNVYkIhsrMxSrxpcCFDOWmfadaKdkBBCNJuGgAnO',
         'Content-Type': 'application/json',
       },
     });

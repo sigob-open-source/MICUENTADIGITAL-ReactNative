@@ -2,15 +2,14 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
   Image,
   TouchableOpacity,
-  ScrollView,
   SafeAreaView,
 } from 'react-native';
 import React from 'react';
 
 import { useNavigation } from '@react-navigation/native';
+import moment from 'moment';
 
 import IMAGEheader from '../../assets/imagenes/reciboimg.png';
 
@@ -24,7 +23,7 @@ const InformacionDelRecibo = ({ route: { params: { response } } }) => {
       </View>
       <View style={{ flex: 2 }} />
       <View style={styles.cardContainer}>
-        <Text style={styles.titleCard}>Informacion del Recibo</Text>
+        <Text style={styles.titleCard}>Información del Recibo</Text>
 
         <View style={{
           backgroundColor: '#F1F1F1',
@@ -39,7 +38,7 @@ const InformacionDelRecibo = ({ route: { params: { response } } }) => {
             <Text style={styles.subsubtitle}>{response.folio}</Text>
           </View>
           <View style={styles.subContainer}>
-            <Text style={styles.subtitle}>Folio de Facturacion:</Text>
+            <Text style={styles.subtitle}>Folio de Facturación:</Text>
             <Text style={styles.subsubtitle}>{response.folio_de_facturacion}</Text>
           </View>
         </View>
@@ -55,7 +54,7 @@ const InformacionDelRecibo = ({ route: { params: { response } } }) => {
         <View style={styles.infoContainer}>
           <View style={styles.subContainer}>
             <Text style={styles.subtitle}>Fecha:</Text>
-            <Text style={styles.subsubtitle}>{response.fecha_de_creacion}</Text>
+            <Text style={styles.subsubtitle}>{moment(response.fecha_de_creacion).format('DD-MM-YYYY')}</Text>
           </View>
           <View style={styles.subContainer}>
             <Text style={styles.subtitle}>Importe Total:</Text>
@@ -75,7 +74,7 @@ const InformacionDelRecibo = ({ route: { params: { response } } }) => {
         />
         <TouchableOpacity onPress={() => navigation.navigate('informacionFiscal', { response })}>
           <View style={styles.cardButton}>
-            <Text style={styles.textButton}>Ingresar Informacion Fiscal</Text>
+            <Text style={styles.textButton}>Ingresar Información Fiscal</Text>
           </View>
         </TouchableOpacity>
 

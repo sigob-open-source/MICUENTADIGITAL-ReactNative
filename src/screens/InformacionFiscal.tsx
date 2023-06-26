@@ -2,11 +2,10 @@ import {
   StyleSheet,
   Text,
   View,
-  TextInput,
-  TouchableOpacity,
   ScrollView,
   SafeAreaView,
   TouchableWithoutFeedback,
+  Linking,
 } from 'react-native';
 import React, { useState, useEffect, useMemo } from 'react';
 
@@ -81,8 +80,8 @@ const InformacionDelRecibo = ({ route: { params: { response } } }) => {
     validationSchema: SCHEMA,
     validateOnChange: true,
     onSubmit: async (values) => {
-      console.log('nose que verga es', response?.folio);
       setLoading(true);
+
       const response2 = await postFacturar({
         codigo_postal: values.codigo_postal,
         email: values.email,
@@ -95,35 +94,38 @@ const InformacionDelRecibo = ({ route: { params: { response } } }) => {
         uso: values.uso,
       });
 
+      if (!response2) {
+        notify({
+          message: 'Revise sus datos de facturación',
+          title: 'Ha ocurrido un error',
+          type: 'warn',
+        });
+        setLoading(false);
+        return;
+      }
       const reciboBase = await getReciboExterno({
         entidad: 1,
         folio: response.folio,
       });
 
-      setLoading(false);
-
       if (reciboBase?.pdf_de_rfc) {
+        setLoading(false);
+
         notify({
           message: 'Se ha facturado el ticket y enviado a su correo electrónico',
           title: 'Ticket Facturado',
           type: 'success',
         });
 
-        navigation.reset({
-          index: 1,
-          routes: [
-            {
-              name: 'menuInicio',
-            },
-          ],
-        });
-      } else {
-        notify({
-          message: 'NO se logro facturar intentelo mas tarde',
-          title: 'Alerta',
-          type: 'warn',
-        });
+        navigation.navigate('descargaFactura', { reciboBase });
+        return;
       }
+      setLoading(false);
+      notify({
+        message: response2,
+        title: 'Alerta',
+        type: 'warn',
+      });
     },
   });
 
@@ -154,7 +156,7 @@ const InformacionDelRecibo = ({ route: { params: { response } } }) => {
 
       <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
         <View style={styles.cardContainer}>
-          <Text style={styles.titleCard}>Informacion Fiscal</Text>
+          <Text style={styles.titleCard}>Información Fiscal</Text>
 
           <View style={styles.textInputContainer}>
             <Input

@@ -123,6 +123,56 @@ const getCiudadano = async (params) => {
   }
   return null;
 };
+export const getExpedienteDeMercado = async (params) => {
+  try {
+    const response = await API.get('empresas/expedientes-de-mercados-caja-public/', { params });
+    return validateResut(response.data, 21);
+  } catch (error) {
+    console.log(error);
+    return null;
+  }
+  return null;
+};
+
+export const getExpedienteDeComercio = async (params) => {
+  try {
+    const response = await API.get('empresas/expedientes-de-comercio-informal-caja-public/', { params });
+    return validateResut(response.data, 20);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+export const getExpedienteDeAnuncio = async (params) => {
+  try {
+    const response = await API.get('empresas/expedientes-de-anuncios-caja-public/', { params });
+    return validateResult(response.data, 24);
+  } catch (error) {
+    console.log(error);
+  }
+  return validate ? null : [];
+};
+
+export const getExpedienteDeLicencia = async (params) => {
+  try {
+    const response = await API.get('empresas/expedientes-de-licencias-caja-public/', { params });
+    return validateResult(response.data, 22);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
+
+export const getPoliciaEspecial = async (params) => {
+  try {
+    const response = await API.get('empresas/contratos-de-policias-caja-public/', { params });
+    return validateResut(response.data, 18);
+  } catch (error) {
+    console.log(error);
+  }
+  return null;
+};
 
 const getEmpresa = async (params) => {
   try {
@@ -400,9 +450,9 @@ const postFacturar = async (values) => {
       const keys = Object.keys(error);
       error = keys.length ? error[keys[0]] : 'Error desconocido';
     }
-    console.log(error.response.data);
-    return { error };
+    return error;
   }
+  return null;
 };
 
 export const GET_PADRONES_MAP = Object.freeze({
