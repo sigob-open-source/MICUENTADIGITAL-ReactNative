@@ -13,7 +13,7 @@ const DetallesPadron = ({ route }) => {
 
   const navigation = useNavigation();
 
-  console.log(route);
+  console.log(JSON.stringify(route.params.cargo, null, 2));
 
   useEffect(() => {
     if (route.params.cargo !== undefined) {
@@ -179,7 +179,7 @@ const DetallesPadron = ({ route }) => {
         <>
           <Row>
             <DataLabel>Periodo Fiscal</DataLabel>
-            <DataLabel>2023</DataLabel>
+            <DataLabel>{route.params.cargo.tipo_de_cargo.periodo_fiscal.periodo}</DataLabel>
           </Row>
           <Row>
             <DataLabel>Descripción</DataLabel>

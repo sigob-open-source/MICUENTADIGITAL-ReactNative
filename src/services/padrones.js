@@ -147,7 +147,7 @@ export const getExpedienteDeComercio = async (params) => {
 export const getExpedienteDeAnuncio = async (params) => {
   try {
     const response = await API.get('empresas/expedientes-de-anuncios-caja-public/', { params });
-    return validateResult(response.data, 24);
+    return validateResut(response.data, 24);
   } catch (error) {
     console.log(error);
   }
@@ -157,7 +157,7 @@ export const getExpedienteDeAnuncio = async (params) => {
 export const getExpedienteDeLicencia = async (params) => {
   try {
     const response = await API.get('empresas/expedientes-de-licencias-caja-public/', { params });
-    return validateResult(response.data, 22);
+    return validateResut(response.data, 22);
   } catch (error) {
     console.log(error);
   }

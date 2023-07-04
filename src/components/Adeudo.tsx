@@ -82,11 +82,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     borderRadius: 10,
     flexDirection: 'column',
-    backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'space-between',
-    elevation: 3,
-    marginVertical: 3,
   },
   text: {
     color: 'black',

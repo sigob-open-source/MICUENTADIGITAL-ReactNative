@@ -30,9 +30,14 @@ const CardItem = ({
           {' $'}
           {reduceCargo?.adeudo_total | 0}
         </Label>
+
+        <Label2>
+          {'| '}
+          {cargo.tipo_de_cargo.periodo_fiscal.periodo | 0}
+        </Label2>
         <FontAwesome5
           name="chevron-right"
-          size={19}
+          size={14}
           solid
           color="#141414"
         />
@@ -44,7 +49,7 @@ const CardItem = ({
 const Container = styled.View`
   background-color: #ffffff;
   flex-direction: row;
-  
+
   width: 100%;
   border-radius: 10px;
   padding: 10px;
@@ -60,8 +65,17 @@ const Container = styled.View`
 const Label = styled.Text`
   font-family: ${fonts.light};
   font-weight: normal;
-  color: #141414;
-  font-size: 16px;
+  color: #666666;
+  font-size: 12px;
   flex: 1;
+`;
+const Label2 = styled.Text`
+  font-family: ${fonts.light};
+  font-weight: normal;
+  color: #666666;
+  font-size: 12px;
+  margin-right: 15px;
+  margin-left: 10px;
+
 `;
 export default CardItem;

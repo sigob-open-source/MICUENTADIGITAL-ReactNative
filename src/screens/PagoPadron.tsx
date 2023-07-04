@@ -471,13 +471,14 @@ const PagoPadron = ({ route }) => {
         <Text style={styles.inputText}>
           {padron?.descripcion === 'Predio' ? 'Buscar por Clave catastral:\nEjemplo: xx-xxx-xxx-xxx-xxxx' : ''}
           {padron?.descripcion === 'Ciudadano' ? 'Buscar por: Clave, RFC o CURP' : ''}
+          {padron?.descripcion === 'Empresa' ? 'Buscar por: Clave, RFC' : ''}
           {padron?.descripcion === 'Contribuyente' ? 'Buscar por: Clave, RFC o CURP' : ''}
-          {padron?.descripcion === 'Infracciones' ? 'Número o Folio de Infracción' : ''}
-          {padron?.descripcion === 'Expediente De Anuncio' ? 'Clave, RFC o CURP' : ''}
-          {padron?.descripcion === 'Mercado' ? 'Clave, RFC o CURP' : ''}
-          {padron?.descripcion === 'Licencia De Funcionamiento' ? 'Clave, RFC o CURP' : ''}
-          {padron?.descripcion === 'Comercio Informal' ? 'Clave, RFC o CURP' : ''}
-          {padron?.descripcion === 'Policia especial' ? 'Clave, RFC o CURP' : ''}
+          {padron?.descripcion === 'Infracciones' ? 'Consulta por Clave, Folio, Placa, Licencia, Nombre infractor' : ''}
+          {padron?.descripcion === 'Expediente De Anuncio' ? 'Consulta por “Clave"' : ''}
+          {padron?.descripcion === 'Mercado' ? 'Consulta por “Clave"' : ''}
+          {padron?.descripcion === 'Licencia De Funcionamiento' ? 'Consulta por “Clave”' : ''}
+          {padron?.descripcion === 'Comercio Informal' ? 'Consulta por “Clave' : ''}
+          {padron?.descripcion === 'Policia especial' ? 'Consulta por “Clave"' : ''}
         </Text>
 
         <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
