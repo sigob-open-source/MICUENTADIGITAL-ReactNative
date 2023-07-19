@@ -7,8 +7,6 @@ import fonts from '../utils/fonts';
 import Header from '../components/Header';
 
 const DetallesPadron = ({ route }) => {
-  const [data, setData] = useState();
-  const [cargos, setCargos] = useState();
   const [cargo, setCargo] = useState();
 
   const navigation = useNavigation();
@@ -17,158 +15,9 @@ const DetallesPadron = ({ route }) => {
 
   useEffect(() => {
     if (route.params.cargo !== undefined) {
-      setCargo(reduceArrCargos());
+      setCargo(route.params.cargo);
     }
   }, []);
-
-  useEffect(() => {}, [cargo]);
-
-  const reduceArrCargos = () => {
-    const {
-      descuentos_especiales,
-      actualizaciones,
-      recargos,
-      descuentos_aplicables,
-      gastos,
-      importe,
-    } = route.params?.cargo;
-    let adeudo_total;
-    let descuentos_de_actualizacion = 0;
-    let descuentos_de_recargos = 0;
-    let descuentos_gastos_totales = 0;
-    let multa_recargos = 0;
-    let multa_gastos = 0;
-    let descuentos_de_recargos_str = '';
-    let descuentos_de_actualizaciones_str = '';
-    let descuentos_de_gastos_str = '';
-    const recargo_total = recargos.reduce(
-      (accum, curr) => accum + curr.importe_total,
-      0,
-    );
-
-    recargos.forEach((item) => {
-      const { descuentos } = item;
-      let ttlDesc;
-      let ttlMultaRec;
-      if (descuentos.length) {
-        ttlDesc = descuentos.reduce(
-          (accum, curr) => accum + curr.importe_total,
-          0,
-        );
-        descuentos.forEach((i) => {
-          descuentos_de_recargos_str += `\n\r-${i.comentarios} `;
-        });
-      } else {
-        ttlDesc = 0;
-      }
-      if (item?.es_multa) {
-        const filteredRecargos = recargos.filter(
-          (recargo) => recargo.es_multa === true,
-        );
-        ttlMultaRec = filteredRecargos.reduce(
-          (accum, curr) => accum + curr.importe_total,
-          0,
-        );
-      } else {
-        ttlMultaRec = 0;
-      }
-      multa_recargos += ttlMultaRec;
-      descuentos_de_recargos += ttlDesc;
-    });
-    gastos.forEach((item) => {
-      const { descuentos } = item;
-      let ttlDesc;
-      let ttlMultaGto;
-      if (descuentos.length) {
-        ttlDesc = descuentos.reduce(
-          (accum, curr) => accum + curr.importe_total,
-          0,
-        );
-        descuentos.forEach((i) => {
-          descuentos_de_gastos_str += `\n\r-${i.comentarios} `;
-        });
-      } else {
-        ttlDesc = 0;
-      }
-      if (item.es_multa) {
-        const filteredMultas = gastos.filter((gasto) => gasto.es_multa === true);
-        ttlMultaGto = filteredMultas.reduce(
-          (accum, curr) => accum + curr.importe,
-          0,
-        );
-      } else {
-        ttlMultaGto = 0;
-      }
-      descuentos_gastos_totales += ttlDesc;
-      multa_gastos += ttlMultaGto;
-    });
-
-    actualizaciones.forEach((item) => {
-      const { descuentos } = item;
-      let ttlDesc;
-      if (descuentos.length) {
-        ttlDesc = descuentos.reduce(
-          (accum, curr) => accum + curr.importe_total,
-          0,
-        );
-        descuentos.forEach((i) => {
-          descuentos_de_actualizaciones_str += `\n\r-${i.comentarios} `;
-        });
-      } else {
-        ttlDesc = 0;
-      }
-      descuentos_de_actualizacion += ttlDesc;
-    });
-
-    const descuentos_especiales_totales = descuentos_especiales.reduce(
-      (accum, curr) => accum + curr.importe_total,
-      0,
-    );
-
-    const descuentos_aplicables_total = descuentos_aplicables.reduce(
-      (accum, curr) => accum + curr.importe_total,
-      0,
-    );
-
-    const actualizaciones_totales = actualizaciones.reduce(
-      (accum, curr) => accum + curr.importe_total,
-      0,
-    );
-
-    const gastos_totales = gastos.reduce(
-      (accum, curr) => accum + curr.importe,
-      0,
-    );
-
-    const descuentos_totales = descuentos_aplicables_total + descuentos_especiales_totales;
-    const multas_totales = multa_gastos + multa_recargos;
-    adeudo_total = importe
-      - descuentos_totales
-      + (recargo_total - descuentos_de_recargos)
-      + (actualizaciones_totales - descuentos_de_actualizacion)
-      + (gastos_totales - descuentos_gastos_totales)
-      + multas_totales;
-    adeudo_total = adeudo_total;
-
-    return {
-      descuentos_de_actualizaciones_str,
-      descuentos_de_recargos_str,
-      descuentos_de_gastos_str,
-      descuentos_gastos_totales,
-      descuentos_de_recargos,
-      descuentos_de_actualizacion,
-      descuentos_aplicables_total,
-      descuentos_especiales_totales,
-      descuentos_totales,
-      multas_totales,
-      multa_recargos,
-      multa_gastos,
-      actualizaciones_totales,
-      recargo_total: recargo_total - multa_recargos,
-      adeudo_total,
-      gastos_totales: gastos_totales - multa_gastos,
-    };
-  };
 
   return (
     <Container>
@@ -203,34 +52,8 @@ const DetallesPadron = ({ route }) => {
               <TextLeft>
                 $
                 {' '}
-                {route.params?.cargo?.importe?.toFixed(2) || '0.00'}
+                {route.params?.cargo.importe?.toFixed(2) || '0.00'}
               </TextLeft>
-            </View>
-          </Row>
-          <Row>
-            <DataLabel>Actualización</DataLabel>
-            <View style={{ flex: 1 }}>
-              <TextLeft>
-                $
-                {' '}
-                {cargo?.descuentos_de_actualizaciones_str || '0.00'}
-              </TextLeft>
-            </View>
-          </Row>
-          <Row>
-            <DataLabel>Recargos</DataLabel>
-            <View style={{ flex: 1 }}>
-              <TextLeft>
-                $
-                {' '}
-                {cargo?.descuentos_de_recargos_str || '0.00'}
-              </TextLeft>
-            </View>
-          </Row>
-          <Row>
-            <DataLabel>Multa</DataLabel>
-            <View style={{ flex: 1 }}>
-              <TextLeft>$ 0.00</TextLeft>
             </View>
           </Row>
           <Row>
@@ -239,7 +62,7 @@ const DetallesPadron = ({ route }) => {
               <TextLeft>
                 $
                 {' '}
-                {cargo?.descuentos_de_gastos_str || '0.00'}
+                {route.params?.cargo.gastos_totales || '0.00'}
               </TextLeft>
             </View>
           </Row>
@@ -249,7 +72,17 @@ const DetallesPadron = ({ route }) => {
               <TextLeft>
                 $
                 {' '}
-                {cargo?.descuentos_aplicables_total || '0.00'}
+                {route.params?.cargo.descuentos_totales || '0.00'}
+              </TextLeft>
+            </View>
+          </Row>
+          <Row>
+            <DataLabel>Recargos</DataLabel>
+            <View style={{ flex: 1 }}>
+              <TextLeft>
+                $
+                {' '}
+                {route.params?.cargo.recargo_total || '0.00'}
               </TextLeft>
             </View>
           </Row>

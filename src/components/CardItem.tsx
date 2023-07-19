@@ -11,6 +11,8 @@ const CardItem = ({
 }) => {
   const navigation = useNavigation();
 
+  console.log(JSON.stringify(cargo, null, 2));
+
   return (
     <TouchableWithoutFeedback
       onPress={() => navigation.navigate(navegar, {
@@ -28,12 +30,12 @@ const CardItem = ({
             : `${info?.substring(0, 57)}...`
 }
           {' $'}
-          {reduceCargo?.adeudo_total | 0}
+          {cargo.adeudo_total.toFixed(2) || 0}
         </Label>
 
         <Label2>
           {'| '}
-          {cargo.tipo_de_cargo.periodo_fiscal.periodo | 0}
+          {cargo.tipo_de_cargo.periodo_fiscal.periodo || 0}
         </Label2>
         <FontAwesome5
           name="chevron-right"

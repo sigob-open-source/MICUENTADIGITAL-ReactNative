@@ -134,9 +134,17 @@ const PagoPadron = ({ route }) => {
     } else {
       setPadronSearched(response);
       response = await getAdeudoPadron(response, numeroDePadron);
+      const cargosPredialEnTramite = response.cargos.some((c) => c.tipo_de_cargo.sistemas?.id === 2 && c.tramite);
+      response.cargos = response.cargos.filter((c) => !c.tramite);
+      if (padron?.descripcion === 'Predio') {
+        response.cargos = cargosPredialEnTramite ? [] : response.cargos.filter((c) => c.tipo_de_cargo.sistemas?.id === 2);
+      } else {
+        response.cargos = response.cargos.filter((c) => c.tipo_de_cargo.sistemas);
+      }
+      response.cargos = response.cargos.map(reduceArrCargos);
       setResultCargos(response?.cargos || []);
       setNewData(true);
-      const [rounded] = round(response?.cargos.map((item) => { const cargo = reduceArrCargos(item); return cargo.adeudo_total; }).reduce((prev, curr) => prev + curr, 0));
+      const [rounded] = round(response?.cargos.reduce((prev, curr) => prev + curr.adeudo_total, 0));
       setTotalAmount(rounded);
       console.log('total amount', rounded);
     }
@@ -422,6 +430,7 @@ const PagoPadron = ({ route }) => {
     adeudo_total = adeudo_total;
 
     return {
+      ...cargo,
       descuentos_de_actualizaciones_str,
       descuentos_de_recargos_str,
       descuentos_de_gastos_str,
@@ -522,7 +531,7 @@ const PagoPadron = ({ route }) => {
                       }`
                     }
                     cargo={cargo}
-                    reduceCargo={reduceArrCargos(cargo)}
+                    reduceCargo={cargo}
                     navegar="detallesPadron"
                   />
                 ))}
