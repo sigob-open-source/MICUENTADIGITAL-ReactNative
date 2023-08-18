@@ -83,6 +83,8 @@ const PagoPadron = ({ route }) => {
   });
 
   const handleSearch = async () => {
+    console.log('que verga ahora', padron?.descripcion);
+
     setIsLoading(true);
     setNewData(false);
     let response;

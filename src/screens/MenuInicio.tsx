@@ -56,7 +56,7 @@ const dataList: IItemMenu[] = [
     enableEntypo: false,
     navegacion: 'pagoPadron',
     necesitaLogin: false,
-    padron: 'Infracciones',
+    padrones: 'Infracciones',
 
   },
   {
@@ -67,7 +67,7 @@ const dataList: IItemMenu[] = [
     enableEntypo: true,
     navegacion: 'pagoPadron',
     necesitaLogin: false,
-    padron: 'Predio',
+    padrones: 'Predio',
   },
   // {
   //   isBlank: false,
@@ -212,7 +212,7 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
 
     if (item.navegacion) {
       setHasSwitchedView(true);
-      navigation.push(item.navegacion, { padron: item.padron });
+      navigation.navigate(item.navegacion, { padron: item.padrones });
     }
   };
 
