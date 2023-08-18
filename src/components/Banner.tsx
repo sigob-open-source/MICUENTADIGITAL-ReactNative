@@ -8,7 +8,7 @@ const Banner = () => (
   <View style={styles.aboutUs}>
     <View style={{ flex: 1 }}>
       <View>
-        <Text style={styles.subTituloInfo}>Redes Sociales</Text>
+        {/* <Text style={styles.subTituloInfo}>Redes Sociales</Text> */}
         <View style={{
           flexDirection: 'row',
           justifyContent: 'space-around',
@@ -49,7 +49,12 @@ const Banner = () => (
 
           <TouchableOpacity onPress={() => Linking.openURL('https://juarezconectado.juarez.gob.mx/')}>
             <View style={styles.webButton}>
-              <Text style={styles.aButton}>Juárez Conectado</Text>
+              <FontAwesome5
+                name="globe"
+                size={30}
+                solid
+                color="#FFFFFF"
+              />
             </View>
           </TouchableOpacity>
         </View>

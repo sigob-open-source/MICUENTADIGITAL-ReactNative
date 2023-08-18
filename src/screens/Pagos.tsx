@@ -31,24 +31,8 @@ const Pagos = (props) => {
   const getPadronesList = async () => {
     try {
       const response = await http.get('catalogos/padrones/');
-      const excludedDescriptions = [
-        'Alcohol',
-        'Notario',
-        'Contribuyente',
-        'Remolque',
-        'Zona Exclusiva',
-        'Expediente de comercio informal',
-        'Expediente de mercado',
-        'Contrato de policia',
-        'Expediente de licencia de funcionamiento',
-      ];
       console.log(response.data);
-      const padrones = response.data.filter(
-        (padron) => padron
-          && typeof padron === 'object'
-          && !excludedDescriptions.includes(padron.descripcion)
-          && (padron.descripcion !== 'Todo' && padron.descripcion !== 'Multas'),
-      );
+      const padrones = response.data.filter((padron) => padron.canales_de_pago.includes(3));
       setPadrones(padrones);
     } catch (error) {
       console.error(error);

@@ -11,6 +11,7 @@ import {
   NativeModules,
 } from 'react-native';
 
+import currency from 'currency.js';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
 import moment from 'moment';
@@ -84,7 +85,6 @@ const PagoPadron = ({ route }) => {
   const handleSearch = async () => {
     setIsLoading(true);
     setNewData(false);
-    // console.log(padron.descripcion);
     let response;
     let numeroDePadron;
     if (padron?.descripcion === 'Ciudadano') {
@@ -134,17 +134,19 @@ const PagoPadron = ({ route }) => {
     } else {
       setPadronSearched(response);
       response = await getAdeudoPadron(response, numeroDePadron);
-      const cargosPredialEnTramite = response.cargos.some((c) => c.tipo_de_cargo.sistemas?.id === 2 && c.tramite);
       response.cargos = response.cargos.filter((c) => !c.tramite);
       if (padron?.descripcion === 'Predio') {
+        const cargosPredialEnTramite = response.cargos.some((c) => c.tipo_de_cargo.sistemas?.id === 2 && c.tramite);
         response.cargos = cargosPredialEnTramite ? [] : response.cargos.filter((c) => c.tipo_de_cargo.sistemas?.id === 2);
+      } else if (padron?.descripcion === 'Infracciones') {
+        response.cargos = response.cargos.filter((c) => c.tipo_de_cargo.sistemas?.id === 15);
       } else {
-        response.cargos = response.cargos.filter((c) => c.tipo_de_cargo.sistemas);
+        response.cargos = response.cargos.filter((c) => !c.tipo_de_cargo.sistemas);
       }
       response.cargos = response.cargos.map(reduceArrCargos);
       setResultCargos(response?.cargos || []);
       setNewData(true);
-      const [rounded] = round(response?.cargos.reduce((prev, curr) => prev + curr.adeudo_total, 0));
+      const [rounded, _, importeSinRedondeo] = round(response?.cargos.reduce((prev, curr) => prev + curr.adeudo_total, 0));
       setTotalAmount(rounded);
       console.log('total amount', rounded);
     }
@@ -158,109 +160,124 @@ const PagoPadron = ({ route }) => {
 
   const dopayment = async () => {
     setLoading(true);
-    const cardToken = await ReactNativeNetPay.openCheckout(false);
 
-    const descripcion = (resultCargos.length === 1
-      && resultCargos[0].descripcion.length <= 250
-      ? resultCargos[0].descripcion
-      : padron.descripcion) as string;
+    let cardToken;
 
-    const cargoIds = resultCargos.map((c) => c.id);
+    try {
+      cardToken = await ReactNativeNetPay.openCheckout(false);
+    } catch (error) {
+      console.log(error);
+    }
 
-    const referenciaNetpay = await generarReferenciaDePagoNetpayPublic(
-      {
-        amount: totalAmount,
-        currency: 'MXN',
-        description: descripcion,
-        expiryDate: getExpiryDate(padron.id),
-        paymentMethod: 'cash',
-        billing: {
-          canal_de_pago: 3,
-          cargos: cargoIds,
-          padron_id: padronSearched.id,
-          tipo_de_padron: padron.id,
-          importe: totalAmount,
-          fecha: moment().format('DD-MM-YYYY'),
-          merchantReferenceCode: null,
-          ciudadano: null,
+    if (cardToken) {
+      const descripcion = (resultCargos.length === 1
+        && resultCargos[0].descripcion.length <= 250
+        ? resultCargos[0].descripcion
+        : padron.descripcion) as string;
+
+      const cargoIds = resultCargos.map((c) => c.id);
+
+      const referenciaNetpay = await generarReferenciaDePagoNetpayPublic(
+        {
+          amount: totalAmount,
+          currency: 'MXN',
+          description: descripcion,
+          expiryDate: getExpiryDate(padron.id),
+          paymentMethod: 'cash',
+          billing: {
+            canal_de_pago: 3,
+            cargos: cargoIds,
+            padron_id: padronSearched.id,
+            tipo_de_padron: padron.id,
+            importe: totalAmount,
+            fecha: moment().format('DD-MM-YYYY'),
+            merchantReferenceCode: null,
+            ciudadano: null,
+          },
         },
-      },
-      { entidad: 1 },
-    );
+        { entidad: 1 },
+      );
 
-    const folioNetpay = referenciaNetpay?.folio_netpay;
+      const folioNetpay = referenciaNetpay?.folio_netpay;
 
-    const responsecard = await createCharge(
-      totalAmount,
-      cardToken,
-      folioNetpay,
-      padronSearched.nombre,
-      padronSearched.apellido_paterno,
-      padronSearched.email,
-      padronSearched.numero_de_celular,
-    );
+      const responsecard = await createCharge(
+        totalAmount,
+        cardToken,
+        folioNetpay,
+        padronSearched.nombre,
+        padronSearched.apellido_paterno,
+        padronSearched.email,
+        padronSearched.numero_de_celular,
+      );
 
-    const { success, result } = await generateRecibo({
-      es_netpay_custom: true,
-      canal_de_pago: 3,
-      folio: folioNetpay,
-      response: responsecard,
-    }, { entidad: 1 });
-
-    if (success) {
-      const { success: successTicket, result: resultTicket } = await generarTicket({
-        entidad_id: 1,
-        recibos_id: [result.id],
-        tramite_en_proceso: false,
+      const { success, result } = await generateRecibo({
+        es_netpay_custom: true,
+        canal_de_pago: 3,
+        folio: folioNetpay,
+        response: responsecard,
+        importe_sin_redondeo: resultCargos.reduce((prev, curr) => prev + curr.adeudo_total, 0),
       }, { entidad: 1 });
 
-      let base64 = result.data;
+      if (success) {
+        const { success: successTicket, result: resultTicket } = await generarTicket({
+          entidad_id: 1,
+          recibos_id: [result.id],
+          tramite_en_proceso: false,
+        }, { entidad: 1 });
 
-      if (successTicket) {
-        base64 = resultTicket.data;
-      }
+        let base64 = result.data;
 
-      notify({
-        type: 'success',
-        title: '¡Éxito!',
-        message: 'Pago exitoso',
-      });
+        if (successTicket) {
+          base64 = resultTicket.data;
+        }
 
-      setLoading(false);
+        notify({
+          type: 'success',
+          title: '¡Éxito!',
+          message: 'Pago exitoso',
+        });
 
-      navigation.reset({
-        index: 1,
-        routes: [
-          {
-            name: 'menuInicio',
-          },
-          {
-            name: 'pdfViewer',
-            params: {
-              reciboB64: `data:application/pdf;base64,${base64}`,
+        setLoading(false);
+
+        navigation.reset({
+          index: 1,
+          routes: [
+            {
+              name: 'menuInicio',
             },
-          },
-        ],
-      });
-    } else {
-      setLoading(false);
+            {
+              name: 'pdfViewer',
+              params: {
+                reciboB64: `data:application/pdf;base64,${base64}`,
+              },
+            },
+          ],
+        });
+      } else {
+        setLoading(false);
 
+        notify({
+          type: 'error',
+          title: 'Error',
+          message: 'No logramos guardar su pago, favor de reportar en ventanilla',
+        });
+      }
+    } else {
       notify({
-        type: 'error',
-        title: 'Error',
-        message: 'No logramos guardar su pago, favor de reportar en ventanilla',
+        type: 'info',
+        title: 'Pago Cancelado',
+        message: 'El pago fue cancelado por el usuario',
       });
     }
+
     setLoading(false);
   };
 
   const calcular = async () => {
     const sumall = resultCargos.map((item) => item.importe).reduce((prev, curr) => prev + curr, 0);
-    console.log('suma', sumall);
 
     if (sumall) {
       const paymentResponse = await NativeModules.RNNetPay.doTrans(sumall.toFixed(2));
-      console.log('entro a la 145');
 
       if (paymentResponse.success) {
         const ticketResponse = await NativeModules.RNNetPay.printTicket();
@@ -455,9 +472,9 @@ const PagoPadron = ({ route }) => {
 
     if (nameSearch === undefined) {
       if (padron?.descripcion === 'Infracciones') {
-        informationData = padronSearched?.folio;
+        informationData = padronSearched?.nombre_completo;
       } else {
-        informationData = ' No se encontraron datos';
+        informationData = ' propietario';
       }
     } else {
       informationData = nameSearch;
@@ -482,7 +499,7 @@ const PagoPadron = ({ route }) => {
           {padron?.descripcion === 'Ciudadano' ? 'Buscar por: Clave, RFC o CURP' : ''}
           {padron?.descripcion === 'Empresa' ? 'Buscar por: Clave, RFC' : ''}
           {padron?.descripcion === 'Contribuyente' ? 'Buscar por: Clave, RFC o CURP' : ''}
-          {padron?.descripcion === 'Infracciones' ? 'Consulta por Clave, Folio, Placa, Licencia, Nombre infractor' : ''}
+          {padron?.descripcion === 'Infracciones' ? 'Consulta por Clave, Folio, Placa, Licencia' : ''}
           {padron?.descripcion === 'Expediente De Anuncio' ? 'Consulta por “Clave"' : ''}
           {padron?.descripcion === 'Mercado' ? 'Consulta por “Clave"' : ''}
           {padron?.descripcion === 'Licencia De Funcionamiento' ? 'Consulta por “Clave”' : ''}
@@ -563,8 +580,9 @@ const PagoPadron = ({ route }) => {
           : (
             <Text style={styles.totalText}>
               Total:
-              {' $'}
-              {totalAmount?.toFixed(2)}
+              {' '}
+
+              {currency(totalAmount).format()}
             </Text>
           )
       }

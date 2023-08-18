@@ -3,6 +3,7 @@ import {
   StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback,
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
+import currency from 'currency.js';
 import fonts from '../utils/fonts';
 
 const Adeudo = ({
@@ -39,8 +40,8 @@ const Adeudo = ({
             {
               cargo > 0 ? (
                 <Text style={styles.text}>
-                  $
-                  {cargo.toFixed(2)}
+                  {' '}
+                  {currency(cargo).format()}
                 </Text>
               )
                 : (

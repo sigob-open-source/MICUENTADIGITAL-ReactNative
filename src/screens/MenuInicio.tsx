@@ -51,20 +51,23 @@ const dataList: IItemMenu[] = [
   {
     isBlank: false,
     color: '#404040',
-    name: ' Consulta de Trámites',
-    iconname: 'folder-open',
+    name: 'Pagar Infracciones',
+    iconname: 'car',
     enableEntypo: false,
-    navegacion: 'tramites',
+    navegacion: 'pagoPadron',
     necesitaLogin: false,
+    padron: 'Infracciones',
+
   },
   {
     isBlank: false,
     color: '#404040',
-    name: 'Cartografía Digital',
-    iconname: 'globe',
+    name: 'Pagar Predial',
+    iconname: 'house-user',
     enableEntypo: true,
-    navegacion: 'cartografia',
+    navegacion: 'pagoPadron',
     necesitaLogin: false,
+    padron: 'Predio',
   },
   // {
   //   isBlank: false,
@@ -96,7 +99,7 @@ const dataList: IItemMenu[] = [
   {
     isBlank: false,
     color: '#404040',
-    name: 'Facturación',
+    name: 'Facturar',
     iconname: 'id-card-alt',
     enableEntypo: true,
     navegacion: 'inicioFactura',
@@ -209,7 +212,7 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
 
     if (item.navegacion) {
       setHasSwitchedView(true);
-      navigation.push(item.navegacion);
+      navigation.push(item.navegacion, { padron: item.padron });
     }
   };
 
@@ -244,6 +247,7 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
           nombreItem={item.name}
           iconName={item.iconname}
           isDesable={item.deshabilitado}
+          padron={item.padron}
         />
       </View>
     </TouchableWithoutFeedback>
@@ -274,25 +278,6 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
           )
         }
 
-        <TouchableOpacity onPress={() => navigation.navigate('pagoPadron', { padron: item })}>
-          <Card
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              borderBottomWidth: 3,
-              borderBottomColor: '#009C6F',
-            }}
-          >
-            <Text style={styles.greeting2}>Pago de Infracciones</Text>
-            <FontAwesome5
-              name="car"
-              size={30}
-              solid
-              color="#142B47"
-            />
-          </Card>
-        </TouchableOpacity>
-
         <View style={styles.separator} />
 
         <FlatList
@@ -302,7 +287,7 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
           numColumns={numColumns}
           ListFooterComponent={(
             <>
-              <View style={styles.pagosStyle}>
+              {/* <View style={styles.pagosStyle}>
                 <View style={styles.tituloCardContainer}>
                   <Text style={styles.pagoTxt}>Pagos</Text>
                   <View style={styles.iconstyel}>
@@ -328,7 +313,49 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
                     </View>
                   </TouchableOpacity>
                 </View>
-              </View>
+              </View> */}
+
+              <View style={styles.separator} />
+
+              <TouchableOpacity onPress={() => navigation.navigate('tramites')}>
+                <Card
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    borderBottomWidth: 3,
+                    borderBottomColor: '#009C6F',
+                  }}
+                >
+                  <Text style={styles.greeting2}>Trámites</Text>
+                  <FontAwesome5
+                    name="folder-open"
+                    size={30}
+                    solid
+                    color="#142B47"
+                  />
+                </Card>
+              </TouchableOpacity>
+
+              <View style={styles.separator} />
+
+              <TouchableOpacity onPress={() => navigation.navigate('cartografia')}>
+                <Card
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    borderBottomWidth: 3,
+                    borderBottomColor: '#009C6F',
+                  }}
+                >
+                  <Text style={styles.greeting2}>Cartografía</Text>
+                  <FontAwesome5
+                    name="map-marked-alt"
+                    size={30}
+                    solid
+                    color="#142B47"
+                  />
+                </Card>
+              </TouchableOpacity>
 
               <View style={styles.separator} />
 

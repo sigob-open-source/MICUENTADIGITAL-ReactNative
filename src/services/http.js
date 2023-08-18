@@ -11,8 +11,8 @@ export const API_SCHEMA = 'https';
 export const API_HOST = 'api.micuenta.digital';
 // export const API_LOCALHOST_GRP = '10.0.2.2:8000';
 // prod jrz
-// export const API_HOST_GRP = 'apiexterna.juarez.gob.mx';
-export const API_HOST_GRP = 'apiingresos.migob.mx';
+export const API_HOST_GRP = 'apiexterna.juarez.gob.mx';
+// export const API_HOST_GRP = 'apiingresos.migob.mx';
 
 // export const API_HOST_GRP = 'apiingresosnayarit.migob.mx';//
 // export const API_HOST_GRP = 'apigrp.migob.mx';

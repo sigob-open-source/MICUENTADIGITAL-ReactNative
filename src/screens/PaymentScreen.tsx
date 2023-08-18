@@ -43,6 +43,7 @@ const PaymentScreen = () => {
   const navigation = useNavigation();
 
   ReactNativeNetPay.init('pk_netpay_RZWqFZTckZHhIaTBzogznLReu', { testMode: true });
+  // ReactNativeNetPay.init('pk_netpay_DBmockYZopdDnTdhYhGJCDXfe', { testMode: false });
 
   const form = useFormik<FormValues>({
     initialValues: {

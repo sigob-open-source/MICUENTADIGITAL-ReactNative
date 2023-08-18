@@ -25,9 +25,7 @@ const generateRecibo = async (payload: IGenerarReciboPayload, params: IGenerarRe
   };
 
   try {
-    const response = await HTTP_GRP.post<IBase64File>('recaudacion/recibo/generar-recibo-por-referencia-de-pago-netpay/', payload, {
-      params,
-    });
+    const response = await HTTP_GRP.post<IBase64File>('recaudacion/recibo/generar-recibo-por-referencia-de-pago-netpay/', payload);
 
     if ([200, 201].includes(response.status) && response.data.id) {
       output = {
@@ -47,7 +45,7 @@ const generateRecibo = async (payload: IGenerarReciboPayload, params: IGenerarRe
     });
 
     output.errors = apiErrorParser(typedError);
-    console.log('este es el log de error', error.response.data);
+    console.log('este es el log de error', JSON.stringify(error.response.data, null, 2));
   }
 
   return output;

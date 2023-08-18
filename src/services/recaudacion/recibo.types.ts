@@ -76,6 +76,7 @@ interface INetPayResponse {
   paymentSource: IPaymentSource;
   billing: IBilling;
   threeDSecure?: unknown;
+  importe_sin_redondeo?: unknown;
 }
 
 interface IBase64File {

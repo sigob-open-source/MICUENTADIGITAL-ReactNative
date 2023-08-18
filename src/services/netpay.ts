@@ -30,9 +30,9 @@ const createCharge = async (
       deviceFingerPrint: '1668110282365',
       currency: 'MXN',
       billing: {
-        firstName: 'KARINA',
-        lastName: 'MONROY',
-        email: 'karina.monroy@hotmail.com',
+        firstName: 'Abiel',
+        lastName: 'Robledo',
+        email: 'abiel.robledo@sigob.com.mx',
         phone: '6531364602',
         merchantReferenceCode: folioNet,
         address: {
@@ -56,7 +56,7 @@ const createCharge = async (
     });
     return response.data;
   } catch (error) {
-    console.log(error);
+    console.log(JSON.stringify(error, null, 2));
   }
 };
 

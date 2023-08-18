@@ -11,8 +11,6 @@ const DetallesPadron = ({ route }) => {
 
   const navigation = useNavigation();
 
-  console.log(JSON.stringify(route.params.cargo, null, 2));
-
   useEffect(() => {
     if (route.params.cargo !== undefined) {
       setCargo(route.params.cargo);

@@ -34,7 +34,7 @@ const round = (_val) => {
   }
   const preRound = +parseFloat(val - initialVal).toFixed(2);
   const rounded = preRound < 0 ? -preRound : preRound;
-  return [val, rounded];
+  return [val, rounded, _val];
 };
 
 export default round;
