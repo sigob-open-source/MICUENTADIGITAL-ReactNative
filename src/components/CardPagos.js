@@ -61,7 +61,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     width: 104,
     height: 95,
-    backgroundColor: 'white',
+    backgroundColor: '#831D45',
     justifyContent: 'center',
     alignItems: 'center',
     shadowColor: 'black',
@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 1,
     textAlign: 'center',
     fontFamily: fonts.semiBold,
-    color: 'black',
+    color: '#ffffff',
   },
   textstyleDes: {
     paddingHorizontal: 1,

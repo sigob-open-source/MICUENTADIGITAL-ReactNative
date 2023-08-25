@@ -57,6 +57,7 @@
     "rn-fetch-blob": "^0.12.0",
     "styled-components": "^5.3.3",
     "uuid": "^9.0.0",
+    "xml-js": "^1.6.11",
     "yup": "^1.0.2"
   },
   "devDependencies": {

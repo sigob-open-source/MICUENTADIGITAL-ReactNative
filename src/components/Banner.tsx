@@ -25,6 +25,17 @@ const Banner = () => (
             </View>
           </TouchableOpacity>
 
+          <TouchableOpacity onPress={() => Linking.openURL('https://instagram.com/cruzperezcuellar?igshid=NTc4MTIwNjQ2YQ==')}>
+            <View style={styles.iconsRedes}>
+              <FontAwesome5
+                name="instagram"
+                size={25}
+                solid
+                color="#ffffff"
+              />
+            </View>
+          </TouchableOpacity>
+
           <TouchableOpacity onPress={() => Linking.openURL('https://twitter.com/MunicipioJuarez')}>
             <View style={styles.iconsRedes}>
               <FontAwesome5
@@ -51,7 +62,7 @@ const Banner = () => (
             <View style={styles.webButton}>
               <FontAwesome5
                 name="globe"
-                size={30}
+                size={20}
                 solid
                 color="#FFFFFF"
               />
@@ -78,7 +89,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#831D45',
-    height: 50,
+    height: 35,
     width: 150,
     borderRadius: 5,
   },
@@ -141,8 +152,8 @@ const styles = StyleSheet.create({
   },
   iconsRedes: {
     backgroundColor: '#184766',
-    height: 50,
-    width: 60,
+    height: 35,
+    width: 45,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 5,

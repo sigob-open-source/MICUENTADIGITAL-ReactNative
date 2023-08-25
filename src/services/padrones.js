@@ -336,32 +336,27 @@ const getMotocicleta = async (params) => {
 
 const getAdeudoPadron = async (padron, numeroPadron) => {
   let result;
-  console.log('====================================');
-  console.log('datos caja public', padron?.id, numeroPadron);
-  console.log('====================================');
-  if (padron !== undefined && padron !== null) {
+  if (padron) {
     await API
       .post('recaudacion/consulta-caja-public/entidad/', {
         padron_id: padron?.id,
         padron: numeroPadron,
         canal_de_pago: 3,
         entidad: 1,
+      }, {
+        timeout: 1000 * 60 * 1,
       })
       .then(
         (response) => {
           result = response?.data;
         },
-        (error) => {
-          console.error(error);
-          console.error(error.response.data);
-        },
-      );
+      ).catch((error) => {
+        console.error(error);
+        console.error(error.response.data);
+      });
   } else {
     result = null;
   }
-  console.log('====================================');
-  console.log('response de caja public', result.data);
-  console.log('====================================');
   return result;
 };
 

@@ -42,6 +42,9 @@ interface IItemMenu {
   linkurl?: string;
 }
 
+const itemPredio = { descripcion: 'Predio', estados_globales: 1, id: 19 };
+const itemInfra = { descripcion: 'Infracciones', estados_globales: 1, id: 19 };
+
 /**
  * @description Todo el datalist son los botones del menú de inicio, cada uno con sus
  * propiedades como el icono del botón,color del botón en caso de que esté desactivado,
@@ -50,24 +53,24 @@ interface IItemMenu {
 const dataList: IItemMenu[] = [
   {
     isBlank: false,
-    color: '#404040',
+    color: '#ffffff',
     name: 'Pagar Infracciones',
     iconname: 'car',
     enableEntypo: false,
     navegacion: 'pagoPadron',
     necesitaLogin: false,
-    padrones: 'Infracciones',
+    padrones: itemInfra,
 
   },
   {
     isBlank: false,
-    color: '#404040',
+    color: '#ffffff',
     name: 'Pagar Predial',
     iconname: 'house-user',
     enableEntypo: true,
     navegacion: 'pagoPadron',
     necesitaLogin: false,
-    padrones: 'Predio',
+    padrones: itemPredio,
   },
   // {
   //   isBlank: false,
@@ -98,7 +101,7 @@ const dataList: IItemMenu[] = [
   // },
   {
     isBlank: false,
-    color: '#404040',
+    color: '#ffffff',
     name: 'Facturar',
     iconname: 'id-card-alt',
     enableEntypo: true,
@@ -136,8 +139,6 @@ const dataList: IItemMenu[] = [
   //   navegacion: 'estrados',
   // },
 ];
-
-const item = { descripcion: 'Infracciones', estados_globales: 1, id: 19 };
 
 const numColumns = 3;
 

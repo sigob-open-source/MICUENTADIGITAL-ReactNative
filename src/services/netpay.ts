@@ -19,21 +19,21 @@ const createCharge = async (
 ) => {
   console.log('este es el metodo de pago', total, token, folioNet, firstName, lastName, email, phone);
   try {
-    // const response = await axios.post('https://suite.netpay.com.mx/gateway-ecommerce/v3.5/charges', {
-    const response = await axios.post('https://gateway-154.netpaydev.com/gateway-ecommerce/v3.5/charges', {
+    const response = await axios.post('https://suite.netpay.com.mx/gateway-ecommerce/v3.5/charges', {
+    // const response = await axios.post('https://gateway-154.netpaydev.com/gateway-ecommerce/v3.5/charges', {
       transactionType: 'Auth',
       amount: total,
       source: token.token,
       description: 'Cargo de prueba',
       paymentMethod: 'card',
-      sessionId: '1668110282365',
-      deviceFingerPrint: '1668110282365',
+      sessionId: '1668111282365',
+      deviceFingerPrint: '1668110272365',
       currency: 'MXN',
       billing: {
         firstName: 'Abiel',
         lastName: 'Robledo',
-        email: 'abiel.robledo@sigob.com.mx',
-        phone: '6531364602',
+        email: 'abielrobledo726@gmail.com',
+        phone: '6381275072',
         merchantReferenceCode: folioNet,
         address: {
           city: 'CD. JUAREZ',
@@ -49,8 +49,8 @@ const createCharge = async (
     }, {
       headers: {
         Accept: 'application/json',
-        Authorization: 'sk_netpay_EwFmccEWqoENmBBpAxcCyUoJrJBDytAcwOaufRJVpYhAy',
-        // Authorization: 'sk_netpay_PIMmYbNVYkIhsrMxSrxpcCFDOWmfadaKdkBBCNJuGgAnO',
+        // Authorization: 'sk_netpay_EwFmccEWqoENmBBpAxcCyUoJrJBDytAcwOaufRJVpYhAy',
+        Authorization: 'sk_netpay_PIMmYbNVYkIhsrMxSrxpcCFDOWmfadaKdkBBCNJuGgAnO',
         'Content-Type': 'application/json',
       },
     });

@@ -26,6 +26,8 @@ import Button from '../components/Button';
 import Header from '../components/Header';
 import Adeudo from '../components/Adeudo';
 import CardItem from '../components/CardItem';
+import LoadingComponent from '../components/LoadingComponent';
+import MaskedInput from '../components/MasketInput';
 
 import {
   getPadrones,
@@ -46,6 +48,7 @@ import { useNotification } from '../components/DropDownAlertProvider';
 import { generarReferenciaDePagoNetpayPublic } from '../services/recaudacion/pago';
 import getExpiryDate from '../utils/get-expiry-date';
 import sortCargos from '../utils/sorterCargos';
+import { log } from '../services/netpayCDN';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
@@ -61,6 +64,12 @@ const PagoPadron = ({ route }) => {
   const [totalAmount, setTotalAmount] = useState(0.0);
   const [padrones, setPadrones] = useState();
 
+  const [part1, setPart1] = useState('');
+  const [part2, setPart2] = useState('');
+  const [part3, setPart3] = useState('');
+  const [part4, setPart4] = useState('');
+  const [part5, setPart5] = useState('');
+
   const notify = useNotification();
   const navigation = useNavigation();
 
@@ -75,6 +84,26 @@ const PagoPadron = ({ route }) => {
     return () => {};
   }, []);
 
+  const handlePart1Change = (text) => {
+    setPart1(text);
+  };
+
+  const handlePart2Change = (text) => {
+    setPart2(text);
+  };
+
+  const handlePart3Change = (text) => {
+    setPart3(text);
+  };
+
+  const handlePart4Change = (text) => {
+    setPart4(text);
+  };
+
+  const handlePart5Change = (text) => {
+    setPart5(text);
+  };
+
   // Alerta para cuando no se encontro nada acorde a la busqueda
   const showAlert = () => notify({
     type: 'warn',
@@ -83,10 +112,15 @@ const PagoPadron = ({ route }) => {
   });
 
   const handleSearch = async () => {
-    console.log('que verga ahora', padron?.descripcion);
-
     setIsLoading(true);
     setNewData(false);
+    console.log('este es el predio mandado ', `${part1}-${part2}-${part3}-${part4}-${part5}`);
+
+    if (padron?.descripcion === 'Predio') {
+      const conquetenar = `${part1}-${part2}-${part3}-${part4}-${part5}`;
+      setSearchText(conquetenar);
+    }
+
     let response;
     let numeroDePadron;
     if (padron?.descripcion === 'Ciudadano') {
@@ -157,8 +191,8 @@ const PagoPadron = ({ route }) => {
   };
 
   // Funcion llamada al dar al boton realizar pago prod
-  // ReactNativeNetPay.init('pk_netpay_DBmockYZopdDnTdhYhGJCDXfe', { testMode: false });
-  ReactNativeNetPay.init('pk_netpay_RZWqFZTckZHhIaTBzogznLReu', { testMode: true });
+  ReactNativeNetPay.init('pk_netpay_DBmockYZopdDnTdhYhGJCDXfe', { testMode: false });
+  // ReactNativeNetPay.init('pk_netpay_RZWqFZTckZHhIaTBzogznLReu', { testMode: true });
 
   const dopayment = async () => {
     setLoading(true);
@@ -217,7 +251,7 @@ const PagoPadron = ({ route }) => {
         canal_de_pago: 3,
         folio: folioNetpay,
         response: responsecard,
-        importe_sin_redondeo: resultCargos.reduce((prev, curr) => prev + curr.adeudo_total, 0),
+        importe_sin_redondeo: resultCargos.reduce((prev, curr) => prev + curr.adeudo_total, 0).toFixed(2),
       }, { entidad: 1 });
 
       if (success) {
@@ -492,24 +526,25 @@ const PagoPadron = ({ route }) => {
   }, [resultCargos]);
 
   return (
-    <View style={styles.container}>
-      <Header item={padron?.descripcion === 'Predio' ? 'Pago de Predial' : padron?.descripcion} imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
+    <>
+      <View style={styles.container}>
+        <Header item={padron?.descripcion === 'Predio' ? 'Pago de Predial' : padron?.descripcion} imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
 
-      <View style={{ marginTop: '5%' }}>
-        <Text style={styles.inputText}>
-          {padron?.descripcion === 'Predio' ? 'Buscar por Clave catastral:\nEjemplo: xx-xxx-xxx-xxx-xxxx' : ''}
-          {padron?.descripcion === 'Ciudadano' ? 'Buscar por: Clave, RFC o CURP' : ''}
-          {padron?.descripcion === 'Empresa' ? 'Buscar por: Clave, RFC' : ''}
-          {padron?.descripcion === 'Contribuyente' ? 'Buscar por: Clave, RFC o CURP' : ''}
-          {padron?.descripcion === 'Infracciones' ? 'Consulta por Clave, Folio, Placa, Licencia' : ''}
-          {padron?.descripcion === 'Expediente De Anuncio' ? 'Consulta por “Clave"' : ''}
-          {padron?.descripcion === 'Mercado' ? 'Consulta por “Clave"' : ''}
-          {padron?.descripcion === 'Licencia De Funcionamiento' ? 'Consulta por “Clave”' : ''}
-          {padron?.descripcion === 'Comercio Informal' ? 'Consulta por “Clave' : ''}
-          {padron?.descripcion === 'Policia especial' ? 'Consulta por “Clave"' : ''}
-        </Text>
+        <View style={{ marginTop: '5%' }}>
+          <Text style={styles.inputText}>
+            {padron?.descripcion === 'Predio' ? 'Buscar por Clave catastral:' : ''}
+            {padron?.descripcion === 'Ciudadano' ? 'Buscar por: Clave, RFC o CURP' : ''}
+            {padron?.descripcion === 'Empresa' ? 'Buscar por: Clave, RFC' : ''}
+            {padron?.descripcion === 'Contribuyente' ? 'Buscar por: Clave, RFC o CURP' : ''}
+            {padron?.descripcion === 'Infracciones' ? 'Consultar por Folio de Infracción' : ''}
+            {padron?.descripcion === 'Expediente De Anuncio' ? 'Consulta por “Clave"' : ''}
+            {padron?.descripcion === 'Mercado' ? 'Consulta por “Clave"' : ''}
+            {padron?.descripcion === 'Licencia De Funcionamiento' ? 'Consulta por “Clave”' : ''}
+            {padron?.descripcion === 'Comercio Informal' ? 'Consulta por “Clave' : ''}
+            {padron?.descripcion === 'Policia especial' ? 'Consulta por “Clave"' : ''}
+          </Text>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
+          {/* <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
           <View style={styles.textInputContainer}>
             <TextInput
               autoCapitalize="characters"
@@ -530,11 +565,112 @@ const PagoPadron = ({ route }) => {
               />
             </View>
           </TouchableWithoutFeedback>
-        </View>
-      </View>
+        </View> */}
 
-      <ScrollView style={{ alignSelf: 'center' }}>
-        {
+          <View>
+            {/* Si es 'Predio', muestra la máscara */}
+            {padron?.descripcion === 'Predio' ? (
+              <View style={styles.inputmsk}>
+                <View style={styles.container2}>
+                  <View>
+                    <TextInput
+                      style={styles.input}
+                      value={part1}
+                      onChangeText={handlePart1Change}
+                      maxLength={2}
+                      keyboardType="numeric"
+                    />
+
+                    <Text style={styles.textInput}>*Localidad</Text>
+                  </View>
+
+                  <Text style={styles.separator}>-</Text>
+                  <View>
+                    <TextInput
+                      style={styles.input}
+                      value={part2}
+                      onChangeText={handlePart2Change}
+                      maxLength={3}
+                      keyboardType="numeric"
+                    />
+
+                    <Text style={styles.textInput}>*Sector</Text>
+                  </View>
+
+                  <Text style={styles.separator}>-</Text>
+
+                  <View>
+                    <TextInput
+                      style={styles.input}
+                      value={part3}
+                      onChangeText={handlePart3Change}
+                      maxLength={3}
+                      keyboardType="numeric"
+                    />
+
+                    <Text style={styles.textInput}>*Manzana</Text>
+                  </View>
+
+                  <Text style={styles.separator}>-</Text>
+
+                  <View>
+                    <TextInput
+                      style={styles.input}
+                      value={part4}
+                      onChangeText={handlePart4Change}
+                      maxLength={3}
+                      keyboardType="numeric"
+                    />
+
+                    <Text style={styles.textInput}>*Lote</Text>
+                  </View>
+
+                  <Text style={styles.separator}>-</Text>
+
+                  <View>
+                    <TextInput
+                      style={styles.input}
+                      value={part5}
+                      onChangeText={handlePart5Change}
+                      maxLength={4}
+                      keyboardType="numeric"
+                    />
+
+                    <Text style={styles.textInput}>*Condominio</Text>
+                  </View>
+
+                </View>
+              </View>
+            ) : (
+            // Si no es 'Predio', muestra el otro contenido
+              <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
+                <View style={styles.textInputContainer}>
+                  <TextInput
+                    autoCapitalize="characters"
+                    color="black"
+                    placeholderTextColor="#C4C4C4"
+                    onChangeText={(text) => setSearchText(text)}
+                    style={styles.textInputStyle}
+                    placeholder="Buscar..."
+                  />
+                </View>
+
+                <TouchableWithoutFeedback onPress={() => { setTotalAmount(0); handleSearch(); }}>
+                  <View style={styles.iconContainer}>
+                    <Icon
+                      name="search"
+                      size={18}
+                      color="white"
+                    />
+                  </View>
+                </TouchableWithoutFeedback>
+              </View>
+            )}
+          </View>
+        </View>
+
+        <ScrollView style={{ alignSelf: 'center' }}>
+          {
           (newData === true && resultCargos?.[0])
             ? (
               <Adeudo
@@ -558,24 +694,21 @@ const PagoPadron = ({ route }) => {
             )
             : null
         }
-        {/* <Adeudo key={index} nombre={nameSearch || ''} padron={padron?.descripcion} cargo={cargo} /> */}
-        {newData === true && resultCargos?.[0] === undefined ? (
-          <Adeudo
-            nombre={
+          {/* <Adeudo key={index} nombre={nameSearch || ''} padron={padron?.descripcion} cargo={cargo} /> */}
+          {newData === true && resultCargos?.[0] === undefined ? (
+            <Adeudo
+              nombre={
               itsData()
             }
-            padron={padron?.descripcion}
-            cargo={null}
-          />
-        ) : null}
+              padron={padron?.descripcion}
+              cargo={null}
+            />
+          ) : null}
 
-        {
-        (isLoading) ? <ActivityIndicator style={styles.loading} size="large" color="#fc9696" /> : null
-      }
-      </ScrollView>
+        </ScrollView>
 
-      <View style={styles.footer}>
-        {
+        <View style={styles.footer}>
+          {
         totalAmount === 0 ? (
           null
         )
@@ -589,8 +722,8 @@ const PagoPadron = ({ route }) => {
           )
       }
 
-        <View key={modalKey}>
-          {
+          <View key={modalKey}>
+            {
             totalAmount > 0 ? (
               <Button
                 onPress={dopayment}
@@ -608,14 +741,16 @@ const PagoPadron = ({ route }) => {
                   </View>
                 </TouchableWithoutFeedback>
               )
-
           }
+          </View>
 
         </View>
 
       </View>
-    </View>
-
+      {
+        (isLoading) ? <LoadingComponent /> : null
+      }
+    </>
   );
 };
 
@@ -750,6 +885,35 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     width: '100%',
     justifyContent: 'space-between',
+  },
+
+  inputmsk: {
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+  },
+
+  container2: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 5,
+  },
+  input: {
+    borderBottomWidth: 1,
+    borderBottomColor: '#582E44',
+    padding: 10,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 5,
+    height: 46,
+    width: 53,
+
+  },
+  separator: {
+    paddingHorizontal: 5,
+  },
+  textInput: {
+    fontSize: 10,
+    color: '#582E44',
   },
 
 });

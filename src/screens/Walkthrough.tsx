@@ -14,7 +14,7 @@ import Swiper from 'react-native-swiper';
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
-import ImagePage1 from '../../assets/imagenes/Private-data.png';
+import ImagePage1 from '../../assets/imagenes/Private-data.jpeg';
 import ImagePage2 from '../../assets/imagenes/MULTA.png';
 import ImagePage3 from '../../assets/imagenes/User-flow-pana.png';
 import { useAppSelector } from '../store-v2/hooks';
@@ -38,8 +38,8 @@ const Walkthrough = ({ navigation }: WalkthroughScreenProps) => {
   const WalkthroughList = [
     {
       id: 1,
-      title: 'Bienvenido a tu app ciudadana',
-      descripcion: 'Encuentra maravillosas funciones, como pagos de adeudos y Trámites.',
+      title: 'Bienvenido a Tu App Juárez Conectado',
+      descripcion: 'Paga y factura desde la comodidad de tu casa u oficina',
       image: ImagePage1,
     },
     {
@@ -125,6 +125,7 @@ const styles = StyleSheet.create({
   imagenIlu: {
     height: 325,
     width: 325,
+    resizeMode: 'contain',
   },
   happyTry: {
     height: '100%',
