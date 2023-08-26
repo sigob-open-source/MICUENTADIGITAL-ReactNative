@@ -136,7 +136,7 @@ const PagoPadron = ({ route }) => {
       numeroDePadron = 3;
       (response !== null) ? setNameSearch(response?.descripcion) : null;
     } else if (padron?.descripcion === 'Infracciones') {
-      response = await getInfracciones({ q: searchText });
+      response = await getInfracciones({ licencia: searchText });
       numeroDePadron = 19;
       (response !== null) ? setNameSearch(response?.descripcion) : null;
     } else if (padron?.descripcion === 'Expediente De Anuncio') {
@@ -169,7 +169,7 @@ const PagoPadron = ({ route }) => {
       showAlert();
     } else {
       setPadronSearched(response);
-      response = await getAdeudoPadron(response, numeroDePadron);
+      response = await getAdeudoPadron(response);
       response.cargos = response.cargos.filter((c) => !c.tramite);
       if (padron?.descripcion === 'Predio') {
         const cargosPredialEnTramite = response.cargos.some((c) => c.tipo_de_cargo.sistemas?.id === 2 && c.tramite);

@@ -1,4 +1,5 @@
 import Moment from 'moment';
+import axios, { Axios } from 'axios';
 import { toCurrency, toMoment } from '../utils/formatters';
 import API from './http';
 
@@ -196,7 +197,7 @@ const getPredio = async (params) => {
 
 const getInfracciones = async (params) => {
   try {
-    const response = await API.get('recaudacion/infracciones-caja-public/', { params });
+    const response = await axios.get('https://wstrans01.juarez.gob.mx/consulta.tcgi', { params });
     return validateResut(response.data, 3);
   } catch (error) {
     console.log(error);
@@ -334,15 +335,12 @@ const getMotocicleta = async (params) => {
   return null;
 };
 
-const getAdeudoPadron = async (padron, numeroPadron) => {
+const getAdeudoPadron = async (folio_De_infraccion) => {
   let result;
   if (padron) {
-    await API
-      .post('recaudacion/consulta-caja-public/entidad/', {
-        padron_id: padron?.id,
-        padron: numeroPadron,
-        canal_de_pago: 3,
-        entidad: 1,
+    await axios
+      .get('https://wstrans01.juarez.gob.mx/consulta.tcgi', {
+        infraccion: folio_De_infraccion,
       }, {
         timeout: 1000 * 60 * 1,
       })
@@ -357,6 +355,8 @@ const getAdeudoPadron = async (padron, numeroPadron) => {
   } else {
     result = null;
   }
+
+  console.log(result);
   return result;
 };
 
