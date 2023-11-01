@@ -60,15 +60,21 @@ const Login = ({ navigation }: LoginScreenProps) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        <TouchableOpacity onPress={() => navigation.navigate('registroCiudadano')}>
+        {/* <TouchableOpacity onPress={() => navigation.navigate('registroCiudadano')}>
           <View style={styles.buttonCredenciales}>
             <Text style={styles.textButtonSin}>Iniciar sesión con cuenta única</Text>
           </View>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <TouchableOpacity onPress={next}>
           <View style={styles.buttonSinCredenciales}>
-            <Text style={styles.textButtonSin}>Entrar sin Usuario</Text>
+            <Text style={styles.textButtonSin}>Ingresar</Text>
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={() => navigation.navigate('terminos')}>
+          <View style={styles.buttonCredenciales}>
+            <Text style={{ color: '#502A3E', fontSize: 10 }}>Aviso de privacidad</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -122,8 +128,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   buttonCredenciales: {
-    backgroundColor: '#582E44',
-    height: 40,
+    height: 25,
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',

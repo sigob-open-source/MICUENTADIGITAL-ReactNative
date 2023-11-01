@@ -124,6 +124,7 @@ const getCiudadano = async (params) => {
   }
   return null;
 };
+
 export const getExpedienteDeMercado = async (params) => {
   try {
     const response = await API.get('empresas/expedientes-de-mercados-caja-public/', { params });
@@ -185,15 +186,57 @@ const getEmpresa = async (params) => {
   return null;
 };
 
-const getPredio = async (params) => {
-  try {
-    const response = await API.get('cuentaunicasir/predio-caja-atencion-ciudadana/', { params });
-    return validateResut(response.data, 3);
-  } catch (error) {
-    console.log(error);
-  }
-  return null;
+const authToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjkzNjcwNzY5LCJpYXQiOjE2OTM1ODQzNjksImp0aSI6IjdkMGViZTk0ZGVlZjRjMDZhN2NlZGU1MWQ2OGEwYTlkIiwidXNlcl9pZCI6OSwiaWQiOjl9.6j847jXCcMsS00sQ-deImtUjWsKo8pbdFFVGK4MWkDo';
+
+const headers = {
+  commom: {
+    Authorization: `Bearer ${authToken}`,
+  },
 };
+
+axios.defaults.headers.common = {
+  Authorization: `Bearer ${authToken}`,
+};
+
+axios.defaults.headers = {
+  Authorization: `Bearer ${authToken}`,
+};
+
+const getPredio = async (params) => {
+  const response = await axios.get('http://ingresosapi.juarez.gob.mx/api/predial/consultar-adeudo/', {
+    params,
+  });
+  console.log('data predios', JSON.stringify(response, null, 2));
+  return response.data;
+};
+
+// const authToken = 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjkzNjA2NjMzLCJpYXQiOjE2OTM1MjAyMzMsImp0aSI6IjZmZDkwNGY2N2M3NzRhNjhiY2RjOTY0OGZhYTVhNzMxIiwidXNlcl9pZCI6OSwiaWQiOjl9.Wd-oS_mgV92Wy2LoSd3Cd8l5b-TIGJxgptikJ1imBu0';
+// const url = 'http://ingresosapi.juarez.gob.mx/api/predial/consultar-adeudo/';
+// const headers = {
+//   Authorization: `Bearer ${authToken}`,
+// };
+
+// const getPredio = async (params) => {
+//   try {
+//     const response = await fetch(url, {
+//       method: 'GET',
+//       headers,
+//     });
+
+//     if (!response.ok) {
+//       throw new Error(`HTTP error! Status: ${response.status}`);
+//     }
+
+//     const data = await response.json();
+//     console.log('data predios', JSON.stringify(data, null, 2));
+//     return data;
+//   } catch (error) {
+//     console.log(error);
+//   }
+//   return null;
+// };
+
+// Llama a la función pasando los parámetros
 
 const getInfracciones = async (params) => {
   try {

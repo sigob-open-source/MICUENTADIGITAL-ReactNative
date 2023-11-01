@@ -20,20 +20,33 @@ import ImagePage3 from '../../assets/imagenes/User-flow-pana.png';
 import { useAppSelector } from '../store-v2/hooks';
 import { RootStackParamList } from '../types/navigation';
 
+import { consultaVialidad } from '../services/juarez-infracciones/consultaVialidad';
+import { TipoDeDocumentoConsulta } from '../services/juarez-infracciones/types/consultaVialidad';
+
+import { obtenerToken } from '../services/juarez-predial/auth';
+import { consultaAdeudo } from '../services/juarez-predial/consultaAdeudo';
+
 type WalkthroughScreenProps = NativeStackScreenProps<RootStackParamList, 'walkthrout'>;
 
 const Walkthrough = ({ navigation }: WalkthroughScreenProps) => {
   const isLoggedIn = useAppSelector((state) => Boolean(state.auth.ciudadano));
 
   useEffect(() => {
-    if (isLoggedIn) {
-      navigation.reset({
-        index: 0,
-        routes: [{ name: 'menuInicio' }],
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isLoggedIn]);
+    void (async () => {
+      try {
+        const { access } = await obtenerToken();
+
+        const d = await consultaAdeudo('01-998-001-005-0000', {
+          accessToken: access,
+        });
+
+        console.log(JSON.stringify(d, null, 2));
+      } catch (error) {
+        console.log(error.response);
+        console.log(error.response.data);
+      }
+    })();
+  }, []);
 
   const WalkthroughList = [
     {

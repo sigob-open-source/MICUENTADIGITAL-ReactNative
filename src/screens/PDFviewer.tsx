@@ -11,7 +11,10 @@ import {
   Alert,
 } from 'react-native';
 import Pdf from 'react-native-pdf';
+import currency from 'currency.js';
 import RNFetchBlob from 'rn-fetch-blob';
+import Header from '../components/Header';
+
 import { RootStackParamList } from '../types/navigation';
 
 // Types & Interfaces
@@ -19,90 +22,103 @@ type PDFViewerScreenProps = NativeStackScreenProps<RootStackParamList, 'pdfViewe
 
 const PDFViewerScreen = ({
   navigation,
-  route: {
-    params: { reciboB64 },
-  },
+  route,
 }: PDFViewerScreenProps) => {
-  const source = { uri: reciboB64 };
-
-  const handleDownload = async () => {
-    // Handle download logic here
-    const granted = await PermissionsAndroid.request(
-      PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-      {
-        title: 'Permisos requeridos',
-        message:
-            'Se requieren permisos para guardar archivos en el dispositivo. ',
-        buttonNeutral: 'Preguntame más tarde',
-        buttonNegative: 'Cancelar',
-        buttonPositive: 'OK',
-      },
-    );
-
-    if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-      const path = `${RNFetchBlob.fs.dirs.DownloadDir}/ticketdepago.pdf`;
-      await RNFetchBlob.fs.writeFile(path, reciboB64.replace('data:application/pdf;base64,', ''), 'base64');
-      console.log('ya paso por  aqui Archivo descargado');
-
-      RNFetchBlob.fs.stat(path)
-        .then((stats) => {
-          if (stats.size > 0) {
-            Alert.alert(
-              'PDF descargado',
-              'El PDF se ha descargado correctamente.',
-              [
-                {
-                  text: 'Abrir archivo',
-                  onPress: () => {
-                    RNFetchBlob.android.actionViewIntent(path, 'application/pdf');
-                  },
-                },
-                {
-                  text: 'OK',
-                  style: 'cancel',
-                },
-              ],
-            );
-          } else {
-            Alert.alert(
-              'ERROR',
-              'Hubo un problema con la descarga. Vuelva a intentarlo.',
-              [
-                {
-                  text: 'OK',
-                  style: 'cancel',
-                },
-              ],
-            );
-          }
-        })
-        .catch((error) => {
-          Alert.alert(
-            'ERROR',
-            'Hubo un problema con la descarga. Vuelva a intentarlo.',
-            [
-              {
-                text: 'OK',
-                style: 'cancel',
-              },
-            ],
-          );
-        });
-    }
-  };
-
+  const { datos } = route;
   return (
     <View style={styles.container}>
-      <Pdf
-        source={source}
+      <Header />
+      <View
         style={styles.pdf}
-      />
-      <View style={styles.containerButton}>
-        <TouchableOpacity onPress={handleDownload}>
-          <View style={styles.button}>
-            <Text style={{ color: '#FFFFFF' }}>Descargar</Text>
+      >
+        {console.log(JSON.stringify(datos.datosRecibo, null, 2))}
+        <View style={{
+          backgroundColor: 'white', width: '100%', height: 59, padding: 15,
+        }}
+        >
+          <Text style={{ fontWeight: '400', color: '#4F4F4F', fontSize: 14 }}>
+            Pago realizado:
+          </Text>
+        </View>
+        <View style={{
+          backgroundColor: 'white',
+          width: '100%',
+          height: 110,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+        >
+          <Text style={{ fontSize: 12, color: '#727272', fontWeight: '400' }}>
+            Pagaste:
+          </Text>
+          <Text style={{ fontWeight: '800', fontSize: 26, color: '#7D0025' }}>
+            {currency(datos.datosRecibo.datosDePago.total).format()}
+          </Text>
+        </View>
+        <View style={{
+          backgroundColor: 'white', width: '100%', flex: 1, padding: 20,
+        }}
+        >
+          <View style={{
+            backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
+          }}
+          >
+            <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
+              Fecha:
+            </Text>
+            <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
+              {datos.datosRecibo.fecha}
+            </Text>
           </View>
-        </TouchableOpacity>
+
+          <View style={{
+            marginTop: 10, backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
+          }}
+          >
+            <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
+              Pagado por:
+            </Text>
+            <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
+              {datos.datosRecibo.nombre}
+              {' '}
+              {datos.datosRecibo.apellidoPaterno}
+              {' '}
+              {datos.datosRecibo.apellidoMaterno}
+            </Text>
+          </View>
+
+          <View style={{
+            marginTop: 10, backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
+          }}
+          >
+            <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
+              Número de autorización:
+            </Text>
+            <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
+              {datos?.datosRecibo?.datosNetpayFolio || 'Pago realizado'}
+            </Text>
+          </View>
+
+          <View style={{
+            backgroundColor: '#F4F4F4',
+            marginTop: 15,
+            width: '100%',
+            height: 60,
+            padding: 10,
+          }}
+          >
+            <Text style={{ fontSize: 10, fontWeight: '400', color: '#6A6A6A' }}>
+              Tu pago se acreditará dentro de las próximas 24 horas hábiles.
+              {' '}
+              {'\n'}
+              Si tienes dudas con el pago de tu servicio, favor de contactarse con
+              ventanilla en el municipio.
+            </Text>
+
+          </View>
+        </View>
+      </View>
+      <View style={styles.containerButton}>
 
         <TouchableOpacity onPress={() => navigation.reset({
           index: 0,
@@ -112,7 +128,7 @@ const PDFViewerScreen = ({
         })}
         >
           <View style={styles.button}>
-            <Text style={{ color: '#FFFFFF' }}>Regresar</Text>
+            <Text style={{ color: '#FFFFFF' }}>Entendido!</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -131,12 +147,14 @@ const styles = StyleSheet.create({
     flex: 1,
     width: Dimensions.get('window').width,
     height: Dimensions.get('window').height,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   button: {
     backgroundColor: '#79142A',
-    width: 150,
+    width: 180,
     height: 45,
-    borderRadius: 10,
+    borderRadius: 5,
     justifyContent: 'center',
     alignItems: 'center',
     marginTop: 15,

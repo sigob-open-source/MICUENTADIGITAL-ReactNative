@@ -58,6 +58,8 @@ import SeleccionarTipoDePadronScreen from './src/screens/PagosDiversos/Seleciona
 import RegistroCiudadano from './src/screens/RegistroCiudadano';
 import CodigoScreen from './src/screens/CodigoAcceso';
 import PaymentScreen from './src/screens/PaymentScreen';
+import ViewPagoNetpay from './src/screens/ViewPagoNetpay';
+import TerminsCondiciones from './src/screens/TerminsCondiciones';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -102,6 +104,8 @@ const AppContainer = () => (
       <Stack.Screen name="tramites" component={Tramites} />
       <Stack.Screen name="descargaFactura" component={DescargaFactura} />
       <Stack.Screen name="paymentScreen" component={PaymentScreen} />
+      <Stack.Screen name="pagoNetpay" component={ViewPagoNetpay} />
+      <Stack.Screen name="terminos" component={TerminsCondiciones} />
       <Stack.Screen
         name="pdfViewer"
         options={{ animation: 'none' }}

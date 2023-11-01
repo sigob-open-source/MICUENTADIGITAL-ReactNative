@@ -10,7 +10,7 @@ const URI = 'https://www.juarez.gob.mx/facturacion/';
 const WebViewFacturacionScreen = ({ route: { params: { reciboURL } } }) => (
   <WebViewPage
     title="Facturación"
-    uri={reciboURL}
+    uri={URI}
   />
 );
 

@@ -105,7 +105,7 @@ const dataList: IItemMenu[] = [
     name: 'Facturar',
     iconname: 'id-card-alt',
     enableEntypo: true,
-    navegacion: 'inicioFactura',
+    navegacion: 'webFacturacion',
     necesitaLogin: false,
     deshabilitado: false,
   },

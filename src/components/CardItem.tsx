@@ -3,50 +3,42 @@ import { TouchableWithoutFeedback } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import styled from 'styled-components/native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import currency from 'currency.js';
 
 import fonts from '../utils/fonts';
 
 const CardItem = ({
-  navegar, info, selectType, data, padron, cargo, reduceCargo,
-}) => {
-  const navigation = useNavigation();
+  navegar, data, padron, cargo,
+}) => (
+  <TouchableWithoutFeedback>
+    <Container>
+      <Label>
+        Clave:
+        {' '}
+        {
+            cargo.motivo || 'sin descripcion'
+          }
+        {' | '}
+        {
+            cargo.descripcion || 'sin descripcion'
+          }
+        {'  '}
+        {/* { currency(data.importes.importeTotal).format() || 0} */}
+      </Label>
 
-  console.log(JSON.stringify(cargo, null, 2));
-
-  return (
-    <TouchableWithoutFeedback
-      onPress={() => navigation.navigate(navegar, {
-        selectType,
-        data,
-        nombrePadron: padron,
-        cargo,
-      })}
-    >
-      <Container>
-        <Label>
-          {
-          (info?.length < 60)
-            ? `${info}`
-            : `${info?.substring(0, 57)}...`
-}
-          {' $'}
-          {cargo.adeudo_total.toFixed(2) || 0}
-        </Label>
-
-        <Label2>
+      {/* <Label2>
           {'| '}
           {cargo.tipo_de_cargo.periodo_fiscal.periodo || 0}
-        </Label2>
-        <FontAwesome5
+        </Label2> */}
+      {/* <FontAwesome5
           name="chevron-right"
           size={14}
           solid
           color="#141414"
-        />
-      </Container>
-    </TouchableWithoutFeedback>
-  );
-};
+        /> */}
+    </Container>
+  </TouchableWithoutFeedback>
+);
 
 const Container = styled.View`
   background-color: #ffffff;
