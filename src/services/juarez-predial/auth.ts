@@ -5,8 +5,8 @@ import { APIMessage } from './types/globals';
 
 const obtenerToken = async () => {
   const response = await axios.post<ObtenerTokenResponse | APIMessage>('https://ingresosapi.juarez.gob.mx/api/token/obtener/', {
-    username: 'sigob',
-    password: '5ig0b2023',
+    username: 'api-sigob',
+    password: 'coronado2023',
   }, {
     headers: {
       'Content-Type': 'application/json',

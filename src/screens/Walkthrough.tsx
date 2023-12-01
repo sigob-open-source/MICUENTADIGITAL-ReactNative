@@ -31,22 +31,22 @@ type WalkthroughScreenProps = NativeStackScreenProps<RootStackParamList, 'walkth
 const Walkthrough = ({ navigation }: WalkthroughScreenProps) => {
   const isLoggedIn = useAppSelector((state) => Boolean(state.auth.ciudadano));
 
-  useEffect(() => {
-    void (async () => {
-      try {
-        const { access } = await obtenerToken();
+  // useEffect(() => {
+  //   void (async () => {
+  //     try {
+  //       const { access } = await obtenerToken();
 
-        const d = await consultaAdeudo('01-998-001-005-0000', {
-          accessToken: access,
-        });
+  //       const d = await consultaAdeudo('01-998-001-005-0000', {
+  //         accessToken: access,
+  //       });
 
-        console.log(JSON.stringify(d, null, 2));
-      } catch (error) {
-        console.log(error.response);
-        console.log(error.response.data);
-      }
-    })();
-  }, []);
+  //       console.log(JSON.stringify(d, null, 2));
+  //     } catch (error) {
+  //       console.log(error.response);
+  //       console.log(error.response.data);
+  //     }
+  //   })();
+  // }, []);
 
   const WalkthroughList = [
     {

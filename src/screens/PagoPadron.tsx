@@ -12,12 +12,7 @@ import {
 import currency from 'currency.js';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { useNavigation } from '@react-navigation/native';
-import moment from 'moment';
-import ReactNativeNetPay from 'react-native-netpay';
-import axios from 'axios';
 import fonts from '../utils/fonts';
-import { generarTicket, generateRecibo } from '../services/recaudacion/recibo';
-import { createCharge } from '../services/netpay';
 import { consultaAdeudo } from '../services/juarez-predial/consultaAdeudo';
 
 import Button from '../components/Button';
@@ -31,16 +26,10 @@ import {
   getPadrones,
 } from '../services/padrones';
 
-import { consultaVialidad } from '../services/juarez-infracciones/consultaVialidad';
-import { TipoDeDocumentoConsulta } from '../services/juarez-infracciones/types/consultaVialidad';
 import { consultaInfraccion } from '../services/juarez-infracciones/consultaInfraccion';
 import { obtenerToken } from '../services/juarez-predial/auth';
 
 import { useNotification } from '../components/DropDownAlertProvider';
-import { generarReferenciaDePagoNetpayPublic } from '../services/recaudacion/pago';
-import getExpiryDate from '../utils/get-expiry-date';
-import sortCargos from '../utils/sorterCargos';
-import { log } from '../services/netpayCDN';
 
 const PagoPadron = ({ route }) => {
   const [padron, setPadron] = useState();
@@ -108,31 +97,33 @@ const PagoPadron = ({ route }) => {
   });
 
   const consultarInfracciones = async (folioInfraccion : string) => {
-    let intentos = true;
-    let intentospt = 0;
-    while (intentos) {
-      try {
-        const response = await consultaInfraccion(folioInfraccion);
-        return response;
-        break;
-      } catch (error) {
-        console.log('este es el error que regreso', error);
-        console.log('numero de intentos es ', intentospt);
-        intentospt++;
-        if (intentospt == 3) {
-          intentos = false;
-          return null;
-        }
-      }
-    }
-    // try {
-    //   const response = await consultaInfraccion(folioInfraccion);
+    const intentos = true;
+    const intentospt = 0;
 
-    //   return response;
-    // } catch (error) {
-    //   console.log('este es el error que regreso', error);
-    //   return false;
+    // while (intentos) {
+    //   try {
+    //     const response = await consultaInfraccion(folioInfraccion);
+    //     return response;
+    //     break;
+    //   } catch (error) {
+    //     console.log('este es el error que regreso', error);
+    //     console.log('numero de intentos es ', intentospt);
+    //     intentospt++;
+    //     if (intentospt == 3) {
+    //       intentos = false;
+    //       return null;
+    //     }
+    //   }
     // }
+    try {
+      console.log(folioInfraccion);
+      const response = await consultaInfraccion(folioInfraccion);
+
+      return response;
+    } catch (error) {
+      console.log('este es el error que regreso', error);
+      return false;
+    }
   };
 
   const consultarPredio = async (folioPredio : string) => {
@@ -156,7 +147,6 @@ const PagoPadron = ({ route }) => {
     setIsBandera(false);
 
     const conquetenar = `${part1}-${part2}-${part3}-${part4}-${part5}`;
-
     let response;
     if (padron?.descripcion === 'Predio') {
       response = await consultarPredio(conquetenar);
@@ -164,13 +154,12 @@ const PagoPadron = ({ route }) => {
     if (padron?.descripcion === 'Infracciones') {
       response = await consultarInfracciones(searchText);
     }
+    console.log(JSON.stringify(response, null, 2));
 
     if (response) {
       setPadronSearched(response);
 
       if (padron?.descripcion === 'Infracciones') {
-        console.log(JSON.stringify(response, null, 2));
-
         if (response.status === 'PAGADA') {
           notify({
             type: 'info',
@@ -214,14 +203,15 @@ const PagoPadron = ({ route }) => {
     setLoading(true);
 
     if (padron?.descripcion === 'Predio') {
-      const { folio } = padronSearched;
+      const { folio, informacion } = padronSearched;
       const AccesToken = tokenPadron;
       const datosDePago = {
         total: totalAmount,
         folio,
         token: AccesToken,
+        clave: informacion.clave,
         padron: 'Predio',
-
+        merchan: `P-${informacion.clave}-`,
       };
       navigation.navigate('pagoNetpay', { params: datosDePago });
     }
@@ -231,6 +221,7 @@ const PagoPadron = ({ route }) => {
         total: totalAmount,
         folio,
         padron: 'Infracciones',
+        merchan: `I-${informacion.clave}-`,
       };
       navigation.navigate('pagoNetpay', { params: datosDePago });
     }

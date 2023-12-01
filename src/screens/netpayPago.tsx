@@ -253,14 +253,8 @@ const NetPayPagoScreen = ({
   const URI = useMemo(() => {
     const ids = cargoIds.join(',');
 
-    return `https://solicitudes.migob.mx/pago-webview?cargos=${ids}&total=${total}&tipo_de_padron=${tipoDePadronId}&object_id_padron=${padronId}&merchantReferenceCode=${merchantReferenceCode}&webView=1`;
-  }, [
-    cargoIds,
-    total,
-    tipoDePadronId,
-    padronId,
-    merchantReferenceCode,
-  ]);
+    return `https://tresdeese.migob.mx/?nombre=${nombre}&apellidoParterno=${apellido}&montoTotal=${montoTotal}`;
+  });
 
   console.log({ URI });
 

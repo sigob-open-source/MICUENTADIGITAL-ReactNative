@@ -25,13 +25,14 @@ const PDFViewerScreen = ({
   route,
 }: PDFViewerScreenProps) => {
   const { datos } = route;
+  const data = datos.datoParaRecibo;
   return (
     <View style={styles.container}>
       <Header />
       <View
         style={styles.pdf}
       >
-        {console.log(JSON.stringify(datos.datosRecibo, null, 2))}
+        {console.log(JSON.stringify(data, null, 2))}
         <View style={{
           backgroundColor: 'white', width: '100%', height: 59, padding: 15,
         }}
@@ -52,7 +53,7 @@ const PDFViewerScreen = ({
             Pagaste:
           </Text>
           <Text style={{ fontWeight: '800', fontSize: 26, color: '#7D0025' }}>
-            {currency(datos.datosRecibo.datosDePago.total).format()}
+            {currency(data.total).format()}
           </Text>
         </View>
         <View style={{
@@ -67,7 +68,7 @@ const PDFViewerScreen = ({
               Fecha:
             </Text>
             <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
-              {datos.datosRecibo.fecha}
+              {data.fechaActual}
             </Text>
           </View>
 
@@ -79,11 +80,10 @@ const PDFViewerScreen = ({
               Pagado por:
             </Text>
             <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
-              {datos.datosRecibo.nombre}
+              {data.nombre}
               {' '}
-              {datos.datosRecibo.apellidoPaterno}
+              {data.lastName}
               {' '}
-              {datos.datosRecibo.apellidoMaterno}
             </Text>
           </View>
 
@@ -95,7 +95,7 @@ const PDFViewerScreen = ({
               Número de autorización:
             </Text>
             <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
-              {datos?.datosRecibo?.datosNetpayFolio || 'Pago realizado'}
+              {data.numeroAut}
             </Text>
           </View>
 

@@ -229,59 +229,6 @@ const ViewPagoNetpay = ({ route }) => {
     }
   };
 
-  // const realizarPagoInsitu = async (merchantReferenceCode, orderId) => {
-  // // Datos para la solicitud
-  //   const xmlData = `
-  //   <PAGOTRANSCAPTURA>
-  //     <ENCABEZADO>
-  //       <fecha>${fechaHoraActual}</fecha>
-  //       <operacion>${new Date().getTime()}</operacion>
-  //       <registros>1</registros>
-  //       <registroid>T00A</registroid>
-  //     </ENCABEZADO>
-  //     <PAGOS>
-  //       <REGISTRO>
-  //         <pago_insitu>
-  //           <autorizacion>${orderId}</autorizacion>
-  //           <cfolio>${merchantReferenceCode}</cfolio>
-  //           <fecha_hora>${fechaHoraActual}</fecha_hora>
-  //           <total>${datosDePago.total}</total>
-  //           <conceptos>
-  //             <pago>
-  //               <infraccion>${datosDePago.folio}</infraccion>
-  //               <importe>${datosDePago.total}}</importe>
-  //             </pago>
-  //           </conceptos>
-  //         </pago_insitu>
-  //       </REGISTRO>
-  //     </PAGOS>
-  //   </PAGOTRANSCAPTURA>`;
-
-  //   // Configurar las cabeceras para enviar XML
-  //   const headers = {
-  //     'Content-Type': 'application/xml',
-  //   };
-
-  //   try {
-  //   // Realizar la solicitud POST
-  //     const response = await axios.post('https://wstrans01.juarez.gob.mx/captura.tcgi', xmlData, { headers });
-
-  //     // Verificar la respuesta
-  //     if (response.status === 200) {
-  //     // La solicitud fue exitosa
-  //     // Puedes procesar la respuesta aquí
-  //       const responseData = response.data;
-  //       // Si la respuesta es XML, puedes convertirla a JSON usando xml2js u otra librería
-  //       // const jsonResult = await xml2js.parseStringPromise(responseData);
-  //       console.log('Respuesta JSON:', responseData);
-  //     } else {
-  //       console.error('La solicitud no fue exitosa. Código de estado:', response.status);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error al realizar la solicitud:', error);
-  //   }
-  // };
-
   const infraccionesPayment = async (merchantReferenceCode, orderId) => {
     try {
       const response = await realizarPagoInsitu(merchantReferenceCode, orderId);
@@ -300,7 +247,8 @@ const ViewPagoNetpay = ({ route }) => {
     setIsLoading(true);
     console.log(values);
     const { total } = datosDePago;
-    // const { folio } = datosDePago;
+    const { folio } = datosDePago;
+    const { padron } = datosDePago;
 
     // const responseCardToken = await GetCardToken();
     // let responsecard = {};
@@ -312,9 +260,12 @@ const ViewPagoNetpay = ({ route }) => {
       nombre: values.nombre,
       apellidoPaterno: values.apellidoPaterno,
       apellidoMaterno: values.apellidoMaterno,
+      phone: values.celular,
       email: values.email,
       fecha: fechaActual,
       montoTotal: total,
+      padronSeleccionado: padron,
+      folio,
     };
 
     navigation.reset({

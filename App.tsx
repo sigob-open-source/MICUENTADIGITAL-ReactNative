@@ -60,6 +60,7 @@ import CodigoScreen from './src/screens/CodigoAcceso';
 import PaymentScreen from './src/screens/PaymentScreen';
 import ViewPagoNetpay from './src/screens/ViewPagoNetpay';
 import TerminsCondiciones from './src/screens/TerminsCondiciones';
+import ErrorScreen from './src/screens/ErrorScreen';
 
 // Initialize the stack navigator
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -76,6 +77,7 @@ const AppContainer = () => (
         headerShown: false,
       }}
     >
+
       <Stack.Screen name="walkthrout" component={Walkthrout} />
       <Stack.Screen
         name="infoServidorPublico"
@@ -126,6 +128,11 @@ const AppContainer = () => (
         component={WebViewCartografiaScreen}
       />
       <Stack.Screen
+        name="errorScreen"
+        options={{ animation: 'none' }}
+        component={ErrorScreen}
+      />
+      <Stack.Screen
         name="zonoficacion"
         options={{ animation: 'none' }}
         component={WebViewZonificacion}
@@ -155,6 +162,7 @@ const AppContainer = () => (
         options={{ animation: 'none' }}
         component={WebViewFacturacionScreen}
       />
+
       <Stack.Screen
         name="estrados"
         options={{ animation: 'none' }}
