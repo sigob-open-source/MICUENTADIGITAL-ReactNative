@@ -1,18 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import currency from 'currency.js';
+import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet, Text, View, Dimensions, TouchableWithoutFeedback,
+  Dimensions, StyleSheet, Text, TouchableWithoutFeedback,
+  View,
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
-import currency from 'currency.js';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
+import { ConsultaInfraccion_Activa } from '../services/juarez-infracciones/types/consultaInfraccion';
 import fonts from '../utils/fonts';
 
+// Types & Interfaces
+interface IAdeudoProps {
+  data: ConsultaInfraccion_Activa;
+}
+
 const Adeudo = ({
-  padron,
   data,
   children,
-}) => {
+}: React.PropsWithChildren<IAdeudoProps>) => {
   const [isCollapsable, setIsCollapsable] = useState(true);
 
   useEffect(() => {
@@ -121,7 +127,7 @@ export default Adeudo;
 
 const styles = StyleSheet.create({
   card: {
-    width: Dimensions.get('window').width * 0.85,
+    width: '100%',
     height: 210,
     paddingHorizontal: 15,
     borderRadius: 10,

@@ -25,8 +25,8 @@ type MutationResult<TData> = {
 };
 
 export type {
-  PaginatedResult,
-  NormalizedAPIError,
-  MutationResult,
   DetailResponse,
+  MutationResult,
+  NormalizedAPIError,
+  PaginatedResult,
 };

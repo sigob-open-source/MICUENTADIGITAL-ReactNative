@@ -1,5 +1,6 @@
 // Internal dependencies
 import axios from 'axios';
+
 import { ObtenerTokenResponse } from './types/auth';
 import { APIMessage } from './types/globals';
 
@@ -9,6 +10,7 @@ const obtenerToken = async () => {
     password: 'coronado2023',
   }, {
     headers: {
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       'Content-Type': 'application/json',
     },
   });

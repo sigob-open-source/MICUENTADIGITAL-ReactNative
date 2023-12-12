@@ -1,4 +1,6 @@
 /* eslint-disable consistent-return */
+import type { AxiosError } from 'axios';
+
 import { HTTP } from './http';
 
 const getReferencia = async (
@@ -21,8 +23,10 @@ const getReferencia = async (
       return response.data;
     }
   } catch (error) {
-    console.log(error);
-    console.log(error?.response?.data);
+    const typedError = error as AxiosError;
+
+    console.log(typedError);
+    console.log(typedError.response?.data);
   }
 };
 
@@ -59,6 +63,6 @@ export type {
   IClasificadorDeTiposDeCargos,
 };
 export {
-  getReferencia,
   getClasificadoresDeTipoDeCargoPortalPublico,
+  getReferencia,
 };

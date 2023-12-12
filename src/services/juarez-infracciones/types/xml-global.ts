@@ -11,7 +11,7 @@ interface XMLBadRequest {
 }
 
 export type {
-  XMLScalarValue,
   XMLBadRequest,
   XMLNoData,
+  XMLScalarValue,
 };

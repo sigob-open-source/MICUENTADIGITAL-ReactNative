@@ -88,8 +88,8 @@ interface ConsultaAdedudoResponse extends CommonResponse {
 export type {
   ApiError,
   CommonResponse,
+  ConsultaAdedudoResponse,
+  PredioProps,
   ReferenciaBancariaBBVA,
   ReferenciaEcommerce,
-  PredioProps,
-  ConsultaAdedudoResponse,
 };

@@ -1,7 +1,10 @@
-import {
-  StyleSheet, Text, View, Image, TouchableOpacity, Linking,
-} from 'react-native';
 import React from 'react';
+import {
+  Linking,
+  StyleSheet,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const Banner = () => (
@@ -14,7 +17,7 @@ const Banner = () => (
           justifyContent: 'space-around',
         }}
         >
-          <TouchableOpacity onPress={() => Linking.openURL('https://www.facebook.com/GobiernoCdJuarez')}>
+          <TouchableOpacity onPress={() => { void Linking.openURL('https://www.facebook.com/GobiernoCdJuarez'); }}>
             <View style={styles.iconsRedes}>
               <FontAwesome5
                 name="facebook"
@@ -25,7 +28,7 @@ const Banner = () => (
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => Linking.openURL('https://instagram.com/cruzperezcuellar?igshid=NTc4MTIwNjQ2YQ==')}>
+          <TouchableOpacity onPress={() => { void Linking.openURL('https://instagram.com/cruzperezcuellar?igshid=NTc4MTIwNjQ2YQ=='); }}>
             <View style={styles.iconsRedes}>
               <FontAwesome5
                 name="instagram"
@@ -36,7 +39,7 @@ const Banner = () => (
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => Linking.openURL('https://twitter.com/MunicipioJuarez')}>
+          <TouchableOpacity onPress={() => { void Linking.openURL('https://twitter.com/MunicipioJuarez'); }}>
             <View style={styles.iconsRedes}>
               <FontAwesome5
                 name="twitter"
@@ -47,7 +50,7 @@ const Banner = () => (
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/@municipiodejuarez6912/featured')}>
+          <TouchableOpacity onPress={() => { void Linking.openURL('https://www.youtube.com/@municipiodejuarez6912/featured'); }}>
             <View style={styles.iconsRedes}>
               <FontAwesome5
                 name="youtube"
@@ -58,7 +61,7 @@ const Banner = () => (
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => Linking.openURL('https://juarezconectado.juarez.gob.mx/')}>
+          <TouchableOpacity onPress={() => { void Linking.openURL('https://juarezconectado.juarez.gob.mx/'); }}>
             <View style={styles.webButton}>
               <FontAwesome5
                 name="globe"

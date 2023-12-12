@@ -1,13 +1,13 @@
 /* eslint-disable react/jsx-props-no-spreading */
 // External dependencies
+import NetInfo from '@react-native-community/netinfo';
 import React, { useEffect, useState } from 'react';
 import {
-  StyleSheet,
   Modal,
-  View,
+  StyleSheet,
   Text,
+  View,
 } from 'react-native';
-import NetInfo from '@react-native-community/netinfo';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 function withInternetConnection<T>(ParentComponent: T) {

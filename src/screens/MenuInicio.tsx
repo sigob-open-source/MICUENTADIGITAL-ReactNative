@@ -1,31 +1,29 @@
 // External dependencies
-import React, { useState, useMemo } from 'react';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useMemo } from 'react';
 import {
-  StyleSheet,
-  View,
   FlatList,
-  TouchableWithoutFeedback,
+  Linking,
+  StyleSheet,
   Text,
   TouchableOpacity,
-  Linking,
+  TouchableWithoutFeedback,
+  View,
 } from 'react-native';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch } from 'react-redux';
 
 // Internal dependencies
-import Square from '../components/CardPagos';
-import Header from '../components/Header';
-import ConnectionCheck from '../components/internetChecker';
 import Banner from '../components/Banner';
-import colors from '../utils/colors';
-import { useAppSelector } from '../store-v2/hooks';
-import { RootStackParamList } from '../types/navigation';
-import { useNotification } from '../components/DropDownAlertProvider';
 import Button from '../components/Button';
-import { clearAuth } from '../store-v2/reducers/auth';
 import Card from '../components/Card';
-import { CLEAR_AUTH } from '../store/reducers/auth';
+import Square from '../components/CardPagos';
+import { useNotification } from '../components/DropDownAlertProvider';
+import Header from '../components/Header';
+import { useAppSelector } from '../store-v2/hooks';
+import { clearAuth } from '../store-v2/reducers/auth';
+import { RootStackParamList } from '../types/navigation';
+import colors from '../utils/colors';
 
 // Types & Interfaces
 type IMenuInicioScreenProps = NativeStackScreenProps<RootStackParamList, 'menuInicio'>;
@@ -40,6 +38,7 @@ interface IItemMenu {
   necesitaLogin?: boolean;
   deshabilitado?: boolean;
   linkurl?: string;
+  padron?: { descripcion: string; estados_globales: number; id: number };
 }
 
 const itemPredio = { descripcion: 'Predio', estados_globales: 1, id: 19 };
@@ -59,8 +58,7 @@ const dataList: IItemMenu[] = [
     enableEntypo: false,
     navegacion: 'pagoPadron',
     necesitaLogin: false,
-    padrones: itemInfra,
-
+    padron: itemInfra,
   },
   {
     isBlank: false,
@@ -70,35 +68,8 @@ const dataList: IItemMenu[] = [
     enableEntypo: true,
     navegacion: 'pagoPadron',
     necesitaLogin: false,
-    padrones: itemPredio,
+    padron: itemPredio,
   },
-  // {
-  //   isBlank: false,
-  //   color: '#404040',
-  //   name: 'Zonificación de Predio',
-  //   iconname: 'map-marked-alt',
-  //   enableEntypo: true,
-  //   navegacion: 'zonoficacion',
-  //   necesitaLogin: false,
-  // },
-  // {
-  //   isBlank: false,
-  //   color: '#404040',
-  //   name: 'Oficinas de Atención',
-  //   iconname: 'school',
-  //   enableEntypo: true,
-  //   navegacion: 'oficinaAtencion',
-  //   necesitaLogin: false,
-  // },
-  // {
-  //   isBlank: false,
-  //   color: '#404040',
-  //   name: 'Directorio',
-  //   iconname: 'book',
-  //   enableEntypo: true,
-  //   navegacion: 'dirfuncionario',
-  //   necesitaLogin: false,
-  // },
   {
     isBlank: false,
     color: '#ffffff',
@@ -109,35 +80,6 @@ const dataList: IItemMenu[] = [
     necesitaLogin: false,
     deshabilitado: false,
   },
-  // {
-  //   isBlank: false,
-  //   color: '#404040',
-  //   name: 'Solicitudes',
-  //   iconname: 'street-view',
-  //   enableEntypo: false,
-  //   navegacion: 'solicitudSelect',
-  //   deshabilitado: false,
-  // },
-  // {
-  //   isBlank: false,
-  //   color: '#404040',
-  //   name: 'Cabildo',
-  //   iconname: 'users',
-  //   enableEntypo: true,
-  //   necesitaLogin: false,
-  //   deshabilitado: false,
-  //   navegacion: 'cobildo',
-  // },
-  // {
-  //   isBlank: false,
-  //   color: '#404040',
-  //   name: 'Estrados',
-  //   iconname: 'balance-scale-right',
-  //   enableEntypo: true,
-  //   necesitaLogin: false,
-  //   deshabilitado: false,
-  //   navegacion: 'estrados',
-  // },
 ];
 
 const numColumns = 3;
@@ -145,40 +87,10 @@ const numColumns = 3;
 const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
   // Component's state
 
-  // TODO: Why is this needed?
-  // eslint-disable-next-line
-  const [hasSwitchedView, setHasSwitchedView] = useState(false);
-
   const ciudadano = useAppSelector((state) => state.auth.ciudadano);
   const notify = useNotification();
 
   const dispatch = useDispatch();
-
-  /**
-   * En el diseño de esta pantalla, en algunos casos pueden quedar iconos vacios,
-   * pero estos se siguen mostrando esta parte es para saber si debería haber más
-   * botones en las columnas restantes, en caso de que detecte que no debería haber,
-   * cambia la propiedad de isblank a true, dentro del componente del botón, al ser
-   * esta propiedad true, el botón se hace invisible e imposible de hacer clic en el.
-   */
-  const formatData = (items: IItemMenu[], columns: number) => {
-    const totalRows = Math.floor(items.length / columns);
-    const totalLastRow = items.length - (totalRows * columns);
-
-    // while (totalLastRow !== 0 && totalLastRow !== columns) {
-    //   items.push({
-    //     name: 'nada',
-    //     iconname: 'question',
-    //     enableEntypo: false,
-    //     isBlank: true,
-    //     color: '#404040',
-    //   });
-
-    //   totalLastRow += 1;
-    // }
-
-    return items;
-  };
 
   /**
    * Está función sirve para navegar a otras pantallas dependiendo del botón
@@ -212,8 +124,8 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
     }
 
     if (item.navegacion) {
-      setHasSwitchedView(true);
-      navigation.navigate(item.navegacion, { padron: item.padrones });
+      // @ts-ignore
+      navigation.navigate(item.navegacion, item.padron ? { padron: item.padron } : null);
     }
   };
 
@@ -247,8 +159,7 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
           enableEntypo={item.enableEntypo}
           nombreItem={item.name}
           iconName={item.iconname}
-          isDesable={item.deshabilitado}
-          padron={item.padron}
+          isDesable={!!item.deshabilitado}
         />
       </View>
     </TouchableWithoutFeedback>
@@ -256,7 +167,7 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
 
   return (
     <View style={styles.container}>
-      <ConnectionCheck />
+
       <View style={{ marginBottom: '2%' }}>
         <Header
           item="Inicio"
@@ -282,60 +193,12 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
         <View style={styles.separator} />
 
         <FlatList
-          data={formatData(dataList, numColumns)}
+          data={dataList}
           renderItem={renderMenuItem}
           keyExtractor={(_, index) => index.toString()}
           numColumns={numColumns}
           ListFooterComponent={(
             <>
-              {/* <View style={styles.pagosStyle}>
-                <View style={styles.tituloCardContainer}>
-                  <Text style={styles.pagoTxt}>Pagos</Text>
-                  <View style={styles.iconstyel}>
-                    <FontAwesome5
-                      name="money-check-alt"
-                      size={30}
-                      solid
-                      color="#414141"
-                    />
-                  </View>
-                </View>
-                <View style={styles.buttonBox}>
-                  <TouchableOpacity onPress={() => navigation.navigate('pagos')}>
-                    <View style={styles.butonPagos}>
-                      <Text style={styles.pagoSubCategoryText}>Consulta de adeudo</Text>
-                    </View>
-                  </TouchableOpacity>
-
-                  <View style={styles.separator2} />
-                  <TouchableOpacity onPress={() => navigation.navigate('seleccionarTipoDePadron')}>
-                    <View style={styles.butonPagos}>
-                      <Text style={styles.pagoSubCategoryText}>Pago de trámites directos</Text>
-                    </View>
-                  </TouchableOpacity>
-                </View>
-              </View> */}
-
-              <View style={styles.separator} />
-
-              <TouchableOpacity onPress={() => navigation.navigate('tramites')}>
-                <Card
-                  style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    borderBottomWidth: 3,
-                    borderBottomColor: '#009C6F',
-                  }}
-                >
-                  <Text style={styles.greeting2}>Trámites</Text>
-                  <FontAwesome5
-                    name="folder-open"
-                    size={30}
-                    solid
-                    color="#142B47"
-                  />
-                </Card>
-              </TouchableOpacity>
 
               <View style={styles.separator} />
 
@@ -400,39 +263,9 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
                 </Card>
               </TouchableOpacity>
 
-              {/* <TouchableOpacity onPress={() => navigation.navigate('webAdeudos')}>
-                <View style={styles.pagosStyle}>
-                  <Text style={styles.pagoTxt}>Gestión de Trámites Gubernamentales</Text>
-                  <View style={styles.iconstyel}>
-                    <FontAwesome5
-                      name="file-signature"
-                      size={30}
-                      solid
-                      color="#414141"
-                    />
-                  </View>
-                </View>
-              </TouchableOpacity> */}
               <View style={styles.separator} />
               <Banner />
               <View style={styles.separator} />
-
-              {/* <View style={styles.notifications}>
-                <View style={styles.notificationsIcon}>
-                  <FontAwesome5
-                    name="comments"
-                    size={35}
-                    solid
-                    color="#414141"
-                  />
-                </View>
-                <View style={styles.infoContainer}>
-                  <Text style={styles.TituloInfo}>Una Nueva Iniciativa</Text>
-                  <Text style={styles.subTituloInfo}>
-                    El presidente comunica un cambio para la ciudad.
-                  </Text>
-                </View>
-              </View> */}
 
               {
                 Boolean(ciudadano) && (

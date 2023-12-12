@@ -1,22 +1,22 @@
 // External dependencies
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, {
   useMemo,
-  useState,
   useRef,
+  useState,
 } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { WebViewMessageEvent } from 'react-native-webview';
 import { ActivityIndicator, View } from 'react-native';
+import { WebViewMessageEvent } from 'react-native-webview';
 
 // Internal dependencies
-import { RootStackParamList } from '../types/navigation';
+import { useNotification } from '../components/DropDownAlertProvider';
+import Header from '../components/HeaderV2/Header';
 import WebViewPage from '../components/WebViewPage';
 import useDebouncedFunction from '../hooks/useDebouncedFunction';
-import { useNotification } from '../components/DropDownAlertProvider';
-import { INetPayResponse } from '../services/recaudacion/recibo.types';
-import { generarTicket, generateRecibo } from '../services/recaudacion/recibo';
-import Header from '../components/HeaderV2/Header';
 import Logger from '../lib/logger';
+import { generarTicket, generateRecibo } from '../services/recaudacion/recibo';
+import { INetPayResponse } from '../services/recaudacion/recibo.types';
+import { RootStackParamList } from '../types/navigation';
 
 // Types & Interfaces
 type INetPayPagoScreen = NativeStackScreenProps<RootStackParamList, 'netpaypago'>;
@@ -231,10 +231,6 @@ const NetPayPagoScreen = ({
   navigation,
   route: {
     params: {
-      cargoIds,
-      padronId,
-      tipoDePadronId,
-      total,
       merchantReferenceCode,
     },
   },
@@ -251,10 +247,13 @@ const NetPayPagoScreen = ({
   const notify = useNotification();
 
   const URI = useMemo(() => {
-    const ids = cargoIds.join(',');
+    // TODO: Where these variables are coming from?
+    const nombre = '';
+    const apellido = '';
+    const montoTotal = '';
 
     return `https://tresdeese.migob.mx/?nombre=${nombre}&apellidoParterno=${apellido}&montoTotal=${montoTotal}`;
-  });
+  }, []);
 
   console.log({ URI });
 

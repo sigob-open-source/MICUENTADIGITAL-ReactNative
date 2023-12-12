@@ -1,20 +1,16 @@
 // External dependencies
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import currency from 'currency.js';
 import React from 'react';
 import {
+  Dimensions,
   StyleSheet,
   Text,
-  View,
-  Dimensions,
   TouchableOpacity,
-  PermissionsAndroid,
-  Alert,
+  View,
 } from 'react-native';
-import Pdf from 'react-native-pdf';
-import currency from 'currency.js';
-import RNFetchBlob from 'rn-fetch-blob';
-import Header from '../components/Header';
 
+import Header from '../components/Header';
 import { RootStackParamList } from '../types/navigation';
 
 // Types & Interfaces
@@ -24,115 +20,119 @@ const PDFViewerScreen = ({
   navigation,
   route,
 }: PDFViewerScreenProps) => {
-  const { datos } = route;
+  const { params: datos } = route;
   const data = datos.datoParaRecibo;
+
   return (
-    <View style={styles.container}>
-      <Header />
-      <View
-        style={styles.pdf}
-      >
-        {console.log(JSON.stringify(data, null, 2))}
-        <View style={{
-          backgroundColor: 'white', width: '100%', height: 59, padding: 15,
-        }}
+    <>
+      <Header item="" />
+      <View style={styles.container}>
+        <View
+          style={styles.pdf}
         >
-          <Text style={{ fontWeight: '400', color: '#4F4F4F', fontSize: 14 }}>
-            Pago realizado:
-          </Text>
-        </View>
-        <View style={{
-          backgroundColor: 'white',
-          width: '100%',
-          height: 110,
-          justifyContent: 'center',
-          alignItems: 'center',
-        }}
-        >
-          <Text style={{ fontSize: 12, color: '#727272', fontWeight: '400' }}>
-            Pagaste:
-          </Text>
-          <Text style={{ fontWeight: '800', fontSize: 26, color: '#7D0025' }}>
-            {currency(data.total).format()}
-          </Text>
-        </View>
-        <View style={{
-          backgroundColor: 'white', width: '100%', flex: 1, padding: 20,
-        }}
-        >
-          <View style={{
-            backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
-          }}
-          >
-            <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
-              Fecha:
-            </Text>
-            <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
-              {data.fechaActual}
-            </Text>
-          </View>
 
           <View style={{
-            marginTop: 10, backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
+            backgroundColor: 'white', width: '100%', height: 59, padding: 15,
           }}
           >
-            <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
-              Pagado por:
-            </Text>
-            <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
-              {data.nombre}
-              {' '}
-              {data.lastName}
-              {' '}
+            <Text style={{ fontWeight: '400', color: '#4F4F4F', fontSize: 14 }}>
+              Pago realizado:
             </Text>
           </View>
-
           <View style={{
-            marginTop: 10, backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
-          }}
-          >
-            <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
-              Número de autorización:
-            </Text>
-            <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
-              {data.numeroAut}
-            </Text>
-          </View>
-
-          <View style={{
-            backgroundColor: '#F4F4F4',
-            marginTop: 15,
+            backgroundColor: 'white',
             width: '100%',
-            height: 60,
-            padding: 10,
+            height: 110,
+            justifyContent: 'center',
+            alignItems: 'center',
           }}
           >
-            <Text style={{ fontSize: 10, fontWeight: '400', color: '#6A6A6A' }}>
-              Tu pago se acreditará dentro de las próximas 24 horas hábiles.
-              {' '}
-              {'\n'}
-              Si tienes dudas con el pago de tu servicio, favor de contactarse con
-              ventanilla en el municipio.
+            <Text style={{ fontSize: 12, color: '#727272', fontWeight: '400' }}>
+              Pagaste:
             </Text>
+            <Text style={{ fontWeight: '800', fontSize: 26, color: '#7D0025' }}>
+              {currency(data.total).format()}
+            </Text>
+          </View>
+          <View style={{
+            backgroundColor: 'white', width: '100%', flex: 1, padding: 20,
+          }}
+          >
+            <View style={{
+              backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
+            }}
+            >
+              <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
+                Fecha:
+              </Text>
+              <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
+                {data.fechaActual}
+              </Text>
+            </View>
 
+            <View style={{
+              marginTop: 10, backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
+            }}
+            >
+              <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
+                Pagado por:
+              </Text>
+              <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
+                {data.nombre}
+                {' '}
+                {data.lastName}
+                {' '}
+              </Text>
+            </View>
+
+            <View style={{
+              marginTop: 10, backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
+            }}
+            >
+              <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
+                Número de autorización:
+              </Text>
+              <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
+                {data.numeroAut}
+              </Text>
+            </View>
+
+            <View style={{
+              backgroundColor: '#F4F4F4',
+              marginTop: 15,
+              width: '100%',
+              height: 60,
+              padding: 10,
+            }}
+            >
+              <Text style={{ fontSize: 10, fontWeight: '400', color: '#6A6A6A' }}>
+                Tu pago se acreditará dentro de las próximas 24 horas hábiles.
+                {' '}
+                {'\n'}
+                Si tienes dudas con el pago de tu servicio, favor de contactarse con
+                ventanilla en el municipio.
+              </Text>
+
+            </View>
           </View>
         </View>
-      </View>
-      <View style={styles.containerButton}>
+        <View style={styles.containerButton}>
 
-        <TouchableOpacity onPress={() => navigation.reset({
-          index: 0,
-          routes: [{
-            name: 'menuInicio',
-          }],
-        })}
-        >
-          <View style={styles.button}>
-            <Text style={{ color: '#FFFFFF' }}>Entendido!</Text>
-          </View>
-        </TouchableOpacity>
+          <TouchableOpacity onPress={() => navigation.reset({
+            index: 0,
+            routes: [{
+              name: 'menuInicio',
+            }],
+          })}
+          >
+            <View style={styles.button}>
+              <Text style={{ color: '#FFFFFF' }}>Entendido!</Text>
+            </View>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </>
+
   );
 };
 

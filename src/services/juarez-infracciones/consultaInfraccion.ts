@@ -2,16 +2,17 @@
 // Dependencies
 import axios from 'axios';
 import * as convert from 'xml-js';
+
 import {
   ConsultaInfraccion_Activa,
   ConsultaInfraccion_Generic,
   ConsultaInfraccion_Pagada,
   StatusInfraccion,
-  XMLConsultaInfraccionResponse,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Motivo_Detalle,
   XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Activa,
   XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Generic,
   XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Pagada,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Motivo_Detalle,
+  XMLConsultaInfraccionResponse,
 } from './types/consultaInfraccion';
 
 /**
@@ -56,10 +57,11 @@ const consultaInfraccion = async (folio: string) => {
     return null;
   }
 
+  const status = rawData.INFRAREPXINFRACCION.REGISTRO.status._text as StatusInfraccion;
   /**
    * La infracción pagada contiene información mínima.
-   */
-  if (rawData.INFRAREPXINFRACCION.REGISTRO.status._text === StatusInfraccion.PAGADA) {
+  */
+  if (status === StatusInfraccion.PAGADA) {
     const typedRawData = rawData
       .INFRAREPXINFRACCION
       .REGISTRO as XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Pagada;
@@ -134,7 +136,7 @@ const consultaInfraccion = async (folio: string) => {
   /**
    * La infracción por pagar retorna propiedades extra como importes y referencias
    */
-  if (rawData.INFRAREPXINFRACCION.REGISTRO.status._text === StatusInfraccion.ACTIVA) {
+  if (status === StatusInfraccion.ACTIVA) {
     const typedRawData = rawData
       .INFRAREPXINFRACCION
       .REGISTRO as XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Activa;

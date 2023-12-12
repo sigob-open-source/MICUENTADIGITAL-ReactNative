@@ -1,24 +1,30 @@
-import { TipoDeCargo } from '../services/recaudacion/tipos-de-cargos.types';
-import type { ITramite } from '../services/tramites/plantillas-de-tramites-de-atencion-ciudadana.types';
-
 type RootStackParamList = {
-  walkthrout: undefined;
-  infoServidorPublico: undefined;
-  tipoDeRegistro: undefined;
-  pdfViewer: {
-    reciboB64: string;
-  };
-  informacionQueja: undefined;
-  archivosDeQuejas: undefined;
+  walkthrough: undefined;
   loginScreen: undefined;
-  informacionRecibo: undefined;
-  informacionFiscal: undefined;
-  registroCiudadano?: {
-    lada: string;
-    numeroDeTelefono: string;
+  menuInicio: undefined;
+  pagoPadron: {
+    padron: {
+      id: number;
+      descripcion: string;
+    }
   };
-  inicioFactura: undefined;
-  otrosPagos: undefined;
+  pagoNetpay: {
+    params: {
+      total: unknown;
+      folio: unknown;
+      padron: unknown;
+    }
+  };
+  terminos: undefined;
+  pdfViewer: {
+    datoParaRecibo: {
+      total: number;
+      fechaActual: string;
+      nombre: string;
+      lastName: string;
+      numeroAut: string;
+    };
+  };
   netpaypago: {
     tipoDePadronId: number;
     padronId: number;
@@ -27,46 +33,31 @@ type RootStackParamList = {
     merchantReferenceCode: string;
   };
   cartografia: undefined;
-  zonoficacion: undefined;
+  errorScreen: undefined;
   cobildo: undefined;
-  convocatorias: undefined;
-  webTramites: {
-    item: ITramite;
-  };
-  webAdeudos: undefined;
   webFacturacion: undefined;
   estrados: undefined;
-  home: undefined;
-  menuInicio: undefined;
-  peticiones: undefined;
-  solicitud: undefined;
-  pagos: undefined;
-  tramites: undefined;
-  dirfuncionario:undefined;
-  oficinaAtencion:undefined;
-  solicitudSelect: undefined;
-  verSolicitud:undefined;
-  verSolicitudes:undefined;
-  problemOneScreen: undefined;
-  problemTwoScreen: undefined;
-  problemThreeScreen: undefined;
-  problemFourScreen: undefined;
-  pagoPadron: undefined;
-  detallesPadron: undefined;
-  netpayCustom: undefined;
-  pagoRealizado: undefined;
-  registroScreen: undefined;
-  codigoScreen: undefined;
-  /* Pagos diversos */
-  seleccionarTipoDePadron: undefined;
-  busquedaPadron: undefined;
-  confirmarPadron: undefined;
-  busquedaDeCargos: undefined;
-  configuracionDeCargo: {
-    tipoDeCargo: TipoDeCargo;
-  };
-  resumenDeCargos: undefined;
-  resumenDePago: undefined;
+  zonoficacion: {
+    datosRecibo: {
+      datosDePago: {
+        total: unknown;
+        folio: unknown;
+        padron: unknown;
+        token: string;
+        clave: string;
+        merchan: string;
+      };
+      nombre: string;
+      apellidoPaterno: string;
+      apellidoMaterno: string;
+      phone: string;
+      email: string;
+      fecha: string;
+      montoTotal: string;
+      padronSeleccionado: string;
+      folio: string;
+    }
+  }
 };
 
 export type {

@@ -88,10 +88,10 @@ interface TipoDeCargo {
 }
 
 export type {
-  PeriodoProps,
-  PeriodoFiscalProps,
-  TipoDeDato,
   PadronProps,
-  VariableProps,
+  PeriodoFiscalProps,
+  PeriodoProps,
   TipoDeCargo,
+  TipoDeDato,
+  VariableProps,
 };

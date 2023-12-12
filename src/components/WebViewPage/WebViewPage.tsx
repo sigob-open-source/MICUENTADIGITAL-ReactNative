@@ -1,6 +1,6 @@
 // External dependencies
-import React, { useRef, forwardRef, useImperativeHandle } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { forwardRef, useImperativeHandle, useRef } from 'react';
+import { StyleSheet, View } from 'react-native';
 import { WebView, WebViewMessageEvent } from 'react-native-webview';
 
 // Internal dependencies

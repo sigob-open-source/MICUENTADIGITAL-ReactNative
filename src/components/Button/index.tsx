@@ -2,14 +2,14 @@
 // External dependencies
 import React, { useMemo } from 'react';
 import {
-  StyleSheet,
-  View,
-  Text,
-  StyleProp,
-  ViewStyle,
-  TouchableWithoutFeedback,
-  TextStyle,
   ActivityIndicator,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  TouchableWithoutFeedback,
+  View,
+  ViewStyle,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
@@ -24,7 +24,7 @@ interface ButtonProps {
   iconName?: string;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
-  iconStyle?: StyleProp<ViewStyle>;
+  iconStyle?: React.ComponentProps<typeof Icon>['style'];
   loading?: boolean;
 }
 

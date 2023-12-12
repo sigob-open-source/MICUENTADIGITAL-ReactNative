@@ -1,1 +1,0 @@
-global.id = 1;

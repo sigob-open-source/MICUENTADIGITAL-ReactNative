@@ -40,6 +40,6 @@ interface EmpresaCajaProps {
 }
 
 export type {
-  EmpresaCiudadano,
   EmpresaCajaProps,
+  EmpresaCiudadano,
 };

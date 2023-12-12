@@ -64,18 +64,18 @@ interface ConsultaResponse {
 }
 
 export type {
-  XMLConsultaLicencia_InfraccionResponsePorLicencia_Encabezado,
-  XMLConsultaLicencia_InfraccionResponsePorLicencia_Infracciones_Infraccion,
-  XMLConsultaLicencia_InfraccionResponsePorLicencia_Infracciones,
-  XMLConsultaLicencia_InfraccionResponsePorLicencia,
-  XMLConsultaLicencia,
-  XMLConsultaPlaca_InfraccionResponsePorPlaca_Encabezado,
-  XMLConsultaPlaca_InfraccionResponsePorPlaca_Infracciones_Registros,
-  XMLConsultaPlaca_InfraccionResponsePorPlaca_Infracciones,
-  XMLConsultaPlaca_InfraccionResponsePorPlaca,
-  XMLConsultaPlaca,
-  XMLConsulta,
   ConsultaResponse,
+  XMLConsulta,
+  XMLConsultaLicencia,
+  XMLConsultaLicencia_InfraccionResponsePorLicencia,
+  XMLConsultaLicencia_InfraccionResponsePorLicencia_Encabezado,
+  XMLConsultaLicencia_InfraccionResponsePorLicencia_Infracciones,
+  XMLConsultaLicencia_InfraccionResponsePorLicencia_Infracciones_Infraccion,
+  XMLConsultaPlaca,
+  XMLConsultaPlaca_InfraccionResponsePorPlaca,
+  XMLConsultaPlaca_InfraccionResponsePorPlaca_Encabezado,
+  XMLConsultaPlaca_InfraccionResponsePorPlaca_Infracciones,
+  XMLConsultaPlaca_InfraccionResponsePorPlaca_Infracciones_Registros,
 };
 
 export {

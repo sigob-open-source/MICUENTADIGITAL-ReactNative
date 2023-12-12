@@ -1,6 +1,6 @@
 // Internal dependencies
-import pagosDiversos from './pagos-diversos';
 import auth from './auth';
+import pagosDiversos from './pagos-diversos';
 
 const reducers = {
   pagosDiversos,

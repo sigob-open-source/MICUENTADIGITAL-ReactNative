@@ -1,4 +1,5 @@
-type RawParams = Record<string, unknown | unknown[]>;
+type RawParams = Record<string, unknown>;
+
 function formatQueryParams(params: RawParams) {
   const output: RawParams = {};
 

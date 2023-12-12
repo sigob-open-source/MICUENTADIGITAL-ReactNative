@@ -2,9 +2,9 @@
 // External components
 import React, { useMemo } from 'react';
 import {
-  View,
-  StyleSheet,
   ColorValue,
+  StyleSheet,
+  View,
   ViewStyle,
 } from 'react-native';
 

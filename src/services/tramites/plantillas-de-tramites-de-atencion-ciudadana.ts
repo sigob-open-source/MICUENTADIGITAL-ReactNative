@@ -1,7 +1,7 @@
 // External dependencies
-import HTTP_GRP from '../http';
 import Logger from '../../lib/logger';
 import type { PaginatedResult } from '../../types/api-ingresos';
+import HTTP_GRP from '../http';
 import type { ITramite } from './plantillas-de-tramites-de-atencion-ciudadana.types';
 
 interface IGetTramitesParams {

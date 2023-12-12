@@ -1,11 +1,11 @@
-// External dependencies
-import HTTP_GRP from '../http';
-
 // Internal dependencies
+import type { AxiosError } from 'axios';
+
 import Logger from '../../lib/logger';
-import { INetPayResponse, IBase64File, GetReciboExternoResponse } from './recibo.types';
 import { MutationResult } from '../../types/api-ingresos';
 import apiErrorParser from '../../utils/error-parser';
+import HTTP_GRP from '../http';
+import { GetReciboExternoResponse, IBase64File, INetPayResponse } from './recibo.types';
 
 interface IGenerarReciboPayload {
   folio: string;
@@ -25,7 +25,9 @@ const generateRecibo = async (payload: IGenerarReciboPayload, params: IGenerarRe
   };
 
   try {
-    const response = await HTTP_GRP.post<IBase64File>('recaudacion/recibo/generar-recibo-por-referencia-de-pago-netpay/', payload);
+    const response = await HTTP_GRP.post<IBase64File>('recaudacion/recibo/generar-recibo-por-referencia-de-pago-netpay/', payload, {
+      params,
+    });
 
     if ([200, 201].includes(response.status) && response.data.id) {
       output = {
@@ -35,17 +37,17 @@ const generateRecibo = async (payload: IGenerarReciboPayload, params: IGenerarRe
       };
     }
   } catch (error) {
-    const typedError = error as Error;
+    const typedError = error as AxiosError;
 
     Logger.error({
       event: 'api error',
-      message: typedError?.message,
+      message: typedError.message,
       error: typedError,
       source: 'recibo.ts',
     });
 
     output.errors = apiErrorParser(typedError);
-    console.log('este es el log de error', JSON.stringify(error.response.data, null, 2));
+    console.log('este es el log de error', JSON.stringify(typedError.response?.data, null, 2));
   }
 
   return output;
@@ -127,62 +129,16 @@ const getReciboExterno = async (params:GetReciboExternoParams) => {
       return response.data[0];
     }
   } catch (error) {
-    const typedError = error as Error;
+    const typedError = error as AxiosError;
 
     Logger.error({
       event: 'api error',
-      message: typedError?.message,
+      message: typedError.message,
       error: typedError,
       source: 'recibo.ts',
     });
-    console.log(error.response.data);
-  }
-  return null;
-};
 
-interface PostFacturacionParams {
-  codigo_postal: string;
-  email: string;
-  entidad: number,
-  fecha_de_pago: string,
-  folio?: string,
-  razon_social: string,
-  regimen_fiscal: number,
-  rfc: string,
-  uso: number,
-}
-
-const postFacturar = async (params:PostFacturacionParams) => {
-  try {
-    const payload = Object.keys(params).reduce((obj, key) => {
-      const value = params[key as keyof PostFacturacionParams] as (string | undefined);
-
-      if (typeof value === 'string' && value.trim()) {
-        // eslint-disable-next-line no-param-reassign
-        obj[key] = value.trim();
-      } else if (typeof value !== 'string' && value) {
-        // eslint-disable-next-line no-param-reassign
-        obj[key] = value;
-      }
-      return obj;
-    }, {} as Record<string, string>);
-    console.log('elputo params', payload);
-
-    const response = await HTTP_GRP.post('recaudacion/facturacion-externa/', {
-      params: payload,
-    });
-
-    return response.data;
-  } catch (error) {
-    const typedError = error as Error;
-
-    Logger.error({
-      event: 'api error',
-      message: typedError?.message,
-      error: typedError,
-      source: 'recibo.ts',
-    });
-    console.log(error.response.data);
+    console.log(typedError.response?.data);
   }
   return null;
 };
@@ -191,5 +147,4 @@ export {
   generarTicket,
   generateRecibo,
   getReciboExterno,
-  postFacturar,
 };

@@ -1,49 +1,23 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-call */
+// External dependencies
 import React from 'react';
 import { TouchableWithoutFeedback } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import styled from 'styled-components/native';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import currency from 'currency.js';
 
+// Internal dependencies
+import type { ConsultaInfraccion_Generic } from '../services/juarez-infracciones/types/consultaInfraccion';
 import fonts from '../utils/fonts';
 
-const CardItem = ({
-  navegar, data, padron, cargo,
-}) => (
-  <TouchableWithoutFeedback>
-    <Container>
-      <Label>
-        Clave:
-        {' '}
-        {
-            cargo.motivo || 'sin descripcion'
-          }
-        {' | '}
-        {
-            cargo.descripcion || 'sin descripcion'
-          }
-        {'  '}
-        {/* { currency(data.importes.importeTotal).format() || 0} */}
-      </Label>
+// Types & Interfaces
+type TCargo = ConsultaInfraccion_Generic['motivos'][number];
 
-      {/* <Label2>
-          {'| '}
-          {cargo.tipo_de_cargo.periodo_fiscal.periodo || 0}
-        </Label2> */}
-      {/* <FontAwesome5
-          name="chevron-right"
-          size={14}
-          solid
-          color="#141414"
-        /> */}
-    </Container>
-  </TouchableWithoutFeedback>
-);
+interface ICardItem {
+  cargo: TCargo;
+}
 
 const Container = styled.View`
   background-color: #ffffff;
   flex-direction: row;
-
   width: 100%;
   border-radius: 10px;
   padding: 10px;
@@ -63,13 +37,20 @@ const Label = styled.Text`
   font-size: 12px;
   flex: 1;
 `;
-const Label2 = styled.Text`
-  font-family: ${fonts.light};
-  font-weight: normal;
-  color: #666666;
-  font-size: 12px;
-  margin-right: 15px;
-  margin-left: 10px;
 
-`;
+const CardItem = ({ cargo }: ICardItem) => (
+  <TouchableWithoutFeedback>
+    <Container>
+      <Label>
+        Clave:
+        {' '}
+        {cargo.motivo || 'sin descripcion'}
+        {' | '}
+        {cargo.descripcion || 'sin descripcion'}
+        {'  '}
+      </Label>
+    </Container>
+  </TouchableWithoutFeedback>
+);
+
 export default CardItem;

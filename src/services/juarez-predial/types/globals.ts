@@ -9,7 +9,7 @@ interface GatedEndpointOptions {
 }
 
 export type {
-  APIMessage,
   APIBadRequestResponse,
+  APIMessage,
   GatedEndpointOptions,
 };

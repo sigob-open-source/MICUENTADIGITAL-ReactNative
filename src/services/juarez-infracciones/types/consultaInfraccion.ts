@@ -5,6 +5,8 @@ enum StatusInfraccion {
   ACTIVA = 'ACTIVA',
   PAGADA = 'PAGADA',
   BAJA = 'BAJA',
+  EBRIEDAD = 'EBRIEDAD',
+  PERITOS = 'PERITOS',
 }
 
 interface XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Encabezado {
@@ -92,7 +94,7 @@ interface XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Base {
 }
 
 interface XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Activa {
-  status: XMLScalarValue<string>;
+  status: XMLScalarValue<StatusInfraccion>;
   importes: XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Importe;
   referencias: XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Referencia;
 }
@@ -204,25 +206,25 @@ type ConsultaInfraccion =
   | ConsultaInfraccion_Pagada;
 
 export type {
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Encabezado,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Conductor,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Vehiculo,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Motivo_Detalle,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Motivo,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Importe,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Referencia_Comerciales,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Referencia,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Base,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Activa,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Pagada,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Generic,
-  XMLConsultaInfraccion_InfraccionResponsePorInfraccion,
-  XMLConsultaInfraccion,
-  XMLConsultaInfraccionResponse,
-  ConsultaInfraccion_Generic,
-  ConsultaInfraccion_Activa,
-  ConsultaInfraccion_Pagada,
   ConsultaInfraccion,
+  ConsultaInfraccion_Activa,
+  ConsultaInfraccion_Generic,
+  ConsultaInfraccion_Pagada,
+  XMLConsultaInfraccion,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Encabezado,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Activa,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Base,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Generic,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro__Pagada,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Conductor,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Importe,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Motivo,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Motivo_Detalle,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Referencia,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Referencia_Comerciales,
+  XMLConsultaInfraccion_InfraccionResponsePorInfraccion_Registro_Vehiculo,
+  XMLConsultaInfraccionResponse,
 };
 
 export {

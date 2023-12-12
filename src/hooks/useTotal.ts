@@ -1,6 +1,6 @@
 // External dependencies
-import { useMemo } from 'react';
 import currency from 'currency.js';
+import { useMemo } from 'react';
 
 // Types & Interfaces
 interface UseTotalProps {

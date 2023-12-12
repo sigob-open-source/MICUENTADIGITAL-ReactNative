@@ -2,10 +2,10 @@
 import React, {
   createContext,
   useContext,
-  useRef,
-  useState,
   useEffect,
   useMemo,
+  useRef,
+  useState,
 } from 'react';
 import DropdownAlert from 'react-native-dropdownalert';
 

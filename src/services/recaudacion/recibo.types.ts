@@ -147,12 +147,12 @@ interface ReciboExternoCorte {
 }
 
 export type {
-  IBase64File,
-  ITransactionDto,
-  ICard,
-  IPaymentSource,
-  IAddress,
-  IBilling,
-  INetPayResponse,
   GetReciboExternoResponse,
+  IAddress,
+  IBase64File,
+  IBilling,
+  ICard,
+  INetPayResponse,
+  IPaymentSource,
+  ITransactionDto,
 };

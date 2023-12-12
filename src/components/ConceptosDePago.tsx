@@ -1,15 +1,15 @@
 /* eslint-disable react/require-default-props */
 // External dependencies
+import currency from 'currency.js';
 import React, { useMemo } from 'react';
 import {
-  View, Text, StyleSheet, ViewStyle,
+  StyleSheet, Text, View, ViewStyle,
 } from 'react-native';
-import currency from 'currency.js';
 
+import useTotal from '../hooks/useTotal';
 // Internal dependencies
 import Card from './Card';
 import Separator from './Separator';
-import useTotal from '../hooks/useTotal';
 
 // Types & Interfaces
 interface ConceptoDePago {

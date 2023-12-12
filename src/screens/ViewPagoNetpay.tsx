@@ -1,20 +1,27 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { Formik } from 'formik';
 import React, { useState } from 'react';
 import {
-  View, Text, TextInput, StyleSheet,
-  TouchableOpacity,
+  StyleSheet,
+  Text, TextInput, TouchableOpacity,
+  View,
 } from 'react-native';
-import { Formik } from 'formik';
-import * as Yup from 'yup';
 import Spinner from 'react-native-loading-spinner-overlay';
-import { useNavigation } from '@react-navigation/native';
-import axios from 'axios';
+import * as Yup from 'yup';
 
-import ReactNativeNetPay from 'react-native-netpay';
-import xml2js from 'xml2js';
 import Header from '../components/Header';
-import { useNotification } from '../components/DropDownAlertProvider';
-import { createCharge, detallesDePago } from '../services/netpay';
+import { RootStackParamList } from '../types/navigation';
 
+// Types & Interfaces
+interface IFormValues {
+  nombre: string;
+  apellidoPaterno: string;
+  apellidoMaterno: string;
+  email: string;
+  celular: string;
+}
+
+type ViewPagoNetpayProps = NativeStackScreenProps<RootStackParamList, 'pagoNetpay'>;
 const validationSchema = Yup.object().shape({
   nombre: Yup.string().required('Campo requerido'),
   apellidoPaterno: Yup.string().required('Campo requerido'),
@@ -23,63 +30,10 @@ const validationSchema = Yup.object().shape({
   celular: Yup.string().matches(/^[0-9]+$/, 'Solo números').required('Campo requerido'),
 });
 
-const ViewPagoNetpay = ({ route }) => {
+const ViewPagoNetpay = ({ route, navigation }: ViewPagoNetpayProps) => {
   const [isLoading, setIsLoading] = useState(false);
 
   const datosDePago = route.params.params;
-  const gettimer = Date.now();
-
-  const notify = useNotification();
-  const navigation = useNavigation();
-
-  // Funcion llamada al dar al boton realizar pago prod
-  // ReactNativeNetPay.init('pk_netpay_DBmockYZopdDnTdhYhGJCDXfe', { testMode: false });
-  ReactNativeNetPay.init('pk_netpay_RZWqFZTckZHhIaTBzogznLReu', { testMode: true });
-
-  const GetCardToken = async () => {
-    let cardToken;
-    try {
-      cardToken = await ReactNativeNetPay.openCheckout(false);
-      return cardToken;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  };
-
-  const getCharge = async (
-    total: number,
-    token: string,
-    values,
-  ) => {
-    try {
-      const responsecard = await createCharge(
-        total,
-        token,
-        values,
-      );
-      return responsecard;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  };
-
-  const getDetallePago = async (responsecard) => {
-    try {
-      const responseDetalle = await detallesDePago(responsecard?.transactionTokenId);
-      console.log('====================================');
-      console.log(JSON.stringify(responseDetalle, null, 2));
-      console.log('====================================');
-      if (responseDetalle.status === 'DONE') {
-        return responseDetalle;
-      }
-      return false;
-    } catch (error) {
-      console.error(error);
-      return false;
-    }
-  };
 
   const obtenerFechaHoraActual = () => {
     const fechaActual = new Date();
@@ -95,153 +49,8 @@ const ViewPagoNetpay = ({ route }) => {
 
     return fechaHoraFormateada;
   };
-  const fechaHoraActual = obtenerFechaHoraActual();
 
-  // Función para realizar una solicitud de pago
-  const realizarPago = async (token) => {
-    try {
-      const apiUrl = 'https://ingresosapi.juarez.gob.mx/api/predial/registrar-pago/';
-      const pagoData = {
-        sucursal: '1',
-        fecha_pago: fechaHoraActual,
-        transaccion_folio: datosDePago.folio,
-        operacion: '4057',
-        autorizacion: '4057',
-        total: datosDePago.total,
-        detalle: [
-          {
-            referencia: '1-998-1-1-0',
-            importe: datosDePago.total,
-          },
-        ],
-      };
-
-      const headers = {
-        Authorization: `Bearer ${token}`,
-        'Content-Type': 'application/json',
-      };
-      const response = await axios.post(apiUrl, pagoData, { headers });
-      // Aquí puedes manejar la respuesta de la solicitud
-      console.log('Respuesta de la solicitud de pago:', response.data);
-      return response.data;
-    } catch (error) {
-    // Manejar errores si los hubiera
-      console.error('Error al realizar la solicitud de pago:', error);
-      throw error;
-    }
-  };
-
-  const getPagoWS = async (token:string) => {
-    try {
-      const response = await realizarPago(token);
-      return response;
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
-  };
-
-  const realizarPagoInsitu = async (merchantReferenceCode, orderId) => {
-    // Encode the XML data as a string
-    const xmlData = `
-    <PAGOTRANSCAPTURA>
-      <ENCABEZADO>
-        <fecha>${fechaHoraActual}</fecha>
-        <operacion>${new Date().getTime()}</operacion>
-        <registros>1</registros>
-        <registroid>T00A</registroid>
-      </ENCABEZADO>
-      <PAGOS>
-        <REGISTRO>
-          <pago_insitu>
-            <autorizacion>${orderId}</autorizacion>
-            <cfolio>${merchantReferenceCode}</cfolio>
-            <fecha_hora>${fechaHoraActual}</fecha_hora>
-            <total>${datosDePago.total}</total>
-            <conceptos>
-              <pago>
-                <infraccion>${datosDePago.folio}</infraccion>
-                <importe>${datosDePago.total}</importe>
-              </pago>
-            </conceptos>
-          </pago_insitu>
-        </REGISTRO>
-      </PAGOS>
-    </PAGOTRANSCAPTURA>`;
-
-    // Construct the URL with the encoded XML data as a query parameter
-    const baseUrl = 'https://wstrans01.juarez.gob.mx/captura.tcgi';
-    const url = `${baseUrl}?ingreso=${xmlData}`;
-    let intentos = 0;
-    let bandera = false;
-
-    while (bandera) {
-      try {
-        // Realize the GET request with the encoded XML data in the URL
-        const response = await axios.get(url, {
-          headers: {
-            'Content-Type': 'application/xml',
-          },
-        });
-
-        // Check the response status
-        if (response.status === 200) {
-          // The request was successful
-          // You can process the response here
-          bandera = true;
-          const responseData = response.data;
-          console.log('Response Data:', responseData);
-          return responseData;
-          break;
-        }
-        console.error('Request was not successful. Status Code:', response.status);
-      } catch (error) {
-        console.error('Error occurred during the request:', error);
-        intentos++;
-        if (intentos == 3) {
-          bandera = true;
-          return null;
-          break;
-        }
-      }
-    }
-
-    try {
-      // Realize the GET request with the encoded XML data in the URL
-      const response = await axios.get(url, {
-        headers: {
-          'Content-Type': 'application/xml',
-        },
-      });
-
-      // Check the response status
-      if (response.status === 200) {
-        // The request was successful
-        // You can process the response here
-        const responseData = response.data;
-        console.log('Response Data:', responseData);
-        return responseData;
-      }
-      console.error('Request was not successful. Status Code:', response.status);
-    } catch (error) {
-      console.error('Error occurred during the request:', error);
-      return null;
-    }
-  };
-
-  const infraccionesPayment = async (merchantReferenceCode, orderId) => {
-    try {
-      const response = await realizarPagoInsitu(merchantReferenceCode, orderId);
-      return response;
-    } catch (error) {
-      console.log(error);
-      return null;
-    }
-  };
-
-  // Llamar a la función para realizar el pago insitu
-
-  const handlePayment = async (values) => {
+  const handlePayment = (values: IFormValues) => {
     // Aquí puedes realizar la acción de pago o enviar los datos al servidor
     // Puedes mostrar el spinner mientras se procesa la acción
     setIsLoading(true);
@@ -250,10 +59,7 @@ const ViewPagoNetpay = ({ route }) => {
     const { folio } = datosDePago;
     const { padron } = datosDePago;
 
-    // const responseCardToken = await GetCardToken();
-    // let responsecard = {};
-    // let responseDetalle = {};
-    const fechaActual = await obtenerFechaHoraActual();
+    const fechaActual = obtenerFechaHoraActual();
 
     const datosRecibo = {
       datosDePago,
@@ -276,99 +82,11 @@ const ViewPagoNetpay = ({ route }) => {
         },
         {
           name: 'zonoficacion',
-          datos: { datosRecibo },
+          params: { datosRecibo },
         },
       ],
     });
 
-    // if (responseCardToken) {
-    //   responsecard = await getCharge(
-    //     total,
-    //     responseCardToken,
-    //     values,
-    //   );
-
-    //   responseDetalle = await getDetallePago(responsecard);
-
-    //   const fechaActual = await obtenerFechaHoraActual();
-
-    //   // const datosRecibo = {
-    //   //   datosDePago,
-    //   //   nombre: values.nombre,
-    //   //   apellidoPaterno: values.apellidoPaterno,
-    //   //   apellidoMaterno: values.apellidoMaterno,
-    //   //   fecha: fechaActual,
-    //   //   datosNetpayFolio: responseDetalle.merchantReferenceCode,
-    //   //   montoTotal: total,
-    //   // };
-
-    //   // navigation.reset({
-    //   //   index: 1,
-    //   //   routes: [
-    //   //     {
-    //   //       name: 'menuInicio',
-    //   //     },
-    //   //     {
-    //   //       name: 'zonoficacion',
-    //   //       datos: { datosRecibo },
-    //   //     },
-    //   //   ],
-    //   // });
-
-    //   if (responseDetalle) {
-    //     notify({
-    //       type: 'success',
-    //       title: '¡Éxito!',
-    //       message: 'Pago exitoso',
-    //     });
-
-    //     let successPayment;
-
-    //     if (datosDePago.padron === 'Infracciones') {
-    //       successPayment = await infraccionesPayment(responseDetalle.merchantReferenceCode, responseDetalle.orderId);
-    //     }
-    //     if (datosDePago.padron === 'Predios') {
-    //       successPayment = await getPagoWS(datosDePago.token);
-    //     }
-
-    //     if (successPayment) {
-    //       setIsLoading(false);
-    //       navigation.reset({
-    //         index: 1,
-    //         routes: [
-    //           {
-    //             name: 'menuInicio',
-    //           },
-    //           {
-    //             name: 'pdfViewer',
-    //             datos: { datosRecibo },
-    //           },
-    //         ],
-    //       });
-    //     } else {
-    //       notify({
-    //         type: 'error',
-    //         title: 'Error',
-    //         message: 'No logramos guardar su pago, favor de reportar en ventanilla',
-    //       });
-    //     }
-    //     setIsLoading(false);
-    //   } else {
-    //     setIsLoading(false);
-
-    //     notify({
-    //       type: 'error',
-    //       title: 'Error',
-    //       message: 'No logramos guardar su pago, favor de reportar en ventanilla',
-    //     });
-    //   }
-    // } else {
-    //   notify({
-    //     type: 'info',
-    //     title: 'Pago Cancelado',
-    //     message: 'El pago fue cancelado por el usuario',
-    //   });
-    // }
     // Simulación de una acción asíncrona
     setTimeout(() => {
       setIsLoading(false);
@@ -378,7 +96,7 @@ const ViewPagoNetpay = ({ route }) => {
 
   return (
     <View style={styles.container}>
-      <Header item="Datos de pago" imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
+      <Header item="Datos de pago" />
       <View style={{ flex: 1, padding: 20 }}>
         <Formik
           initialValues={{
@@ -434,6 +152,8 @@ const ViewPagoNetpay = ({ route }) => {
                 onChangeText={handleChange('email')}
                 value={values.email}
                 placeholder="Correo Electrónico"
+                keyboardType="email-address"
+                autoCapitalize="none"
               />
               {touched.email && errors.email && (
               <Text style={styles.error}>{errors.email}</Text>
@@ -449,7 +169,7 @@ const ViewPagoNetpay = ({ route }) => {
               <Text style={styles.error}>{errors.celular}</Text>
               )}
 
-              <TouchableOpacity onPress={handleSubmit}>
+              <TouchableOpacity onPress={handleSubmit as unknown as () => void}>
                 <View style={styles.button}>
                   <Text style={{ color: '#FFFFFF' }}>SEGUIR CON EL PAGO</Text>
                 </View>

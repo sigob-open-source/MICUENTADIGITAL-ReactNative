@@ -1,10 +1,11 @@
 // Internal dependencies
 import axios from 'axios';
+
+import { IConsultaDeAdeudoResponse } from './types/consultaAdeudo';
 import { APIMessage, GatedEndpointOptions } from './types/globals';
-import { ConsultaDeAdeudoResponse } from './types/consultaAdeudo';
 
 const consultaAdeudo = async (folio: string, options: GatedEndpointOptions) => {
-  const response = await axios.get<ConsultaDeAdeudoResponse | APIMessage>('https://ingresosapi.juarez.gob.mx/api/predial/consultar-adeudo/', {
+  const response = await axios.get<IConsultaDeAdeudoResponse | APIMessage>('https://ingresosapi.juarez.gob.mx/api/predial/consultar-adeudo/', {
     params: {
       referencia: folio,
     },

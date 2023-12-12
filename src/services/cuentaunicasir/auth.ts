@@ -84,6 +84,6 @@ const obtenerAcceso = async (payload: IObtenerAccesoPayload) => {
 };
 
 export {
-  solicitarCodigoDeAcceso,
   obtenerAcceso,
+  solicitarCodigoDeAcceso,
 };

@@ -2,14 +2,14 @@
 // External dependencies
 import React from 'react';
 import {
-  View,
-  Text,
-  StyleSheet,
   Image,
+  StyleSheet,
+  Text,
+  View,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-// Internal dependenices
+// Internal dependencies
 import LOGO from '../../../assets/imagenes/logo.png';
 
 // Types & Interfaces
@@ -23,10 +23,17 @@ const Header = ({
   title,
   leftComponent,
   disableShadow = false,
-}: HeaderProps) => (
-  <View style={styles.outerContainer}>
-    <SafeAreaView>
-      <View style={[styles.innerContainer, disableShadow ? {} : styles.shadow]}>
+}: HeaderProps) => {
+  const insets = useSafeAreaInsets();
+
+  return (
+    <View
+      style={[
+        styles.outerContainer,
+        { paddingTop: insets.top },
+        disableShadow ? {} : styles.shadow]}
+    >
+      <View style={[styles.innerContainer]}>
         <View style={styles.leftCtaContainer}>
           { leftComponent }
         </View>
@@ -42,9 +49,9 @@ const Header = ({
           <Image source={LOGO} style={styles.logo} />
         </View>
       </View>
-    </SafeAreaView>
-  </View>
-);
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   outerContainer: {

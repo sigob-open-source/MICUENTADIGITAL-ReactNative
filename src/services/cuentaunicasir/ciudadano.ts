@@ -1,11 +1,12 @@
 // Internal dependencies
 import { AxiosError } from 'axios';
+
 import Logger from '../../lib/logger';
 import { MutationResult, PaginatedResult } from '../../types/api-ingresos';
 import apiErrorParser from '../../utils/error-parser';
+import formatQueryParams from '../../utils/formatQueryParams';
 import HTTP_GRP from '../http';
 import { CiudadanoCajaProps, CiudadanoMutationResult } from './ciudadano-types';
-import formatQueryParams from '../../utils/formatQueryParams';
 
 /**
  * Get Ciudadano
@@ -152,7 +153,7 @@ const updateCiudadano = async (
 };
 
 export {
-  getCiudadanoCaja,
   createCiudadano,
+  getCiudadanoCaja,
   updateCiudadano,
 };

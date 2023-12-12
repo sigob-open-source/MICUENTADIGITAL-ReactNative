@@ -1,47 +1,53 @@
-import {
-  StyleSheet, View, Text, TouchableWithoutFeedback, Image,
-} from 'react-native';
 import React from 'react';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
-import { useNavigation, CommonActions } from '@react-navigation/native';
-import colors from '../utils/colors';
+import {
+  Image,
+  StyleSheet,
+  Text,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-const navigation = useNavigation;
+import LOGO from '../../assets/imagenes/logo.png';
 
-const Header = (props) => (
-  <View style={styles.container}>
-    <TouchableWithoutFeedback>
-      <View style={styles.logoContainerIma}>
-        <Image
-          style={styles.logo}
-          source={require('../../assets/imagenes/logo.png')}
-        />
+interface IHeaderProps {
+  item: string;
+}
+
+const Header = ({ item }: IHeaderProps) => {
+  const insets = useSafeAreaInsets();
+  return (
+    <View style={[styles.outerContainer, { paddingTop: insets.top }]}>
+      <View style={styles.container}>
+        <TouchableWithoutFeedback>
+          <View style={styles.logoContainerIma}>
+            <Image
+              style={styles.logo}
+              source={LOGO}
+            />
+          </View>
+        </TouchableWithoutFeedback>
+
+        <View style={styles.textContainer}>
+          <Text
+            numberOfLines={3}
+            style={styles.tituloHeader}
+          >
+            {item}
+          </Text>
+        </View>
+
       </View>
-    </TouchableWithoutFeedback>
-
-    <View style={styles.textContainer}>
-      <Text
-        numberOfLines={3}
-        style={styles.tituloHeader}
-      >
-        {props.item}
-      </Text>
     </View>
-
-    <View style={styles.logoContainerIma}>
-      <Image
-        style={styles.logo}
-        // source={require('../../assets/imagenes/logo.png')}
-      />
-    </View>
-
-  </View>
-);
+  );
+};
 
 const styles = StyleSheet.create({
   textContainer: {
     flex: 1,
     justifyContent: 'center',
+    marginLeft: -75,
+
   },
   tituloHeader: {
     fontSize: 15,
@@ -63,9 +69,11 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     resizeMode: 'contain',
   },
+  outerContainer: {
+    backgroundColor: '#FFFFFF',
+  },
   container: {
     flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
     height: 50,
     width: '100%',
     justifyContent: 'center',

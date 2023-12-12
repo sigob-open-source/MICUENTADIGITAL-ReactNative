@@ -1,51 +1,55 @@
-import React, { useEffect, useState } from 'react';
-import {
-  StyleSheet,
-  View,
-  Dimensions,
-  TouchableWithoutFeedback,
-  TextInput,
-  ScrollView,
-  Text,
-} from 'react-native';
-
+/* eslint-disable react/no-array-index-key */
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import currency from 'currency.js';
-import Icon from 'react-native-vector-icons/FontAwesome';
-import { useNavigation } from '@react-navigation/native';
-import fonts from '../utils/fonts';
-import { consultaAdeudo } from '../services/juarez-predial/consultaAdeudo';
-
-import Button from '../components/Button';
-
-import Header from '../components/Header';
-import Adeudo from '../components/Adeudo';
-import CardItem from '../components/CardItem';
-import LoadingComponent from '../components/LoadingComponent';
-
+import React, { useState } from 'react';
 import {
-  getPadrones,
-} from '../services/padrones';
+  Dimensions,
+  Keyboard, ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
-import { consultaInfraccion } from '../services/juarez-infracciones/consultaInfraccion';
-import { obtenerToken } from '../services/juarez-predial/auth';
-
+import Adeudo from '../components/Adeudo';
+import Button from '../components/Button';
+import CardItem from '../components/CardItem';
 import { useNotification } from '../components/DropDownAlertProvider';
+import Header from '../components/Header';
+import LoadingComponent from '../components/LoadingComponent';
+import { consultaInfraccion } from '../services/juarez-infracciones/consultaInfraccion';
+import { ConsultaInfraccion_Activa, ConsultaInfraccion_Pagada, StatusInfraccion } from '../services/juarez-infracciones/types/consultaInfraccion';
+import { obtenerToken } from '../services/juarez-predial/auth';
+import { consultaAdeudo } from '../services/juarez-predial/consultaAdeudo';
+import { IConsultaDeAdeudoResponse } from '../services/juarez-predial/types/consultaAdeudo';
+import { RootStackParamList } from '../types/navigation';
+import fonts from '../utils/fonts';
 
-const PagoPadron = ({ route }) => {
-  const [padron, setPadron] = useState();
-  const [padronSearched, setPadronSearched] = useState();
-  const [searchText, setSearchText] = useState();
+type PagoPadronScreenProps = NativeStackScreenProps<RootStackParamList, 'pagoPadron'>;
+
+type GetPromiseValue<P> = P extends Promise<infer V> ? V : unknown;
+type TInfraccion = GetPromiseValue<ReturnType<typeof consultaInfraccion>>;
+type TAdeudo = GetPromiseValue<ReturnType<typeof consultaAdeudo>>;
+type TPadronResponse =
+  | TInfraccion
+  | TAdeudo;
+
+const PagoPadron = ({ route, navigation }: PagoPadronScreenProps) => {
+  const insets = useSafeAreaInsets();
+
+  const [padron] = useState(route.params.padron);
+  const [padronSearched, setPadronSearched] = useState<TPadronResponse | null>(null);
+  const [searchText, setSearchText] = useState<string>('');
   // revison de variable de entorno.
-  const [resultCargos, setResultCargos] = useState([]);
-  const [nameSearch, setNameSearch] = useState();
-  const [newData, setNewData] = useState(false);
-  const [isBandera, setIsBandera] = useState(false);
+  const [seEncontroAdeudo, setSeEncontroAdeudo] = useState(false);
   const [modalKey, setModalKey] = useState(100);
   const [isLoading, setIsLoading] = useState(false);
   const [loading, setLoading] = useState<boolean>(false);
   const [totalAmount, setTotalAmount] = useState(0.0);
-  const [padrones, setPadrones] = useState();
-  const [tokenPadron, setTokenPadron] = useState();
+  const [tokenPadron, setTokenPadron] = useState<string>('');
   const [statusCheck, setStatusCheck] = useState(false);
   const [statusData, setStatusData] = useState('');
 
@@ -56,36 +60,24 @@ const PagoPadron = ({ route }) => {
   const [part5, setPart5] = useState('');
 
   const notify = useNotification();
-  const navigation = useNavigation();
 
-  const fetchPadrones = async () => {
-    const _padrones = await getPadrones();
-    setPadrones(_padrones);
-  };
-
-  useEffect(() => {
-    setPadron(route.params.padron);
-    fetchPadrones();
-    return () => {};
-  }, []);
-
-  const handlePart1Change = (text) => {
+  const handlePart1Change = (text: string) => {
     setPart1(text);
   };
 
-  const handlePart2Change = (text) => {
+  const handlePart2Change = (text: string) => {
     setPart2(text);
   };
 
-  const handlePart3Change = (text) => {
+  const handlePart3Change = (text: string) => {
     setPart3(text);
   };
 
-  const handlePart4Change = (text) => {
+  const handlePart4Change = (text: string) => {
     setPart4(text);
   };
 
-  const handlePart5Change = (text) => {
+  const handlePart5Change = (text: string) => {
     setPart5(text);
   };
 
@@ -96,25 +88,7 @@ const PagoPadron = ({ route }) => {
     message: `No se encontró ningun ${padron?.descripcion} que concuerde con la busqueda`,
   });
 
-  const consultarInfracciones = async (folioInfraccion : string) => {
-    const intentos = true;
-    const intentospt = 0;
-
-    // while (intentos) {
-    //   try {
-    //     const response = await consultaInfraccion(folioInfraccion);
-    //     return response;
-    //     break;
-    //   } catch (error) {
-    //     console.log('este es el error que regreso', error);
-    //     console.log('numero de intentos es ', intentospt);
-    //     intentospt++;
-    //     if (intentospt == 3) {
-    //       intentos = false;
-    //       return null;
-    //     }
-    //   }
-    // }
+  const consultarInfracciones = async (folioInfraccion: string) => {
     try {
       console.log(folioInfraccion);
       const response = await consultaInfraccion(folioInfraccion);
@@ -122,29 +96,32 @@ const PagoPadron = ({ route }) => {
       return response;
     } catch (error) {
       console.log('este es el error que regreso', error);
-      return false;
+      return null;
     }
   };
 
-  const consultarPredio = async (folioPredio : string) => {
+  const consultarPredio = async (folioPredio: string) => {
     try {
       const { access } = await obtenerToken();
       setTokenPadron(access);
+
       const response = await consultaAdeudo(folioPredio, {
         accessToken: access,
       });
+
       return response;
     } catch (error) {
       console.log(error);
-      return false;
+      return null;
     }
   };
 
   const handleSearch = async () => {
     setIsLoading(true);
-    setNewData(false);
     setStatusCheck(false);
-    setIsBandera(false);
+    setSeEncontroAdeudo(false);
+
+    Keyboard.dismiss();
 
     const conquetenar = `${part1}-${part2}-${part3}-${part4}-${part5}`;
     let response;
@@ -160,32 +137,52 @@ const PagoPadron = ({ route }) => {
       setPadronSearched(response);
 
       if (padron?.descripcion === 'Infracciones') {
-        if (response.status === 'PAGADA') {
+        const typedResponse = response as Exclude<TInfraccion, null> & {
+          importes?: {
+            importeTotal: number;
+          };
+        };
+
+        const { status } = typedResponse;
+
+        if (typedResponse.status === StatusInfraccion.PAGADA) {
+          const infraccionPagada = response as ConsultaInfraccion_Pagada;
+
           notify({
             type: 'info',
             title: 'Atención',
-            message: `${response?.status} el dia ${response.fechaPago}`,
+            message: `${status} el dia ${infraccionPagada.fechaPago}`,
           });
-        } else if (response?.status === 'EBRIEDAD' || response?.status === 'PERITOS') {
+        } else if (
+          status === StatusInfraccion.EBRIEDAD
+          || status === StatusInfraccion.PERITOS
+        ) {
           setStatusCheck(true);
-          setStatusData(response?.status);
+          setStatusData(status);
         }
-        if (response?.importes?.importeTotal) {
-          setTotalAmount(response?.importes?.importeTotal);
-          setIsBandera(true);
+
+        if (typedResponse?.importes?.importeTotal) {
+          setTotalAmount(typedResponse.importes.importeTotal);
+          setSeEncontroAdeudo(true);
         }
       }
 
       if (padron?.descripcion === 'Predio') {
-        if (response.aprobado === false) {
+        const typedResponse = response as IConsultaDeAdeudoResponse & {
+          motivo?: string;
+          totales?: {
+            total: number;
+          };
+        };
+        if (!typedResponse.aprobado) {
           notify({
             type: 'warn',
             title: 'Atención',
-            message: `${response?.motivo}`,
+            message: `${typedResponse?.motivo}`,
           });
-        } else {
-          setTotalAmount(response?.totales?.total);
-          setIsBandera(true);
+        } else if (typedResponse?.totales?.total) {
+          setTotalAmount(typedResponse.totales.total);
+          setSeEncontroAdeudo(true);
         }
       }
     } else {
@@ -199,11 +196,15 @@ const PagoPadron = ({ route }) => {
   // // Llama a la función para realizar el pago (reemplaza 'aqui_su_token' con tu token real)
   // const token = 'aqui_su_token';
 
-  const dopayment = async () => {
+  const doPayment = () => {
     setLoading(true);
 
     if (padron?.descripcion === 'Predio') {
-      const { folio, informacion } = padronSearched;
+      const { folio, informacion } = padronSearched as {
+        folio: string;
+        informacion:{ clave: string; };
+      };
+
       const AccesToken = tokenPadron;
       const datosDePago = {
         total: totalAmount,
@@ -215,44 +216,43 @@ const PagoPadron = ({ route }) => {
       };
       navigation.navigate('pagoNetpay', { params: datosDePago });
     }
+
     if (padron?.descripcion === 'Infracciones') {
-      const { folio } = padronSearched;
+      const { folio } = padronSearched as {
+        folio: string;
+      };
+
       const datosDePago = {
         total: totalAmount,
         folio,
         padron: 'Infracciones',
-        merchan: `I-${informacion.clave}-`,
+        merchan: `I-${folio}-`,
       };
+
       navigation.navigate('pagoNetpay', { params: datosDePago });
     }
 
     setLoading(false);
   };
 
-  const itsData = () => {
-    let informationData = '';
-
-    if (nameSearch === undefined) {
-      if (padron?.descripcion === 'Infracciones') {
-        informationData = padronSearched?.conductor.nombre;
-      } else {
-        informationData = ' propietario';
-      }
-    } else {
-      informationData = nameSearch;
-    }
-    return informationData;
-  };
-
   return (
     <View style={styles.container}>
-
-      <Header item={padron?.descripcion === 'Predio' ? 'Pago de Predial' : padron?.descripcion} imgnotif={require('../../assets/imagenes/notificationGet_icon.png')} />
+      <Header
+        item={
+          padron?.descripcion === 'Predio'
+            ? 'Pago de Predial'
+            : padron?.descripcion
+        }
+      />
 
       <View style={{ marginTop: '5%' }}>
         <Text style={styles.inputText}>
-          {padron?.descripcion === 'Predio' ? 'Buscar por Clave Catastral:' : ''}
-          {padron?.descripcion === 'Infracciones' ? 'Consultar por Folio de Infracción' : ''}
+          {padron?.descripcion === 'Predio'
+            ? 'Buscar por Clave Catastral:'
+            : ''}
+          {padron?.descripcion === 'Infracciones'
+            ? 'Consultar por Folio de Infracción'
+            : ''}
         </Text>
 
         <View>
@@ -326,31 +326,34 @@ const PagoPadron = ({ route }) => {
 
                   <Text style={styles.textInput}>*Condominio</Text>
                 </View>
-
               </View>
             </View>
           ) : (
           // Si no es 'Predio', muestra el otro contenido
-
-            <View style={{ flexDirection: 'row', alignItems: 'center', paddingHorizontal: 20 }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                paddingHorizontal: 20,
+              }}
+            >
               <View style={styles.textInputContainer}>
                 <TextInput
                   keyboardType="numeric"
-                  color="black"
                   placeholderTextColor="#C4C4C4"
                   onChangeText={(text) => setSearchText(text)}
-                  style={styles.textInputStyle}
                   placeholder="Buscar..."
                 />
               </View>
 
-              <TouchableWithoutFeedback onPress={() => { setTotalAmount(0); handleSearch(); }}>
+              <TouchableWithoutFeedback
+                onPress={() => {
+                  setTotalAmount(0);
+                  void handleSearch();
+                }}
+              >
                 <View style={styles.iconContainer}>
-                  <Icon
-                    name="search"
-                    size={18}
-                    color="white"
-                  />
+                  <Icon name="search" size={18} color="white" />
                 </View>
               </TouchableWithoutFeedback>
             </View>
@@ -363,263 +366,367 @@ const PagoPadron = ({ route }) => {
       // Por ejemplo:
 
         <ScrollView style={{ alignSelf: 'center' }}>
-
           {statusCheck ? (
-            <View style={{
-              height: 95,
-              width: 300,
-              backgroundColor: '#FFFFFF',
-              justifyContent: 'center',
-              alignItems: 'center',
-              borderRadius: 5,
-              padding: 15,
-            }}
+            <View
+              style={{
+                height: 95,
+                width: 300,
+                backgroundColor: '#FFFFFF',
+                justifyContent: 'center',
+                alignItems: 'center',
+                borderRadius: 5,
+                padding: 15,
+              }}
             >
-              <Text style={{ textAlign: 'center', fontWeight: '800', color: '#582E45' }}>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontWeight: '800',
+                  color: '#582E45',
+                }}
+              >
                 PAGO NO PERMITIDO
                 {' \n'}
                 (
                 {statusData || ''}
                 )
               </Text>
-              <View style={{
-                height: 1, width: 250, backgroundColor: '#D4D9DB', marginVertical: 2,
-              }}
+              <View
+                style={{
+                  height: 1,
+                  width: 250,
+                  backgroundColor: '#D4D9DB',
+                  marginVertical: 2,
+                }}
               />
-              <Text style={{ textAlign: 'center', fontWeight: '500', color: '#404040' }}> Favor de pasar a ventanilla para realizar su pago </Text>
+              <Text
+                style={{
+                  textAlign: 'center',
+                  fontWeight: '500',
+                  color: '#404040',
+                }}
+              >
+                {' '}
+                Favor de pasar a ventanilla para realizar su pago
+                {' '}
+              </Text>
             </View>
           ) : null}
 
-          {
-        (isBandera)
-          ? (
-            <Adeudo
-              data={padronSearched}
-              padron={route.params?.padron?.descripcion}
-              cargo={totalAmount}
-              children={padronSearched.motivos?.map((cargo, index) => (
-                <CardItem
-                  key={index}
-                  data={padronSearched.motivos}
-                  cargo={cargo}
-                />
-              ))}
-            />
-          )
-          : null
-      }
-          {/* <Adeudo key={index} nombre={nameSearch || ''} padron={padron?.descripcion} cargo={cargo} /> */}
-          {newData === true && resultCargos?.[0] === undefined ? (
-            <Adeudo
-              nombre={
-            itsData()
-          }
-              padron={padron?.descripcion}
-              cargo={null}
-            />
-          ) : null}
-          {
-      (isLoading) ? <LoadingComponent /> : null
-    }
-        </ScrollView>
-
-      ) : (
-      // Código a ejecutar si la condición es falsa
-      // Por ejemplo:
-        <ScrollView style={{ alignSelf: 'center' }}>
-
-          {
-            (isBandera)
-              ? (
-                <View style={styles.cardPredios}>
-                  <View>
-                    <Text style={{ fontSize: 14, color: '#313030', fontWeight: '600' }}>{padronSearched?.informacion.propietario || 'Sin Nombre Registrado'}</Text>
-
-                    <Text style={{
-                      fontSize: 10,
-                      color: '#747474',
-                      fontWeight: '400',
-                      marginTop: 2,
-                    }}
-                    >
-                      {padronSearched?.informacion.domicilio || 'Sin Direccion'}
-                    </Text>
-                  </View>
-
-                  <View style={{
-                    width: '90%', height: 1, backgroundColor: '#E6E6E6', marginVertical: 6,
-                  }}
+          {seEncontroAdeudo ? (
+            <Adeudo data={padronSearched as ConsultaInfraccion_Activa}>
+              {
+                (padronSearched as ConsultaInfraccion_Activa)?.motivos.map((cargo, index) => (
+                  <CardItem
+                    key={index}
+                    cargo={cargo}
                   />
-
-                  <View style={{ width: '100%', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}>ACTUAL</Text>
-                  </View>
-                  <Text style={styles.predialsubtex}>IMPUESTO PREDIAL:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.adeudo_actual.impuesto_predial || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>IMPUESTO UNIVERSITARIO:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.adeudo_actual.impuesto_universitario || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>FIDEICOMISO PASO DEL NORTE:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.adeudo_actual.fideicomiso || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>CONTRIBUCION EXTRAORDINARIA:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.adeudo_actual.contribucion_extraordinaria || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>D.A.P:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.adeudo_actual.dap || '0.00'}</Text>
-                  <View />
-
-                  <View style={{
-                    width: '90%', height: 1, backgroundColor: '#E6E6E6', marginVertical: 6,
-                  }}
-                  />
-
-                  <View style={{ width: '100%', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}>RECARGOS</Text>
-                  </View>
-                  <Text style={styles.predialsubtex}>IMPUESTO PREDIAL:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.recargos.impuesto_predial || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>IMPUESTO UNIVERSITARIO:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.recargos.impuesto_universitario || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>FIDEICOMISO PASO DEL NORTE:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.recargos.fideicomiso || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>CONTRIBUCION EXTRAORDINARIA:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.recargos.contribucion_extraordinaria || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>D.A.P:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.recargos.dap || '0.00'}</Text>
-                  <View />
-
-                  <View style={{
-                    width: '90%', height: 1, backgroundColor: '#E6E6E6', marginVertical: 6,
-                  }}
-                  />
-
-                  <View style={{ width: '100%', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}>REZAGOS</Text>
-                  </View>
-                  <Text style={styles.predialsubtex}>IMPUESTO PREDIAL:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.rezago.impuesto_predial || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>IMPUESTO UNIVERSITARIO:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.rezago.impuesto_universitario || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>FIDEICOMISO PASO DEL NORTE:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.rezago.fideicomiso || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>CONTRIBUCION EXTRAORDINARIA:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.rezago.contribucion_extraordinaria || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>D.A.P:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.rezago.dap || '0.00'}</Text>
-                  <View />
-
-                  <View style={{
-                    width: '90%', height: 1, backgroundColor: '#E6E6E6', marginVertical: 6,
-                  }}
-                  />
-
-                  <View style={{ width: '100%', alignItems: 'center' }}>
-                    <Text style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}>RECARGOS DEL REZAGO</Text>
-                  </View>
-                  <Text style={styles.predialsubtex}>IMPUESTO PREDIAL:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.recargo_rezago.impuesto_predial || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>IMPUESTO UNIVERSITARIO:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.recargo_rezago.impuesto_universitario || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>FIDEICOMISO PASO DEL NORTE:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.recargo_rezago.fideicomiso || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>CONTRIBUCION EXTRAORDINARIA:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.recargo_rezago.contribucion_extraordinaria || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>D.A.P:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.desglose.recargo_rezago.dap || '0.00'}</Text>
-                  <View />
-
-                  <View style={{
-                    width: '90%', height: 1, backgroundColor: '#E6E6E6', marginVertical: 6,
-                  }}
-                  />
-
-                  <Text style={styles.predialsubtex}>SUBTOTAL:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.totales.subtotal || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>CARGOS DE COBRANZA:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.totales.total_gastos_de_cobranza || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>DESCUENTO:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.totales.total_descuentos || '0.00'}</Text>
-
-                  <Text style={styles.predialsubtex}>REDONDEO:</Text>
-                  <Text style={styles.predialsubtex2}>{padronSearched?.totales.ajuste_redondeo || '0.00'}</Text>
-
-                  <View />
-                </View>
-              )
-              : null
-          }
-          {newData === true && resultCargos?.[0] === undefined ? (
-            <Adeudo
-              nombre={
-                itsData()
+                ))
               }
-              padron={padron?.descripcion}
-              cargo={null}
-            />
+            </Adeudo>
+          ) : null}
+
+          {isLoading ? <LoadingComponent /> : null}
+        </ScrollView>
+      ) : (
+        // Código a ejecutar si la condición es falsa
+        // Por ejemplo:
+        <ScrollView style={{ alignSelf: 'center' }}>
+          {seEncontroAdeudo ? (
+            <View style={styles.cardPredios}>
+              <View>
+                <Text style={{ fontSize: 14, color: '#313030', fontWeight: '600' }}>
+                  {(padronSearched as IConsultaDeAdeudoResponse)?.informacion
+                    .propietario
+                    || 'Sin Nombre Registrado'}
+                </Text>
+
+                <Text
+                  style={{
+                    fontSize: 10,
+                    color: '#747474',
+                    fontWeight: '400',
+                    marginTop: 2,
+                  }}
+                >
+                  {(padronSearched as IConsultaDeAdeudoResponse)?.informacion
+                    .domicilio || 'Sin Direccion'}
+                </Text>
+              </View>
+
+              <View
+                style={{
+                  width: '90%',
+                  height: 1,
+                  backgroundColor: '#E6E6E6',
+                  marginVertical: 6,
+                }}
+              />
+
+              <View style={{ width: '100%', alignItems: 'center' }}>
+                <Text
+                  style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}
+                >
+                  ACTUAL
+                </Text>
+              </View>
+              <Text style={styles.predialsubtex}>IMPUESTO PREDIAL:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose
+                  .adeudo_actual.impuesto_predial
+                  || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>IMPUESTO UNIVERSITARIO:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.adeudo_actual
+                  .impuesto_universitario || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>
+                FIDEICOMISO PASO DEL NORTE:
+              </Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose
+                  .adeudo_actual.fideicomiso || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>
+                CONTRIBUCION EXTRAORDINARIA:
+              </Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.adeudo_actual
+                  .contribucion_extraordinaria || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>D.A.P:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose
+                  .adeudo_actual.dap || '0.00'}
+              </Text>
+              <View />
+
+              <View
+                style={{
+                  width: '90%',
+                  height: 1,
+                  backgroundColor: '#E6E6E6',
+                  marginVertical: 6,
+                }}
+              />
+
+              <View style={{ width: '100%', alignItems: 'center' }}>
+                <Text
+                  style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}
+                >
+                  RECARGOS
+                </Text>
+              </View>
+              <Text style={styles.predialsubtex}>IMPUESTO PREDIAL:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.recargos.impuesto_predial || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>IMPUESTO UNIVERSITARIO:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose
+                  .recargos.impuesto_universitario
+                  || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>
+                FIDEICOMISO PASO DEL NORTE:
+              </Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.recargos.fideicomiso || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>
+                CONTRIBUCION EXTRAORDINARIA:
+              </Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.recargos
+                  .contribucion_extraordinaria || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>D.A.P:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.recargos.dap || '0.00'}
+              </Text>
+              <View />
+
+              <View
+                style={{
+                  width: '90%',
+                  height: 1,
+                  backgroundColor: '#E6E6E6',
+                  marginVertical: 6,
+                }}
+              />
+
+              <View style={{ width: '100%', alignItems: 'center' }}>
+                <Text
+                  style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}
+                >
+                  REZAGOS
+                </Text>
+              </View>
+              <Text style={styles.predialsubtex}>IMPUESTO PREDIAL:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.rezago.impuesto_predial || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>IMPUESTO UNIVERSITARIO:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose
+                  .rezago.impuesto_universitario
+                  || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>
+                FIDEICOMISO PASO DEL NORTE:
+              </Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.rezago.fideicomiso || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>
+                CONTRIBUCION EXTRAORDINARIA:
+              </Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose
+                  .rezago.contribucion_extraordinaria
+                  || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>D.A.P:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.rezago.dap || '0.00'}
+              </Text>
+              <View />
+
+              <View
+                style={{
+                  width: '90%',
+                  height: 1,
+                  backgroundColor: '#E6E6E6',
+                  marginVertical: 6,
+                }}
+              />
+
+              <View style={{ width: '100%', alignItems: 'center' }}>
+                <Text
+                  style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}
+                >
+                  RECARGOS DEL REZAGO
+                </Text>
+              </View>
+              <Text style={styles.predialsubtex}>IMPUESTO PREDIAL:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose
+                  .recargo_rezago.impuesto_predial
+                  || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>IMPUESTO UNIVERSITARIO:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.recargo_rezago
+                  .impuesto_universitario || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>
+                FIDEICOMISO PASO DEL NORTE:
+              </Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose
+                  .recargo_rezago.fideicomiso || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>
+                CONTRIBUCION EXTRAORDINARIA:
+              </Text>
+
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.recargo_rezago
+                  .contribucion_extraordinaria || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>D.A.P:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.desglose.recargo_rezago.dap || '0.00'}
+              </Text>
+              <View />
+
+              <View
+                style={{
+                  width: '90%',
+                  height: 1,
+                  backgroundColor: '#E6E6E6',
+                  marginVertical: 6,
+                }}
+              />
+
+              <Text style={styles.predialsubtex}>SUBTOTAL:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.totales.subtotal || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>CARGOS DE COBRANZA:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.totales.total_gastos_de_cobranza || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>DESCUENTO:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.totales.total_descuentos || '0.00'}
+              </Text>
+
+              <Text style={styles.predialsubtex}>REDONDEO:</Text>
+              <Text style={styles.predialsubtex2}>
+                {(padronSearched as IConsultaDeAdeudoResponse)?.totales.ajuste_redondeo || '0.00'}
+              </Text>
+
+              <View />
+            </View>
           ) : null}
         </ScrollView>
       )}
-      {
-          (isLoading) ? <LoadingComponent /> : null
-      }
-      <View style={styles.footer}>
-        {
-        totalAmount === 0 ? (
-          null
-        )
-          : (
-            <Text style={styles.totalText}>
-              Total:
-              {' '}
 
-              {currency(totalAmount).format()}
-            </Text>
-          )
-      }
+      {isLoading ? <LoadingComponent /> : null}
+
+      <View style={[styles.footer, { paddingBottom: insets.bottom }]}>
+        {totalAmount === 0 ? null : (
+          <Text style={styles.totalText}>
+            Total:
+            {' '}
+            {currency(totalAmount).format()}
+          </Text>
+        )}
 
         <View key={modalKey}>
-          {
-            totalAmount > 0 ? (
-              <Button
-                onPress={dopayment}
-                style={styles.buttonPrint}
-                text="Pagar"
-                iconName="search"
-                loading={loading}
-              />
-            )
-
-              : (
-                <TouchableWithoutFeedback onPress={() => { setTotalAmount(0); handleSearch(); }}>
-                  <View style={styles.buttonPrintDisabled}>
-                    <Text style={styles.textButton}>Realizar Búsqueda</Text>
-                  </View>
-                </TouchableWithoutFeedback>
-              )
-
-          }
-
+          {totalAmount > 0 ? (
+            <Button
+              onPress={doPayment}
+              style={styles.buttonPrint}
+              text="Pagar"
+              iconName="search"
+              loading={loading}
+            />
+          ) : (
+            <TouchableWithoutFeedback
+              onPress={() => {
+                setTotalAmount(0);
+                void handleSearch();
+              }}
+            >
+              <View style={styles.buttonPrintDisabled}>
+                <Text style={styles.textButton}>Realizar Búsqueda</Text>
+              </View>
+            </TouchableWithoutFeedback>
+          )}
         </View>
-
       </View>
     </View>
-
   );
 };
 
@@ -716,6 +823,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 8,
     justifyContent: 'center',
     alignItems: 'center',
+    borderTopRightRadius: 10,
+    borderBottomRightRadius: 10,
   },
   iconAvanzadoContainer: {
     backgroundColor: '#79142A',
@@ -766,9 +875,7 @@ const styles = StyleSheet.create({
     fontFamily: fonts.bold,
     textAlign: 'left',
   },
-  loading: {
-
-  },
+  loading: {},
   row: {
     alignItems: 'center',
     height: 50,
@@ -796,7 +903,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     height: 46,
     width: 53,
-
   },
   separator: {
     paddingHorizontal: 5,
@@ -805,5 +911,4 @@ const styles = StyleSheet.create({
     fontSize: 10,
     color: '#582E44',
   },
-
 });

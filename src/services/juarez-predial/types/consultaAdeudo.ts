@@ -1,10 +1,11 @@
-interface ConsultaDeAdeudoResponse_Informacion {
+/* eslint-disable @typescript-eslint/naming-convention */
+interface IConsultaDeAdeudoResponse_Informacion {
   clave: string;
   propietario: string;
   domicilio: string;
 }
 
-interface ConsultaDeAdeudoResponse_AdeudoActual {
+interface IConsultaDeAdeudoResponse_AdeudoActual {
   impuesto_predial: string;
   impuesto_universitario: string;
   dap: string;
@@ -12,7 +13,7 @@ interface ConsultaDeAdeudoResponse_AdeudoActual {
   contribucion_extraordinaria: string;
 }
 
-interface ConsultaDeAdeudoResponse_Descuentos {
+interface IConsultaDeAdeudoResponse_Descuentos {
   descuento_cumplido: string;
   descuento_pronto_pago: string;
   descuento_senecto: string;
@@ -20,15 +21,15 @@ interface ConsultaDeAdeudoResponse_Descuentos {
   descuento_discapacidad: string;
 }
 
-interface ConsultaDeAdeudoResponse_Desglose {
-  adeudo_actual: ConsultaDeAdeudoResponse_AdeudoActual;
-  recargos: ConsultaDeAdeudoResponse_AdeudoActual;
-  rezago: ConsultaDeAdeudoResponse_AdeudoActual;
-  recargo_rezago: ConsultaDeAdeudoResponse_AdeudoActual;
-  descuentos: ConsultaDeAdeudoResponse_Descuentos;
+interface IConsultaDeAdeudoResponse_Desglose {
+  adeudo_actual: IConsultaDeAdeudoResponse_AdeudoActual;
+  recargos: IConsultaDeAdeudoResponse_AdeudoActual;
+  rezago: IConsultaDeAdeudoResponse_AdeudoActual;
+  recargo_rezago: IConsultaDeAdeudoResponse_AdeudoActual;
+  descuentos: IConsultaDeAdeudoResponse_Descuentos;
 }
 
-interface ConsultaDeAdeudoResponse_Totales {
+interface IConsultaDeAdeudoResponse_Totales {
   total_descuentos: string;
   subtotal: string;
   total_gastos_de_cobranza: string;
@@ -36,19 +37,19 @@ interface ConsultaDeAdeudoResponse_Totales {
   total: string;
 }
 
-interface ConsultaDeAdeudoResponse {
+interface IConsultaDeAdeudoResponse {
   aprobado: boolean;
-  informacion: ConsultaDeAdeudoResponse_Informacion;
-  desglose: ConsultaDeAdeudoResponse_Desglose;
-  totales: ConsultaDeAdeudoResponse_Totales;
+  informacion: IConsultaDeAdeudoResponse_Informacion;
+  desglose: IConsultaDeAdeudoResponse_Desglose;
+  totales: IConsultaDeAdeudoResponse_Totales;
   folio: string;
 }
 
 export type {
-  ConsultaDeAdeudoResponse_Informacion,
-  ConsultaDeAdeudoResponse_AdeudoActual,
-  ConsultaDeAdeudoResponse_Descuentos,
-  ConsultaDeAdeudoResponse_Desglose,
-  ConsultaDeAdeudoResponse_Totales,
-  ConsultaDeAdeudoResponse,
+  IConsultaDeAdeudoResponse,
+  IConsultaDeAdeudoResponse_AdeudoActual,
+  IConsultaDeAdeudoResponse_Descuentos,
+  IConsultaDeAdeudoResponse_Desglose,
+  IConsultaDeAdeudoResponse_Informacion,
+  IConsultaDeAdeudoResponse_Totales,
 };

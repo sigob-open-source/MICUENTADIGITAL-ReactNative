@@ -1,8 +1,10 @@
+/* eslint-disable react/no-array-index-key */
 // External dependencies
 import React, { useMemo } from 'react';
-import { Text, StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 
 // Internal dependencies
+import LADAS from '../dataset/ladas.json';
 import { PadronProps } from '../services/catalogos/padrones.types';
 import { CiudadanoCajaProps } from '../services/cuentaunicasir/ciudadano-types';
 import { EmpresaCajaProps } from '../services/cuentaunicasir/empresa-types';
@@ -10,7 +12,6 @@ import { ContribuyenteCajaProps } from '../services/empresas/contribuyentes-caja
 import { PADRONES_PAGOS_DIVERSOS } from '../utils/constants';
 import Card from './Card';
 import Separator from './Separator';
-import LADAS from '../dataset/ladas.json';
 
 // Types & Interfaces
 interface InformacionDePadronProps {
@@ -129,7 +130,7 @@ const InformacionDePadron = ({ tipoDePadron, padron }: InformacionDePadronProps)
 
       {
         items.map((item, key) => (
-          <React.Fragment key={key.toString()}>
+          <React.Fragment key={key}>
             <Text style={styles.field}>
               {item.name}
             </Text>

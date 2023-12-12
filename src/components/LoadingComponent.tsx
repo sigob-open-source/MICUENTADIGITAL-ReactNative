@@ -1,6 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
-  View, Text, ActivityIndicator, StyleSheet,
+  ActivityIndicator, StyleSheet,
+  Text, View,
 } from 'react-native';
 
 const LoadingComponent = () => {

@@ -4,5 +4,5 @@ interface ObtenerTokenResponse {
 }
 
 export type {
-  ObtenerTokenResponse
+  ObtenerTokenResponse,
 };

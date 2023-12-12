@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 // External dependencies
 import { createSlice, PayloadAction, SliceCaseReducers } from '@reduxjs/toolkit';
+
 import { ICiudadano } from '../../services/cuentaunicasir/auth.types';
 
 // Internal dependencies

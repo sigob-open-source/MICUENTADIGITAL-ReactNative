@@ -1,7 +1,7 @@
 /* eslint-disable react/require-default-props */
 // External dependencies
 import React from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
+import { StyleSheet, View, ViewStyle } from 'react-native';
 
 // Types & Interfaces
 interface SeparatorProps {

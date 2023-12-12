@@ -1,17 +1,17 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React, { useEffect } from 'react';
 import {
+  Image,
   StyleSheet,
   Text,
-  View,
-  Image,
   TouchableOpacity,
+  View,
 } from 'react-native';
-import React, { useEffect } from 'react';
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
 
 import IMAGEN from '../../assets/imagenes/jrzfondo.png';
 import IconLogo from '../../assets/imagenes/logo.png';
-import { RootStackParamList } from '../types/navigation';
 import { useAppSelector } from '../store-v2/hooks';
+import { RootStackParamList } from '../types/navigation';
 
 type LoginScreenProps = NativeStackScreenProps<
 RootStackParamList,

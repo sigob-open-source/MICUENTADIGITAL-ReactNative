@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/naming-convention */
 module.exports = {
   env: {
     es2021: true,
@@ -20,8 +21,20 @@ module.exports = {
   plugins: [
     'react',
     '@typescript-eslint',
+    'unused-imports',
+    'simple-import-sort',
   ],
   rules: {
+    'simple-import-sort/imports': 'error',
+    'simple-import-sort/exports': 'error',
+    'no-unused-vars': 'off', // or "@typescript-eslint/no-unused-vars": "off",
+    'unused-imports/no-unused-imports': 'error',
+    'unused-imports/no-unused-vars': [
+      'warn',
+      {
+        vars: 'all', varsIgnorePattern: '^_', args: 'after-used', argsIgnorePattern: '^_',
+      },
+    ],
     '@typescript-eslint/ban-ts-comment': 'off',
     '@typescript-eslint/no-non-null-assertion': 'off',
     'no-restricted-exports': 'off',
@@ -42,13 +55,6 @@ module.exports = {
       {
         namedComponents: 'arrow-function',
         unnamedComponents: 'arrow-function',
-      },
-    ],
-    'no-unused-vars': [
-      'error',
-      {
-        args: 'after-used',
-        varsIgnorePattern: '^_+$',
       },
     ],
     'no-void': ['error', { allowAsStatement: true }],

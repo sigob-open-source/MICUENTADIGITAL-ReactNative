@@ -1,52 +1,23 @@
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import React from 'react';
 import {
+  Image,
   StyleSheet,
   Text,
-  View,
-  Image,
   TouchableWithoutFeedback,
-  TouchableOpacity,
-  TouchableWithoutFeedbackBase,
+  View,
 } from 'react-native';
-import React, { useEffect } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 
-import { NativeStackScreenProps } from '@react-navigation/native-stack';
-
-import ImagePage1 from '../../assets/imagenes/Private-data.jpeg';
 import ImagePage2 from '../../assets/imagenes/MULTA.png';
-import ImagePage3 from '../../assets/imagenes/User-flow-pana.png';
-import { useAppSelector } from '../store-v2/hooks';
-import { RootStackParamList } from '../types/navigation';
+import ImagePage1 from '../../assets/imagenes/Private-data.jpeg';
+import type { RootStackParamList } from '../types/navigation';
 
-import { consultaVialidad } from '../services/juarez-infracciones/consultaVialidad';
-import { TipoDeDocumentoConsulta } from '../services/juarez-infracciones/types/consultaVialidad';
-
-import { obtenerToken } from '../services/juarez-predial/auth';
-import { consultaAdeudo } from '../services/juarez-predial/consultaAdeudo';
-
-type WalkthroughScreenProps = NativeStackScreenProps<RootStackParamList, 'walkthrout'>;
+type WalkthroughScreenProps = NativeStackScreenProps<RootStackParamList, 'walkthrough'>;
 
 const Walkthrough = ({ navigation }: WalkthroughScreenProps) => {
-  const isLoggedIn = useAppSelector((state) => Boolean(state.auth.ciudadano));
-
-  // useEffect(() => {
-  //   void (async () => {
-  //     try {
-  //       const { access } = await obtenerToken();
-
-  //       const d = await consultaAdeudo('01-998-001-005-0000', {
-  //         accessToken: access,
-  //       });
-
-  //       console.log(JSON.stringify(d, null, 2));
-  //     } catch (error) {
-  //       console.log(error.response);
-  //       console.log(error.response.data);
-  //     }
-  //   })();
-  // }, []);
+  const insets = useSafeAreaInsets();
 
   const WalkthroughList = [
     {
@@ -61,44 +32,33 @@ const Walkthrough = ({ navigation }: WalkthroughScreenProps) => {
       descripcion: 'Realiza pagos y consultas desde la comodidad de tu celular.',
       image: ImagePage2,
     },
-    // {
-    //   id: 3,
-    //   title: 'Visita redes sociales oficiales',
-    //   descripcion: '¡Ahora pondrás dar seguimientos a tus quejas y solicitudes personalmente y saber en qué proceso va al momento!!',
-    //   image: ImagePage3,
-    // },
   ];
+
   return (
-    <SafeAreaView style={{ flex: 1 }}>
-
-      <View style={styles.container}>
-        {/* <TouchableWithoutFeedback onPress={() => navigation.navigate('loginScreen')}>
-          <Text style={styles.saltartxt}>Saltar</Text>
-        </TouchableWithoutFeedback> */}
-
-        <Swiper
-          paginationStyle={{
-            position: 'absolute',
-            bottom: '6%',
-          }}
-          activeDotColor="#E14848"
-          activeDotStyle={{ width: 20, height: 8 }}
-        >
-          {WalkthroughList.map((item) => (
-            <View style={styles.happyTry} key={item.id}>
-              <Text style={styles.txtDescripcion}>{item.title}</Text>
-              <Text style={styles.subtxt}>{item.descripcion}</Text>
-              <Image style={styles.imagenIlu} source={item.image} />
-            </View>
-          ))}
-        </Swiper>
-        <TouchableWithoutFeedback onPress={() => navigation.navigate('loginScreen')}>
-          <View style={styles.button}>
-            <Text style={styles.textButton}>Vamos a Comenzar!</Text>
+    <View style={[styles.container, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+      <Swiper
+        paginationStyle={{
+          position: 'absolute',
+          bottom: '6%',
+        }}
+        activeDotColor="#E14848"
+        activeDotStyle={{ width: 20, height: 8 }}
+      >
+        {WalkthroughList.map((item) => (
+          <View style={styles.happyTry} key={item.id}>
+            <Text style={styles.txtDescripcion}>{item.title}</Text>
+            <Text style={styles.subtxt}>{item.descripcion}</Text>
+            <Image style={styles.imagenIlu} source={item.image} />
           </View>
-        </TouchableWithoutFeedback>
-      </View>
-    </SafeAreaView>
+        ))}
+      </Swiper>
+
+      <TouchableWithoutFeedback onPress={() => navigation.navigate('loginScreen')}>
+        <View style={styles.button}>
+          <Text style={styles.textButton}>Vamos a Comenzar!</Text>
+        </View>
+      </TouchableWithoutFeedback>
+    </View>
   );
 };
 

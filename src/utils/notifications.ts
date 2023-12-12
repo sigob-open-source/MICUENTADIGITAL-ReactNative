@@ -1,8 +1,11 @@
+// External dependencies
 import { AxiosError } from 'axios';
 import { useContext } from 'react';
+
+// Internal dependencies
 import DropdownalertContext from '../context/Dropdownalert';
 import { AlertNotification } from '../types/alert';
-import { CommonResponse, ApiError } from '../types/api';
+import { ApiError, CommonResponse } from '../types/api';
 
 const useDropdownAlert = () => {
   const { notification, setNotification } = useContext(DropdownalertContext);

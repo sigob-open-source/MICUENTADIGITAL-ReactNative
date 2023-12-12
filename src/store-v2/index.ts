@@ -1,22 +1,22 @@
 // External dependencies
-import { combineReducers } from 'redux';
-import { configureStore } from '@reduxjs/toolkit';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
+import { configureStore } from '@reduxjs/toolkit';
+import { combineReducers } from 'redux';
 import {
-  persistStore,
-  persistReducer,
-  PersistConfig,
   FLUSH,
-  REHYDRATE,
   PAUSE,
   PERSIST,
+  PersistConfig,
+  persistReducer,
+  persistStore,
   PURGE,
   REGISTER,
+  REHYDRATE,
 } from 'redux-persist';
-
+import autoMergeLevel1 from 'redux-persist/lib/stateReconciler/autoMergeLevel1';
 // Internal dependencies
 import createFilter from 'redux-persist-transform-filter';
+
 import reducers, { RootState } from './reducers';
 
 const authPersistedStateFilter = createFilter('auth', ['access', 'ciudadano']);
