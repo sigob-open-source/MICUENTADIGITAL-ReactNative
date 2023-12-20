@@ -14,7 +14,9 @@ import PagoPadron from './src/screens/PagoPadron';
 // Registro de ciudadanos Screens
 import PDFViewerScreen from './src/screens/PDFviewer';
 import TerminsCondiciones from './src/screens/TerminsCondiciones';
+import Tramites from './src/screens/Tramites';
 import ViewPagoNetpay from './src/screens/ViewPagoNetpay';
+import ViewTramites from './src/screens/ViewTramites';
 import Walkthrough from './src/screens/Walkthrough';
 import WebViewCabildo from './src/screens/WebviewCabildo';
 import WebViewCartografiaScreen from './src/screens/WebviewCartografia';
@@ -51,6 +53,11 @@ const AppContainer = () => (
         component={PDFViewerScreen}
       />
       <Stack.Screen
+        name="tramites"
+        options={{ animation: 'none' }}
+        component={Tramites}
+      />
+      <Stack.Screen
         name="netpaypago"
         options={{ animation: 'none' }}
         component={NetPayPagoScreen}
@@ -84,6 +91,11 @@ const AppContainer = () => (
         name="zonoficacion"
         options={{ animation: 'none' }}
         component={WebViewZonificacionScreen}
+      />
+      <Stack.Screen
+        name="webTramites"
+        options={{ animation: 'none' }}
+        component={ViewTramites}
       />
     </Stack.Navigator>
   </NavigationContainer>

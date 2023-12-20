@@ -199,6 +199,26 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
           numColumns={numColumns}
           ListFooterComponent={(
             <>
+              <View style={styles.separator} />
+
+              <TouchableOpacity onPress={() => navigation.navigate('tramites')}>
+                <Card
+                  style={{
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    borderBottomWidth: 3,
+                    borderBottomColor: '#009C6F',
+                  }}
+                >
+                  <Text style={styles.greeting2}>Trámites</Text>
+                  <FontAwesome5
+                    name="file-signature"
+                    size={30}
+                    solid
+                    color="#142B47"
+                  />
+                </Card>
+              </TouchableOpacity>
 
               <View style={styles.separator} />
 

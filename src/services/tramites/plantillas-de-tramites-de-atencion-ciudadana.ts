@@ -8,7 +8,7 @@ interface IGetTramitesParams {
   page: number;
 }
 
-const getTramites = async (params: IGetTramitesParams = { page: 1 }) => {
+const getTramites2 = async (params: IGetTramitesParams = { page: 1 }) => {
   let output: PaginatedResult<ITramite> = {
     count: 0,
     next: null,
@@ -38,6 +38,21 @@ const getTramites = async (params: IGetTramitesParams = { page: 1 }) => {
   return output;
 };
 
+const getTramites = async (_params = {}) => {
+  try {
+    const params = {
+      ..._params,
+      estado_de_ficha: 3,
+    };
+    const res = await HTTP_GRP.get('/tramites/plantillas-de-tramites-indexada/', { params });
+    return res.data;
+  } catch (error) {
+    console.log(error);
+  }
+  return { results: [], count: 0 };
+};
+
 export {
   getTramites,
+  getTramites2,
 };

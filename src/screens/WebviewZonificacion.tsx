@@ -42,6 +42,20 @@ const WebViewZonificacionScreen = ({ route, navigation }: TWebViewZonificacionSc
 
   const fechaHoraActual = obtenerFechaHoraActual();
 
+  // const registrarPredioSigob = async (folio:string) => {
+  //   const apiUrl = 'https://apiingresos.migob.mx/catastro/predio-pagado/';
+
+  //   const predioPago ={
+
+  //   }
+
+  //   const headers = {
+  //     // eslint-disable-next-line @typescript-eslint/naming-convention
+  //     'Content-Type': 'application/json',
+  //   };
+  //   const response = await axios.post(apiUrl, pagoData, { headers });
+  // };
+
   const realizarPagoInsitu = async (
     montoTotal: string,
     folio: string,
@@ -360,7 +374,7 @@ const WebViewZonificacionScreen = ({ route, navigation }: TWebViewZonificacionSc
   return (
     <View style={{ flex: 1 }}>
       <WebView
-        source={{ uri: `https://${domain}/?nombre=${datos.datosRecibo.nombre}&apellidoParterno=${datos.datosRecibo.apellidoPaterno}&montoTotal=${datos.datosRecibo.montoTotal}&email=${datos.datosRecibo.email}&phone=${datos.datosRecibo.phone}&merchantReferenceCode=${datos.datosRecibo.datosDePago.merchan + nowTime}` }}
+        source={{ uri: `https://tresdeese.migob.mx/?nombre=${datos.datosRecibo.nombre}&apellidoParterno=${datos.datosRecibo.apellidoPaterno}&montoTotal=${datos.datosRecibo.montoTotal}&email=${datos.datosRecibo.email}&phone=${datos.datosRecibo.phone}&merchantReferenceCode=${datos.datosRecibo.datosDePago.merchan + nowTime}` }}
         style={{ flex: 1 }}
         onMessage={handleMessage}
       />
