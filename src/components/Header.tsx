@@ -7,7 +7,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { RFPercentage } from 'react-native-responsive-fontsize';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -66,7 +65,7 @@ const styles = StyleSheet.create({
     right: 0,
   },
   tituloHeader: {
-    fontSize: RFPercentage(0.04),
+    fontSize: 15,
     fontWeight: '800',
     color: '#782745',
     textAlign: 'center',

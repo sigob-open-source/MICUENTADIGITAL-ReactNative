@@ -11,7 +11,6 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { RFPercentage } from 'react-native-responsive-fontsize';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
@@ -436,7 +435,7 @@ const PagoPadron = ({ route, navigation }: PagoPadronScreenProps) => {
           {seEncontroAdeudo ? (
             <View style={styles.cardPredios}>
               <View>
-                <Text style={{ fontSize: RFPercentage(0.04), color: '#313030', fontWeight: '600' }}>
+                <Text style={{ fontSize: 14, color: '#313030', fontWeight: '600' }}>
                   {(padronSearched as IConsultaDeAdeudoResponse)?.informacion
                     .propietario
                     || 'Sin Nombre Registrado'}
@@ -444,7 +443,7 @@ const PagoPadron = ({ route, navigation }: PagoPadronScreenProps) => {
 
                 <Text
                   style={{
-                    fontSize: RFPercentage(0.03),
+                    fontSize: 10,
                     color: '#747474',
                     fontWeight: '400',
                     marginTop: 2,
@@ -466,7 +465,7 @@ const PagoPadron = ({ route, navigation }: PagoPadronScreenProps) => {
 
               <View style={{ width: '100%', alignItems: 'center' }}>
                 <Text
-                  style={{ fontSize: RFPercentage(0.03), color: '#865770', fontWeight: '600' }}
+                  style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}
                 >
                   ACTUAL
                 </Text>
@@ -518,7 +517,7 @@ const PagoPadron = ({ route, navigation }: PagoPadronScreenProps) => {
 
               <View style={{ width: '100%', alignItems: 'center' }}>
                 <Text
-                  style={{ fontSize: RFPercentage(0.03), color: '#865770', fontWeight: '600' }}
+                  style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}
                 >
                   RECARGOS
                 </Text>
@@ -567,7 +566,7 @@ const PagoPadron = ({ route, navigation }: PagoPadronScreenProps) => {
 
               <View style={{ width: '100%', alignItems: 'center' }}>
                 <Text
-                  style={{ fontSize: RFPercentage(0.03), color: '#865770', fontWeight: '600' }}
+                  style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}
                 >
                   REZAGOS
                 </Text>
@@ -617,7 +616,7 @@ const PagoPadron = ({ route, navigation }: PagoPadronScreenProps) => {
 
               <View style={{ width: '100%', alignItems: 'center' }}>
                 <Text
-                  style={{ fontSize: RFPercentage(0.03), color: '#865770', fontWeight: '600' }}
+                  style={{ fontSize: 12, color: '#865770', fontWeight: '600' }}
                 >
                   RECARGOS DEL REZAGO
                 </Text>
@@ -745,13 +744,13 @@ const styles = StyleSheet.create({
     borderColor: '#865770',
   },
   predialsubtex: {
-    fontSize: RFPercentage(0.03),
+    fontSize: 10,
     color: '#747474',
     fontWeight: '600',
     marginTop: 3,
   },
   predialsubtex2: {
-    fontSize: RFPercentage(0.03),
+    fontSize: 10,
     color: '#313030',
     fontWeight: '700',
   },
@@ -762,13 +761,13 @@ const styles = StyleSheet.create({
   headText: {
     textAlign: 'center',
     color: 'black',
-    fontSize: RFPercentage(0.05),
+    fontSize: 20,
     fontFamily: fonts.black,
     marginBottom: 10,
   },
   inputText: {
     color: '#404040',
-    fontSize: RFPercentage(0.03),
+    fontSize: 12,
     fontFamily: fonts.medium,
     marginHorizontal: 23,
   },
@@ -847,7 +846,7 @@ const styles = StyleSheet.create({
   textButton: {
     color: 'white',
     fontFamily: fonts.bold,
-    fontSize: RFPercentage(0.04),
+    fontSize: 16,
     textAlign: 'center',
     margin: 10,
   },
@@ -871,7 +870,7 @@ const styles = StyleSheet.create({
   },
   totalText: {
     color: 'black',
-    fontSize: RFPercentage(0.05),
+    fontSize: 20,
     padding: 5,
     fontFamily: fonts.bold,
     textAlign: 'left',
@@ -909,7 +908,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 5,
   },
   textInput: {
-    fontSize: RFPercentage(0.03),
+    fontSize: 10,
     color: '#582E44',
   },
 });

@@ -5,7 +5,6 @@ import React, { useMemo } from 'react';
 import {
   StyleSheet, Text, View, ViewStyle,
 } from 'react-native';
-import { RFPercentage } from 'react-native-responsive-fontsize';
 
 import useTotal from '../hooks/useTotal';
 // Internal dependencies
@@ -107,33 +106,33 @@ const styles = StyleSheet.create({
   title: {
     color: '#364046',
     fontWeight: '700',
-    fontSize: RFPercentage(0.04),
+    fontSize: 14,
   },
   subtitle: {
     color: '#9F9F9F',
     fontWeight: '700',
-    fontSize: RFPercentage(0.04),
+    fontSize: 14,
   },
   total: {
-    fontSize: RFPercentage(0.05),
+    fontSize: 20,
     color: '#585858',
     fontWeight: '700',
     textAlign: 'center',
   },
   totalDisclaimer: {
     color: '#9F9F9F',
-    fontSize: RFPercentage(0.03),
+    fontSize: 11,
     fontWeight: '700',
     marginTop: 5,
   },
   field: {
-    fontSize: RFPercentage(0.04),
+    fontSize: 14,
     color: '#525050',
     fontWeight: '700',
     marginTop: 8,
   },
   value: {
-    fontSize: RFPercentage(0.04),
+    fontSize: 14,
     color: '#747474',
     fontWeight: '400',
   },
@@ -153,7 +152,7 @@ const styles = StyleSheet.create({
   },
   additionalChargesDisclaimer: {
     color: '#E8AB35',
-    fontSize: RFPercentage(0.03),
+    fontSize: 12,
     fontWeight: '700',
     textAlign: 'center',
     marginTop: 17,

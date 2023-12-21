@@ -2,7 +2,6 @@
 // External dependencies
 import React, { useMemo } from 'react';
 import { StyleSheet, Text } from 'react-native';
-import { RFPercentage } from 'react-native-responsive-fontsize';
 
 // Internal dependencies
 import LADAS from '../dataset/ladas.json';
@@ -150,16 +149,16 @@ const styles = StyleSheet.create({
   cardTitle: {
     color: '#364046',
     fontWeight: '700',
-    fontSize: RFPercentage(0.04),
+    fontSize: 14,
   },
   field: {
-    fontSize: RFPercentage(0.04),
+    fontSize: 14,
     color: '#818181',
     fontWeight: '500',
     marginTop: 8,
   },
   value: {
-    fontSize: RFPercentage(0.04),
+    fontSize: 14,
     color: '#010101',
     fontWeight: '700',
   },

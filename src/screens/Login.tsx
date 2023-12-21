@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { RFPercentage } from 'react-native-responsive-fontsize';
 
 import IMAGEN from '../../assets/imagenes/jrzfondo.png';
 import IconLogo from '../../assets/imagenes/logo.png';
@@ -61,12 +60,6 @@ const Login = ({ navigation }: LoginScreenProps) => {
       </View>
 
       <View style={styles.buttonContainer}>
-        {/* <TouchableOpacity onPress={() => navigation.navigate('registroCiudadano')}>
-          <View style={styles.buttonCredenciales}>
-            <Text style={styles.textButtonSin}>Iniciar sesión con cuenta única</Text>
-          </View>
-        </TouchableOpacity> */}
-
         <TouchableOpacity onPress={next}>
           <View style={styles.buttonSinCredenciales}>
             <Text style={styles.textButtonSin}>Ingresar</Text>
@@ -75,7 +68,7 @@ const Login = ({ navigation }: LoginScreenProps) => {
 
         <TouchableOpacity onPress={() => navigation.navigate('terminos')}>
           <View style={styles.buttonCredenciales}>
-            <Text style={{ color: '#502A3E', fontSize: RFPercentage(0.03) }}>Aviso de privacidad</Text>
+            <Text style={{ color: '#502A3E', fontSize: 10 }}>Aviso de privacidad</Text>
           </View>
         </TouchableOpacity>
       </View>
@@ -138,6 +131,6 @@ const styles = StyleSheet.create({
   },
   textButtonSin: {
     color: 'white',
-    fontSize: RFPercentage(0.03),
+    fontSize: 12,
   },
 });

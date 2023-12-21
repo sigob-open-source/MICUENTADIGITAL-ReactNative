@@ -5,7 +5,6 @@ import {
   View,
 } from 'react-native';
 import Collapsible from 'react-native-collapsible';
-import { RFPercentage } from 'react-native-responsive-fontsize';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 import { ConsultaInfraccion_Activa } from '../services/juarez-infracciones/types/consultaInfraccion';
@@ -95,7 +94,7 @@ const Adeudo = ({
           }}
           >
             <Text style={{
-              fontSize: RFPercentage(0.03),
+              fontSize: 11,
               color: '#313030',
               fontWeight: '400',
               marginRight: 5,
@@ -149,7 +148,7 @@ const styles = StyleSheet.create({
   text: {
     color: '#313030',
     fontFamily: fonts.bold,
-    fontSize: RFPercentage(0.03),
+    fontSize: 12,
   },
   row: {
     alignItems: 'center',
@@ -175,7 +174,7 @@ const styles = StyleSheet.create({
 
   },
   infoTex: {
-    fontSize: RFPercentage(0.03),
+    fontSize: 11,
     color: '#313030',
     fontWeight: '400',
     marginTop: 4,

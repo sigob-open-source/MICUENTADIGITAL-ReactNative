@@ -6,7 +6,6 @@ import {
   Text,
   View,
 } from 'react-native';
-import { RFPercentage } from 'react-native-responsive-fontsize';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import Header from '../components/Header';
@@ -107,7 +106,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   titulo: {
-    fontSize: RFPercentage(0.05),
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#6d0c2e',
     marginTop: 70,
@@ -137,12 +136,12 @@ const styles = StyleSheet.create({
   },
   tituloHeader: {
     color: '#6d0c2e',
-    fontSize: RFPercentage(0.05),
+    fontSize: 20,
     fontWeight: '900',
     paddingLeft: 45,
   },
   aviso: {
-    fontSize: RFPercentage(0.04),
+    fontSize: 15,
     fontWeight: '500',
   },
   boton: {

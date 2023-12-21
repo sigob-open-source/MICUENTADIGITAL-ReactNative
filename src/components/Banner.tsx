@@ -5,7 +5,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { RFPercentage } from 'react-native-responsive-fontsize';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
 const Banner = () => (
@@ -123,7 +122,7 @@ const styles = StyleSheet.create({
     left: 13,
   },
   bannerText: {
-    fontSize: RFPercentage(0.05),
+    fontSize: 20,
     color: 'white',
     fontWeight: '900',
     shadowColor: 'black',
@@ -135,7 +134,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   bannerSubText: {
-    fontSize: RFPercentage(0.03),
+    fontSize: 13,
     color: 'white',
     fontWeight: '500',
     shadowColor: 'black',
@@ -146,7 +145,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   TituloInfo: {
-    fontSize: RFPercentage(0.06),
+    fontSize: 23,
     fontWeight: 'bold',
     color: '#404040',
   },
@@ -163,7 +162,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   subTituloInfo: {
-    fontSize: RFPercentage(0.04),
+    fontSize: 17,
     fontWeight: '500',
     color: '#404040',
     marginBottom: 10,

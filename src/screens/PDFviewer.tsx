@@ -9,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { RFPercentage } from 'react-native-responsive-fontsize';
 
 import Header from '../components/Header';
 import { RootStackParamList } from '../types/navigation';
@@ -36,7 +35,7 @@ const PDFViewerScreen = ({
             backgroundColor: 'white', width: '100%', height: 59, padding: 15,
           }}
           >
-            <Text style={{ fontWeight: '400', color: '#4F4F4F', fontSize: RFPercentage(0.04) }}>
+            <Text style={{ fontWeight: '400', color: '#4F4F4F', fontSize: 14 }}>
               Pago realizado:
             </Text>
           </View>
@@ -48,10 +47,10 @@ const PDFViewerScreen = ({
             alignItems: 'center',
           }}
           >
-            <Text style={{ fontSize: RFPercentage(0.03), color: '#727272', fontWeight: '400' }}>
+            <Text style={{ fontSize: 12, color: '#727272', fontWeight: '400' }}>
               Pagaste:
             </Text>
-            <Text style={{ fontWeight: '800', fontSize: RFPercentage(0.07), color: '#7D0025' }}>
+            <Text style={{ fontWeight: '800', fontSize: 26, color: '#7D0025' }}>
               {currency(data.total).format()}
             </Text>
           </View>
@@ -63,10 +62,10 @@ const PDFViewerScreen = ({
               backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
             }}
             >
-              <Text style={{ fontSize: RFPercentage(0.03), fontWeight: '600', color: '#A9A9A9' }}>
+              <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
                 Fecha:
               </Text>
-              <Text style={{ fontSize: RFPercentage(0.03), fontWeight: '700', color: '#575757' }}>
+              <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
                 {data.fechaActual}
               </Text>
             </View>
@@ -75,10 +74,10 @@ const PDFViewerScreen = ({
               marginTop: 10, backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
             }}
             >
-              <Text style={{ fontSize: RFPercentage(0.03), fontWeight: '600', color: '#A9A9A9' }}>
+              <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
                 Pagado por:
               </Text>
-              <Text style={{ fontSize: RFPercentage(0.03), fontWeight: '700', color: '#575757' }}>
+              <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
                 {data.nombre}
                 {' '}
                 {data.lastName}
@@ -90,10 +89,10 @@ const PDFViewerScreen = ({
               marginTop: 10, backgroundColor: '#F4F4F4', width: '100%', height: 40, padding: 5, justifyContent: 'center',
             }}
             >
-              <Text style={{ fontSize: RFPercentage(0.03), fontWeight: '600', color: '#A9A9A9' }}>
+              <Text style={{ fontSize: 10, fontWeight: '600', color: '#A9A9A9' }}>
                 Número de autorización:
               </Text>
-              <Text style={{ fontSize: RFPercentage(0.03), fontWeight: '700', color: '#575757' }}>
+              <Text style={{ fontSize: 10, fontWeight: '700', color: '#575757' }}>
                 {data.numeroAut}
               </Text>
             </View>
@@ -106,7 +105,7 @@ const PDFViewerScreen = ({
               padding: 10,
             }}
             >
-              <Text style={{ fontSize: RFPercentage(0.03), fontWeight: '400', color: '#6A6A6A' }}>
+              <Text style={{ fontSize: 10, fontWeight: '400', color: '#6A6A6A' }}>
                 Tu pago se acreditará dentro de las próximas 24 horas hábiles.
                 {' '}
                 {'\n'}
