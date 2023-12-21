@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useDispatch } from 'react-redux';
 
@@ -171,6 +172,7 @@ const MenuInicio = ({ navigation }: IMenuInicioScreenProps) => {
       <View style={{ marginBottom: '2%' }}>
         <Header
           item="Inicio"
+          hideBackButton
         />
       </View>
 
@@ -363,7 +365,7 @@ const styles = StyleSheet.create({
   textInputStyle: {
     height: '100%',
     marginLeft: 14,
-    fontSize: 13,
+    fontSize: RFPercentage(0.03),
   },
   iconContainer: {
     width: 39,
@@ -396,13 +398,13 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   TituloInfo: {
-    fontSize: 18,
+    fontSize: RFPercentage(0.05),
     marginBottom: 2,
     fontWeight: 'bold',
     color: '#404040',
   },
   subTituloInfo: {
-    fontSize: 14,
+    fontSize: RFPercentage(0.04),
     fontWeight: '500',
     color: '#404040',
   },
@@ -453,7 +455,7 @@ const styles = StyleSheet.create({
   pagoTxt: {
     color: '#404040',
     fontWeight: '800',
-    fontSize: 14,
+    fontSize: RFPercentage(0.04),
   },
   iconstyel: {
     height: '100%',
@@ -465,7 +467,7 @@ const styles = StyleSheet.create({
   pagoSubCategoryText: {
     color: '#404040',
     fontWeight: '600',
-    fontSize: 14,
+    fontSize: RFPercentage(0.04),
   },
   greetingContainer: {
     paddingHorizontal: 20,
@@ -473,18 +475,18 @@ const styles = StyleSheet.create({
   },
   greeting: {
     color: '#404040',
-    fontSize: 16,
+    fontSize: RFPercentage(0.04),
     fontWeight: 'bold',
   },
   greeting2: {
     color: '#142B47',
-    fontSize: 16,
+    fontSize: RFPercentage(0.04),
     fontWeight: 'bold',
     marginRight: 10,
   },
   greetingSubject: {
     color: '#101010',
-    fontSize: 16,
+    fontSize: RFPercentage(0.04),
     fontWeight: 'bold',
   },
   logOutButton: {

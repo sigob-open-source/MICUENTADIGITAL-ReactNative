@@ -1,13 +1,17 @@
 /* eslint-disable react/require-default-props */
 // External dependencies
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
   Image,
   StyleSheet,
   Text,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 // Internal dependencies
 import LOGO from '../../../assets/imagenes/logo.png';
@@ -15,16 +19,19 @@ import LOGO from '../../../assets/imagenes/logo.png';
 // Types & Interfaces
 interface HeaderProps {
   title?: string;
-  leftComponent?: JSX.Element;
+  hideBackButton?: boolean;
   disableShadow?: boolean;
 }
 
 const Header = ({
   title,
-  leftComponent,
+  hideBackButton,
   disableShadow = false,
 }: HeaderProps) => {
   const insets = useSafeAreaInsets();
+  const navigation = useNavigation();
+
+  const shouldRenderBackButton = navigation.canGoBack() && !hideBackButton;
 
   return (
     <View
@@ -35,7 +42,13 @@ const Header = ({
     >
       <View style={[styles.innerContainer]}>
         <View style={styles.leftCtaContainer}>
-          { leftComponent }
+          {shouldRenderBackButton && (
+            <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+              <View style={styles.backButton}>
+                <Icon name="chevron-left" size={18} />
+              </View>
+            </TouchableWithoutFeedback>
+          )}
         </View>
 
         <Text
@@ -78,7 +91,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   headline: {
-    fontSize: 15,
+    fontSize: RFPercentage(0.04),
     fontWeight: '800',
     color: '#782745',
     textAlign: 'center',
@@ -96,6 +109,13 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     height: 20,
     width: 75,
+  },
+  backButton: {
+    width: 30,
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

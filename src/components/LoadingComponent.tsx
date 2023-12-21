@@ -3,6 +3,7 @@ import {
   ActivityIndicator, StyleSheet,
   Text, View,
 } from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 
 const LoadingComponent = () => {
   const [message, setMessage] = useState('Cargando...');
@@ -32,7 +33,7 @@ const LoadingComponent = () => {
     }}
     >
       <ActivityIndicator size="large" color="white" />
-      <Text style={{ color: '#ffffff', marginTop: 10, fontSize: 12 }}>{message}</Text>
+      <Text style={{ color: '#ffffff', marginTop: 10, fontSize: RFPercentage(0.03) }}>{message}</Text>
     </View>
   );
 };

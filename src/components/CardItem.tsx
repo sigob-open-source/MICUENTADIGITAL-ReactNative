@@ -34,7 +34,7 @@ const Label = styled.Text`
   font-family: ${fonts.light};
   font-weight: normal;
   color: #666666;
-  font-size: 12px;
+  font-size: RFPercentage(0.03)px;
   flex: 1;
 `;
 

@@ -11,6 +11,7 @@ import {
   View,
   ViewStyle,
 } from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/FontAwesome5';
 
 // Types & Interfaces
@@ -147,25 +148,25 @@ const styles = StyleSheet.create({
   },
   text: {
     color: 'white',
-    fontSize: 16,
+    fontSize: RFPercentage(0.04),
   },
   medium: {
     height: 44,
   },
   mediumText: {
-    fontSize: 16,
+    fontSize: RFPercentage(0.04),
   },
   small: {
     height: 36,
   },
   smallText: {
-    fontSize: 14,
+    fontSize: RFPercentage(0.04),
   },
   large: {
     height: 48,
   },
   largeText: {
-    fontSize: 18,
+    fontSize: RFPercentage(0.05),
   },
   disabled: {
     opacity: 0.5,

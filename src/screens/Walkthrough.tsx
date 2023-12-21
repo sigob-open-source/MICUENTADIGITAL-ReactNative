@@ -7,6 +7,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Swiper from 'react-native-swiper';
 
@@ -73,7 +74,7 @@ const styles = StyleSheet.create({
   },
   saltartxt: {
     color: '#BD6A6A',
-    fontSize: 14,
+    fontSize: RFPercentage(0.04),
     fontWeight: '500',
     position: 'absolute',
     right: 20,
@@ -90,7 +91,7 @@ const styles = StyleSheet.create({
     marginBottom: '10%',
   },
   txtDescripcion: {
-    fontSize: 18,
+    fontSize: RFPercentage(0.05),
     color: '#362D71',
     fontWeight: '700',
     textAlign: 'center',
@@ -107,12 +108,12 @@ const styles = StyleSheet.create({
   },
   textButton: {
     color: '#FFFFFF',
-    fontSize: 15,
+    fontSize: RFPercentage(0.04),
     fontWeight: '500',
   },
   subtxt: {
     color: '#6F7173',
-    fontSize: 12,
+    fontSize: RFPercentage(0.03),
     fontWeight: '300',
     textAlign: 'center',
   },

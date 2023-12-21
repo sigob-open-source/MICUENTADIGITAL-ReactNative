@@ -369,8 +369,6 @@ const WebViewZonificacionScreen = ({ route, navigation }: TWebViewZonificacionSc
     }
   };
 
-  const domain = __DEV__ ? 'flowersac.migob.mx' : 'tresdeese.migob.mx';
-
   return (
     <View style={{ flex: 1 }}>
       <WebView

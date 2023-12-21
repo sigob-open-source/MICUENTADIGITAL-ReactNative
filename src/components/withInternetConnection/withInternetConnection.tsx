@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
 function withInternetConnection<T>(ParentComponent: T) {
@@ -81,12 +82,12 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   alertTitle: {
-    fontSize: 16,
+    fontSize: RFPercentage(0.04),
     color: '#a4a4a4',
     marginLeft: 5,
   },
   alertText: {
-    fontSize: 16,
+    fontSize: RFPercentage(0.04),
     color: '#010101',
   },
 });

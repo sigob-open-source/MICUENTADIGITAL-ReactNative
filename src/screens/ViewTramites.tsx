@@ -2,8 +2,8 @@
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React from 'react';
 
+// Internal dependencies
 import WebViewPage from '../components/WebViewPage';
-// Internal dependenices
 import { RootStackParamList } from '../types/navigation';
 
 // Types & Interfaces

@@ -1,7 +1,11 @@
-import { useNavigation } from '@react-navigation/native';
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import React, { useEffect, useState } from 'react';
 import {
-  ActivityIndicator, FlatList, StyleSheet, Text, TouchableOpacity,
+  ActivityIndicator,
+  FlatList,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
   View,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome5';
@@ -11,19 +15,16 @@ import Card from '../components/Card';
 import Header from '../components/Header';
 import Input from '../components/Input';
 import Separator from '../components/Separator';
-import { getTramites } from '../services/tramites/plantillas-de-tramites-de-atencion-ciudadana';
+import { getTramites, type ITramiteIndexado } from '../services/tramites/plantillas-de-tramites-de-atencion-ciudadana';
+import { RootStackParamList } from '../types/navigation';
 
-function normalizeString(input: string) {
-  return input.trim().toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-}
+type TramitesScreenProps = NativeStackScreenProps<RootStackParamList, 'webTramites'>;
 
-const Tramites = () => {
+const Tramites = ({ navigation }: TramitesScreenProps) => {
   const [loading, setLoading] = useState(true);
-  const [tiposDeTramites, setTiposDeTramites] = useState([]);
+  const [tiposDeTramites, setTiposDeTramites] = useState<ITramiteIndexado[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchText, setSearchText] = useState('');
-
-  const navigation = useNavigation();
 
   useEffect(() => {
     let mounted = true;
@@ -36,7 +37,9 @@ const Tramites = () => {
       }
     };
     void fetchData();
+
     return () => { mounted = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getTiposDeTramites = async () => {
@@ -51,16 +54,22 @@ const Tramites = () => {
   const loadNextPage = async () => {
     setLoading(true);
     const nextPage = currentPage + 1;
-    const query: Record<string, number | string> = { entidad: 1, page: nextPage, desc: true };
+    const query: Record<string, unknown> = { entidad: 1, desc: true };
+
     if (searchText.trim()) {
       query.nombre = searchText.trim();
     }
-    const response = await getTramites(query);
+
+    const response = await getTramites({
+      page: nextPage,
+      ...query,
+    });
 
     if (response.results.length) {
       setTiposDeTramites([...tiposDeTramites, ...response.results]);
       setCurrentPage(nextPage);
     }
+
     setLoading(false);
   };
 
@@ -81,7 +90,8 @@ const Tramites = () => {
 
   return (
     <>
-      <Header />
+      <Header item="" />
+
       <Card style={styles.card}>
 
         <Input
@@ -97,17 +107,17 @@ const Tramites = () => {
           style={styles.cta}
           text="Buscar"
           iconName="search"
-          onPress={onSearch}
+          onPress={() => { void onSearch(); }}
         />
       </Card>
-      {console.log(tiposDeTramites)}
+
       <FlatList
         contentContainerStyle={styles.content}
         data={tiposDeTramites}
         keyExtractor={(data) => data.id}
-        renderItem={({ item, index }) => (
+        renderItem={({ item }) => (
           <View>
-            <TouchableOpacity onPress={() => navigation.push('webTramites', { item })}>
+            <TouchableOpacity onPress={() => { navigation.push('webTramites', { item }); }}>
               <Card>
                 <View style={styles.titleContainer}>
                   <Text style={styles.title}> TRÁMITE </Text>
@@ -131,7 +141,7 @@ const Tramites = () => {
           </View>
         )}
         ItemSeparatorComponent={() => <View style={{ marginTop: 8 }} />}
-        onEndReached={loadNextPage}
+        onEndReached={() => { void loadNextPage(); }}
         ListFooterComponent={() => (loading ? <ActivityIndicator size="small" /> : null)}
       />
     </>

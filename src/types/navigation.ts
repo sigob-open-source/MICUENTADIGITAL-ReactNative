@@ -57,6 +57,9 @@ type RootStackParamList = {
       padronSeleccionado: string;
       folio: string;
     }
+  },
+  webTramites: {
+    item: { id: string }
   }
 };
 

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 
 import Header from '../components/Header';
 import { RootStackParamList } from '../types/navigation';
@@ -27,10 +28,10 @@ const ErrorScreen = ({ navigation }: ErrorScreenProps) => (
         alignItems: 'center',
       }}
     >
-      <Text style={{ fontSize: 16, fontWeight: '700', color: '#831D45' }}>
+      <Text style={{ fontSize: RFPercentage(0.04), fontWeight: '700', color: '#831D45' }}>
         Sucedió algo inesperado
       </Text>
-      <Text style={{ fontSize: 14, fontWeight: '500', textAlign: 'center' }}>
+      <Text style={{ fontSize: RFPercentage(0.04), fontWeight: '500', textAlign: 'center' }}>
         Si ya realizó su pago y su cuenta continua activa, favor de acudir a
         la Recaudación Municipal
       </Text>

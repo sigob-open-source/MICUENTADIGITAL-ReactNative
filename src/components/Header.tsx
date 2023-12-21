@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
   Image,
@@ -6,27 +7,42 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
+import { RFPercentage } from 'react-native-responsive-fontsize';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 import LOGO from '../../assets/imagenes/logo.png';
 
 interface IHeaderProps {
   item: string;
+  hideBackButton?: boolean;
 }
 
-const Header = ({ item }: IHeaderProps) => {
+const Header = ({ item, hideBackButton }: IHeaderProps) => {
   const insets = useSafeAreaInsets();
+
+  const navigation = useNavigation();
+
+  const canRenderBackButton = navigation.canGoBack() && !hideBackButton;
+
   return (
     <View style={[styles.outerContainer, { paddingTop: insets.top }]}>
       <View style={styles.container}>
-        <TouchableWithoutFeedback>
-          <View style={styles.logoContainerIma}>
-            <Image
-              style={styles.logo}
-              source={LOGO}
-            />
-          </View>
-        </TouchableWithoutFeedback>
+
+        {canRenderBackButton && (
+          <TouchableWithoutFeedback onPress={() => navigation.goBack()}>
+            <View style={styles.backButton}>
+              <Icon name="chevron-left" size={18} />
+            </View>
+          </TouchableWithoutFeedback>
+        )}
+
+        <View style={styles.logoContainerIma}>
+          <Image
+            style={styles.logo}
+            source={LOGO}
+          />
+        </View>
 
         <View style={styles.textContainer}>
           <Text
@@ -44,13 +60,13 @@ const Header = ({ item }: IHeaderProps) => {
 
 const styles = StyleSheet.create({
   textContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    marginLeft: -75,
-
+    position: 'absolute',
+    textAlign: 'center',
+    left: 0,
+    right: 0,
   },
   tituloHeader: {
-    fontSize: 15,
+    fontSize: RFPercentage(0.04),
     fontWeight: '800',
     color: '#782745',
     textAlign: 'center',
@@ -76,7 +92,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     height: 50,
     width: '100%',
-    justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 25,
     borderBottomWidth: 0.2,
@@ -86,6 +101,12 @@ const styles = StyleSheet.create({
     resizeMode: 'contain',
     height: 20,
     width: 75,
+  },
+  backButton: {
+    height: '100%',
+    display: 'flex',
+    justifyContent: 'center',
+    width: 25,
   },
 });
 
